@@ -31,15 +31,14 @@ integer i;
         #1 clk = ~clk;
     end
    
-    
-    always
+    always @ (posedge clk) // fixme: posedge vs. clock signal
     begin
         for (i = 0; i < 5; i = i+1) begin
                 #1 dcount_tb = dcount_tb + 1;
         end
         
         #1 _load = 1; 
-        #1 dcount_tb = 8'b11111100;
+        #1 dcount_tb = 8'b11111000;
         #1 _load = 0; 
        
         for (i = 0; i < 15; i = i + 1) begin
@@ -65,7 +64,7 @@ integer i;
         end
 
         #1 _load = 1; 
-        #1 dcount_tb = 8'b11111100;
+        #1 dcount_tb = 8'b11111000;
         #1 _load = 0;
         #1 _wrapstop = 0;
         for (i = 0; i < 15; i = i + 1) begin
