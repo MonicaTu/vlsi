@@ -12,7 +12,7 @@ integer i;
     initial
     begin
         clk = 0;
-        _areset = 0; 
+        _areset = 1; 
         _aset = 0;
         _load = 0;
         _updown = 1;
@@ -52,7 +52,9 @@ integer i;
 
     always
     begin
+        #1  _areset = 0;
         #42 _areset = 1;
+        #43 _areset = 0;
     end
 
     always
