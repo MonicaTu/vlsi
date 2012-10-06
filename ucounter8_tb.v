@@ -40,10 +40,8 @@ integer i;
     end
 
     initial begin
-        for (i = 0; i < 3; i = i+1) begin
-            dcount_tb = 0;
-            #1;
-        end
+        dcount_tb = 0;
+        #3;
         for (i = 0; i < 5; i = i+1) begin
             dcount_tb = dcount_tb + 1;
             #1;
