@@ -17,40 +17,32 @@ reg    overflow;
             else
                 if (_load)
                     dcount = preld_val;
-                else
-                    begin
-                        if (_updown)
-                        begin
-                            if (dcount == 255)
-                            begin
-                                if (_wrapstop)
-                                begin
-                                    dcount = 0;
-                                end
-                                else
-                                    begin
-                                        overflow = 1;
-                                        #5 $finish;    // stop
-                                    end
+                else begin
+                    if (_updown) begin
+                        if (dcount == 255) begin
+                            if (_wrapstop) begin
+                                dcount = 0;
                             end
-                            else
-                                dcount = dcount + 1;
+                            else begin
+                                overflow = 1;
+                                #5 $finish;    // stop
+                            end
                         end
                         else
-                            if (dcount == 0)
-                            begin
-                                if (_wrapstop)
-                                begin
-                                    dcount = 255;
-                                end
-                                else
-                                    begin
-                                        overflow = 1;
-                                        #5 $finish; // stop
-                                    end
+                            dcount = dcount + 1;
+                    end
+                    else
+                        if (dcount == 0) begin
+                            if (_wrapstop) begin
+                                dcount = 255;
                             end
-                            else
-                                dcount = dcount - 1;
-                       end
+                            else begin
+                                overflow = 1;
+                                #5 $finish; // stop
+                            end
+                        end
+                        else
+                            dcount = dcount - 1;
+                   end
     end
 endmodule
