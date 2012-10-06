@@ -1,3 +1,6 @@
+//`timescale 1ns/10ps
+`timescale 1ns/1ns
+
 module ucounter8_tb;
 
 reg  clk, _areset, _aset, _load, _updown, _wrapstop;
@@ -26,75 +29,25 @@ integer i;
         #10000 $finish;
     end
     
-    always
-    begin
+    always begin
         #1 clk = ~clk;
     end
-  
-    always
-    begin
+ 
+    initial begin
+        _areset = 1;
+        #3 _areset = 0;
         #5 _load = 1;
-        #6 _load = 0;
-        #47 _load = 1; 
-        #48 _load = 0;
-    end
-    
-    always
-    begin
-        #21 _updown = 0;
-        #36 _updown = 1;
     end
 
-    always
-    begin
-        #37 _aset = 1;
-    end
-
-    always
-    begin
-        #1  _areset = 0;
-        #42 _areset = 1;
-        #43 _areset = 0;
-    end
-
-    always
-    begin
-        #49 _wrapstop = 0;
-    end
-
-    always @ (posedge clk) // fixme: posedge vs. clock signal
-    begin
+    initial begin
+        for (i = 0; i < 3; i = i+1) begin
+            dcount_tb = 0;
+            #1;
+        end
         for (i = 0; i < 5; i = i+1) begin
-                #1 dcount_tb = dcount_tb + 1;
+            dcount_tb = dcount_tb + 1;
+            #1;
         end
-        
-        #1 dcount_tb = 8'b11111000;
-       
-        for (i = 0; i < 15; i = i + 1) begin
-            #1 dcount_tb = dcount_tb + 1;
-        end
-
-        for (i = 0; i < 15; i = i + 1) begin
-            #1 dcount_tb = dcount_tb - 1;
-        end
-        
-        for (i = 0; i < 5; i = i + 1) begin
-            #1 dcount_tb = dcount_tb;
-        end
-
-        #1 dcount_tb = 0;
-        
-        for (i = 0; i < 5; i = i + 1) begin
-            #1 dcount_tb = dcount_tb + 1;
-        end
-
-        #1 dcount_tb = 8'b11111000;
-        for (i = 0; i < 15; i = i + 1) begin
-            #1 dcount_tb = dcount_tb + 1;
-            if (dcount_tb == 8'b11111111) begin
-                #1 overflow_tb = 1;
-                #1 $finish;
-            end
-        end
+        dcount_tb = 8'b11111000;
     end
 endmodule
