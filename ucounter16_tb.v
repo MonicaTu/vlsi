@@ -20,7 +20,7 @@ integer i;
         _aset = 0;
         _load = 0;
         _updown = 1;
-        _wrapstop = 1;
+        _wrapstop = 0;
         preld_val = DEFAULT_VAL;
         
         $dumpfile("ucounter16_tb");
