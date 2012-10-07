@@ -4,7 +4,8 @@
 module ucounter16_tb;
 parameter CLK_CYCLE = 2;
 parameter DEFAULT_VAL = 8'b11111000;
-reg  clk, _updown, _wrapstop;
+wire  clk_low, clk_high;
+reg  _updown, _wrapstop;
 reg  _areset_low, _aset_low, _load_low;
 reg  _areset_high, _aset_high, _load_high;
 
@@ -24,10 +25,10 @@ integer i;
 
 //    ucounter16 m(overflow, dcount, clk, _areset, _aset, _load, preld_val, _updown, _wrapstop);
 //    ucounter16 m(overflow_high, overflow_low, dcount_high, dcount_low, clk, _areset, _aset, _load, preld_val_high, preld_val_low, _updown, _wrapstop);
-    ucounter16 m(overflow_high, overflow_low, dcount_high, dcount_low, clk, _areset_high, _areset_low, _aset_high, _aset_low, _load_high, _load_low, preld_val_high, preld_val_low, _updown, _wrapstop);
+    ucounter16 m(overflow_high, overflow_low, dcount_high, dcount_low, clk_high, clk_low, _areset_high, _areset_low, _aset_high, _aset_low, _load_high, _load_low, preld_val_high, preld_val_low, _updown, _wrapstop);
     initial
     begin
-        clk = 0;
+//        clk_low = 0;
         _areset_low = 1; 
         _aset_low = 0;
         _load_low = 0;
@@ -35,6 +36,7 @@ integer i;
         _wrapstop = 1;
 //        preld_val = DEFAULT_VAL;
         
+//        clk_high = 0;
         _areset_high = 1; 
         _aset_high = 0;
         _load_high = 0;
@@ -44,9 +46,9 @@ integer i;
         #10000 $finish;
     end
     
-    always begin
-        #(CLK_CYCLE/2) clk = ~clk;
-    end
+//    always begin
+//        #(CLK_CYCLE/2) clk_low = ~clk_low;
+//    end
     
     initial begin
         #CLK_CYCLE _areset_low = 0;
