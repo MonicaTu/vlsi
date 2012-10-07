@@ -7,8 +7,7 @@ output overflow;
 reg    [7:0] dcount;
 reg    overflow;
 
-    always @ (posedge clk) // fixme
-    begin
+    always @ (posedge clk, _areset, _aset, _load, _updown, _wrapstop) begin
         if (_areset)
             dcount = 0;
         else
