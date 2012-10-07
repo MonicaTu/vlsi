@@ -7,7 +7,7 @@ output overflow;
 reg    [7:0] dcount;
 reg    overflow;
 
-    always @ (posedge clk, _areset, _aset, _load, _updown, _wrapstop) begin
+    always @ (posedge clk) begin
         if (_areset)
             dcount = 0;
         else
@@ -24,7 +24,7 @@ reg    overflow;
                             end
                             else begin
                                 overflow = 1;
-                                #5 $finish;    // stop
+//                                #5 $finish;    // stop
                             end
                         end
                         else
@@ -39,7 +39,7 @@ reg    overflow;
                             end
                             else begin
                                 overflow = 1;
-                                #5 $finish; // stop
+//                                #5 $finish; // stop
                             end
                         end
                         else
