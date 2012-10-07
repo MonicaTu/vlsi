@@ -29,6 +29,8 @@ reg    overflow;
                             end
                         end
                         else
+//                            if (dcount == 8'bx)
+//                                dcount = 0;
                             dcount = dcount + 1;
                     end
                     else
