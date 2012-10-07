@@ -5,45 +5,25 @@ input  [7:0] preld_val;
 output [7:0] dcount;
 output overflow;
 reg    [7:0] dcount;
-reg    overflow;
 
-    always @ (posedge clk) begin
+    always @ (posedge clk, _areset, _updown) begin
         if (_areset)
-            dcount = 0;
+            dcount <= 0;
         else
-            if (_aset)
-                dcount = dcount; // fixme
+            if (_updown)
+                dcount <= dcount + 1;
             else
-                if (_load)
-                    dcount = preld_val;
-                else begin
-                    if (_updown) begin
-                        if (dcount == 255) begin
-                            if (_wrapstop) begin
-                                dcount = 0;
-                            end
-                            else begin
-                                overflow = 1;
-//                                #5 $finish;    // stop
-                            end
-                        end
-                        else
-//                            if (dcount == 8'bx)
-//                                dcount = 0;
-                            dcount = dcount + 1;
-                    end
-                    else
-                        if (dcount == 0) begin
-                            if (_wrapstop) begin
-                                dcount = 255;
-                            end
-                            else begin
-                                overflow = 1;
-//                                #5 $finish; // stop
-                            end
-                        end
-                        else
-                            dcount = dcount - 1;
-                   end
+                dcount <= dcount - 1;
     end
+    
+    always @ (posedge clk, _aset) begin
+            dcount = 255;
+    end
+
+    always @ (posedge clk, _load) begin
+            dcount = preld_val;
+    end
+
+    assign overflow = ( _wrapstop && dcount == 255 ) ? 1 : 0;
+
 endmodule
