@@ -10,3 +10,4 @@ test_ucounter8:
 
 clean:
 	rm -f a.out ucounter8_tb
+	rm -f a.out ucounter16_tb
