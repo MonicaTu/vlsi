@@ -4,7 +4,8 @@
 
 module ucounter16_tb;
 
-parameter DEFAULT_VAL = 8'b10011010;
+//parameter DEFAULT_VAL = 8'b10011010;
+parameter DEFAULT_VAL = 8'hF8;
 parameter MAX16BIT_VAL = 16'hFFFF;
 
 reg clk, _areset, _aset, _load, _updown, _wrapstop;
@@ -20,35 +21,33 @@ integer i;
 
     ucounter16 g(overflow, dcount, clk, _areset, _aset, _load, preld_val, _updown, _wrapstop, carry_in);
 
-	//setup clk
     initial begin
         clk = 0;
+	    _areset = 0; 
+	    _aset = 0;
+        _load = 0;
+        preld_val = DEFAULT_VAL;
+        _updown = 1;
+        _wrapstop = 0;
+        carry_in = 1;
     end
 
+	//setup clk
     always begin
         #10 clk = ~clk;
     end
 
-    initial begin
-        carry_in = 1;
-    end
-
-    initial begin
-	    preld_val = DEFAULT_VAL;
-	end
-
     // _areset test
 	initial begin // 0-50
-	    	_areset = 0; 
         #20 _areset = 1; //20
 	    #20 _areset = 0; //40
 	end
 
-    initial begin
-        #20 tb_dcount = 0;
-        #20;
-    end
-
+//    initial begin
+//        #20 tb_dcount = 0;
+//        #20;
+//    end
+/*
     // _aset test
     initial begin //50-100
 	    	_aset = 0;
@@ -62,18 +61,17 @@ integer i;
         end
         #10 tb_dcount = MAX16BIT_VAL;
     end
-
+*/
     // _laod test
-	initial begin //100-200
-	    	 _load = 0;
-	    #100 _load = 1; //100
-	    #90	 _load = 0; //190
-	end
+//    initial begin //100-200
+//        #100 _load = 1; //100
+//        #90	 _load = 0; //190
+//    end
 
-    initial begin
-        #10 tb_dcount = DEFAULT_VAL; 
-    end
-
+//    initial begin
+//        #10 tb_dcount = DEFAULT_VAL; 
+//    end
+/*
     // _updown test
 	initial begin //200-1000
         	  _updown = 1;
@@ -116,6 +114,7 @@ integer i;
             end
         end
     end
+*/
 /* 
     initial begin //1200 Before circle, After fullStop
 			_wrapstop = 0;
@@ -125,10 +124,16 @@ integer i;
     #50000 $finish;
     end
  */    
-    initial
-    begin
+    initial begin
         $dumpfile("ucounter16_tb.vcd");
         $dumpvars;
+        #100000 $finish;
     end
-	 
+
+//    initial begin
+//        $fsdDumpfile("ucounter16_tb.fsdb");
+//        $fsdDumpvars;
+//    end
+
+
 endmodule

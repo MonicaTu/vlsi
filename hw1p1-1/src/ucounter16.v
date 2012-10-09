@@ -1,9 +1,9 @@
 `include "ucounter8.v"
 
-module ucounter16 (overflow, dcount_top, clk, _areset, _aset, _load, preld_val_top, _updown, _wrapstop, carry_in);
+module ucounter16 (overflow, dcount_top, clk, _areset, _aset, _load, preld_val, _updown, _wrapstop, carry_in);
 
 input clk, _areset, _aset, _load, _updown, _wrapstop, carry_in;
-input  [15:0] preld_val_top;
+input  [15:0] preld_val;
 
 output [15:0] dcount_top;
 output overflow;
