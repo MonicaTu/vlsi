@@ -21,22 +21,19 @@ integer i;
     ucounter16 g(overflow, dcount, clk, _areset, _aset, _load, preld_val, _updown, _wrapstop, _carry_in);
 
 	// setup clk
-    initial begin                                                                                      
-        clk = 0; // Start clock from LOW                                                              
-        forever #(`PERIOD/2) clk = ~clk;                                                            
+    initial begin
+        clk = 0; // Start clock from LOW
+        forever #(`PERIOD/2) clk = ~clk;
     end   
 
     initial begin
-//        _aset = 0;
-//        _load = 0;
         preld_val = DEFAULT_VAL;
         _updown = 1;
-//        _wrapstop = 1;
         _carry_in = 1;
         #100000 $finish;
     end
 
-	initial begin // 0-50
+	initial begin
         // _areset test
 	                 _areset   = 0; 
         #(`PERIOD)   _areset   = 1;
@@ -72,7 +69,6 @@ integer i;
             #(`PERIOD) tb_dcount = tb_dcount + 1;
         end
         // _updown test
-//        #(`PERIOD) tb_dcount = DEFAULT_VAL; 
         for ( i = 0; i < 5; i = i + 1 ) begin
             #(`PERIOD) tb_dcount = tb_dcount - 1;
         end
@@ -97,6 +93,5 @@ integer i;
 //        $fsdbDumpfile("ucounter16_tb.fsdb");
 //        $fsdbDumpvars();
 //    end
-
 
 endmodule
