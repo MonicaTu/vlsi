@@ -19,7 +19,7 @@ wire   carry_out;
 wire   local_clk;
 
 assign carry_out = ( dcount == MAX8BIT_VAL ) ? 1 : 0;
-assign local_clk = _wrapstop ? 1 : clk;
+assign local_clk = ( carry_out && _wrapstop == 0 ) ? 1 : clk;
 
     always @ (posedge local_clk) begin
         if (_areset)
@@ -39,8 +39,7 @@ assign local_clk = _wrapstop ? 1 : clk;
     	    dcount <= MAX8BIT_VAL;
     	else if (_load)
     	    dcount <= preld_val;
-        
-        if (carry_in) begin
+        else if (carry_in) begin
             if (_updown)
                 dcount = dcount + 8'd1;
             else
