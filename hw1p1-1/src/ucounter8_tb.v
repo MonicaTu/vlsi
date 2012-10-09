@@ -38,9 +38,6 @@ integer i;
         _wrapstop = 0;
         carry_in = 1;
         preld_val = DEFAULT_VAL;
-        
-        $dumpfile("ucounter8_tb");
-        $dumpvars;
         #10000 $finish;
     end
     
