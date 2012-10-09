@@ -30,22 +30,22 @@ integer i;
         _updown = 1;
         _wrapstop = 1;
         carry_in = 1;
+        #100000 $finish;
     end
 
 	//setup clk
     always begin
-        #10 clk = ~clk;
+        #1 clk = ~clk;
     end
 
     // _areset test
 	initial begin // 0-50
-        #20 _areset = 1; //20
-	    #20 _areset = 0; //40
+        #2 _areset = 1; //20
+	    #2 _areset = 0; //40
 	end
 
 //    initial begin
-//        #20 tb_dcount = 0;
-//        #20;
+//        #2 tb_dcount = 0;
 //    end
 /*
     // _aset test
@@ -63,10 +63,10 @@ integer i;
     end
 */
     // _laod test
-//    initial begin //100-200
-//        #100 _load = 1; //100
-//        #90	 _load = 0; //190
-//    end
+    initial begin //100-200
+        #5 _load = 1; //100
+        #2 _load = 0; //190
+    end
 
 //    initial begin
 //        #10 tb_dcount = DEFAULT_VAL; 
@@ -126,13 +126,12 @@ integer i;
  */    
     initial begin
         $dumpfile("ucounter16_tb.vcd");
-        $dumpvars;
-        #100000 $finish;
+        $dumpvars();
     end
 
 //    initial begin
-//        $fsdDumpfile("ucounter16_tb.fsdb");
-//        $fsdDumpvars;
+//        $fsdbDumpfile("ucounter16_tb.fsdb");
+//        $fsdbDumpvars();
 //    end
 
 
