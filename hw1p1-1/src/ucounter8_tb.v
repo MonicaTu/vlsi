@@ -27,7 +27,7 @@ integer i;
     
     ucounter8 g(overflow, dcount, clk, _areset, _aset, _load, preld_val, _updown, _wrapstop, carry_in);
 
-    assign carry_out = ( dcount == MAX8BIT_VAL && _wrapstop == 0 ) ? 1 : 0;
+    assign carry_out = ( dcount == MAX8BIT_VAL && _wrapstop ) ? 1 : 0;
     
     initial begin
         clk = 0;
@@ -35,7 +35,7 @@ integer i;
         _aset = 0;
         _load = 0;
         _updown = 1;
-        _wrapstop = 0;
+        _wrapstop = 1;
         carry_in = 1;
         preld_val = DEFAULT_VAL;
         #10000 $finish;
@@ -59,9 +59,9 @@ integer i;
 
         #(CLK_CYCLE) tb_dcount = DEFAULT_VAL;
         for ( i = 0; i < 10; i = i + 1 ) begin
-            // _wrapstop = 0;
-            if ( carry_out == 1) begin
-                tb_dcount = MAX8BIT_VAL;
+            // _wrapstop = 1;
+            if ( carry_out == 1 ) begin
+                tb_dcount = 0;
                 tb_overflow = 1;
             end else
                 #(CLK_CYCLE) tb_dcount = tb_dcount + 1;

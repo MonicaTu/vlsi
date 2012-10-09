@@ -28,7 +28,7 @@ integer i;
         _load = 0;
         preld_val = DEFAULT_VAL;
         _updown = 1;
-        _wrapstop = 0;
+        _wrapstop = 1;
         carry_in = 1;
     end
 
