@@ -2,21 +2,23 @@
 `include "ucounter16.v"
 
 `define PERIOD 10
+`define SIZE 16
+
 module ucounter16_tb;
 
-parameter DEFAULT_VAL = 16'hABC5;
-parameter MAX16BIT_VAL = 16'hFFFF;
-
-reg clk, _areset, _aset, _load, _updown, _wrapstop;
-reg  [15:0] preld_val;
-reg  _carry_in;
-
-wire [15:0] dcount;
-wire overflow;
-
-reg [15:0] tb_dcount;
-reg tb_overflow;
-integer i;
+    parameter DEFAULT_VAL = 16'hABC5;
+    parameter MAX16BIT_VAL = 16'hFFFF;
+    
+    reg clk, _areset, _aset, _load, _updown, _wrapstop;
+    reg  [`SIZE-1:0] preld_val;
+    reg  _carry_in;
+    
+    wire [`SIZE-1:0] dcount;
+    wire overflow;
+    
+    reg [`SIZE-1:0] tb_dcount;
+    reg tb_overflow;
+    integer i;
 
     ucounter16 g(overflow, dcount, clk, _areset, _aset, _load, preld_val, _updown, _wrapstop, _carry_in);
 
@@ -82,6 +84,8 @@ integer i;
         #(`PERIOD) tb_dcount = MAX16BIT_VAL; 
         // _wrapstop test
         #(`PERIOD*5);
+        tb_overflow = 1;
+        $finish;
     end
     
     initial begin
