@@ -6,7 +6,7 @@
 
 module ucounter8_tb;
 
-    parameter DEFAULT_VAL = 8'hC5;
+    parameter DEFAULT_VAL = 8'hFC;
     parameter MAX8BIT_VAL = 8'hFF;
     
     reg clk, _areset, _aset, _load, _updown, _wrapstop;
@@ -83,8 +83,8 @@ module ucounter8_tb;
         // _aset test
         #(`PERIOD) tb_dcount = MAX8BIT_VAL; 
         // _wrapstop test
+        #(`PERIOD) tb_overflow = 1;
         #(`PERIOD*5);
-        tb_overflow = 1;
         $finish;
     end
     

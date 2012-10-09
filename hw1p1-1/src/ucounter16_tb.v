@@ -6,7 +6,7 @@
 
 module ucounter16_tb;
 
-    parameter DEFAULT_VAL = 16'hABC5;
+    parameter DEFAULT_VAL = 16'h00FC;
     parameter MAX16BIT_VAL = 16'hFFFF;
     
     reg clk, _areset, _aset, _load, _updown, _wrapstop;
@@ -83,8 +83,8 @@ module ucounter16_tb;
         // _aset test
         #(`PERIOD) tb_dcount = MAX16BIT_VAL; 
         // _wrapstop test
+        #(`PERIOD) tb_overflow = 1;
         #(`PERIOD*5);
-        tb_overflow = 1;
         $finish;
     end
     
