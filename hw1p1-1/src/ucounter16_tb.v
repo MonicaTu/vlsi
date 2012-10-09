@@ -1,18 +1,25 @@
 //`timescale 1ns/10ps
 `timescale 1ns/1ns
+`include "ucounter16.v"
 
 module ucounter16_tb;
 parameter CLK_CYCLE = 2;
 parameter DEFAULT_VAL = 16'b0000_0000_11111_000;
 reg  clk, _areset, _aset, _load, _updown, _wrapstop;
 reg  [15:0] preld_val;
+reg  carry_in;
+
 wire [15:0] dcount;
 wire overflow;
+
 reg  [15:0] dcount_tb;
 reg  overflow_tb;
 integer i;
 
-    ucounter16 g(overflow, dcount, clk, _areset, _aset, _load, preld_val, _updown, _wrapstop);
+    ucounter16 g(overflow, dcount, clk, _areset, _aset, _load, preld_val, _updown, _wrapstop, carry_in);
+    
+    initial carry_in = 1;
+    
     initial
     begin
         clk = 0;
