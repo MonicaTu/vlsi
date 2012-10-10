@@ -94,9 +94,9 @@ module ucounter8_tb;
         $dumpvars();
     end
 
-//    initial begin
-//        $fsdbDumpfile("ucounter8_tb.fsdb");
-//        $fsdbDumpvars();
-//    end
+    initial begin
+        $fsdbDumpfile("ucounter8_tb.fsdb");
+        $fsdbDumpvars();
+    end
 
 endmodule
