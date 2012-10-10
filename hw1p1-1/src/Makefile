@@ -1,12 +1,8 @@
 test_ucounter16:
-	iverilog ucounter16_tb.v
-	./a.out
-	gtkwave ucounter16_tb.vcd
+	ncverilog ucounter16_tb.v +access+r
 
 test_ucounter8:
-	iverilog ucounter8_tb.v
-	./a.out
-	gtkwave ucounter8_tb.vcd
+	ncverilog ucounter8_tb.v +access+r
 
 clean:
 	rm -f a.out ucounter8_tb.vcd
