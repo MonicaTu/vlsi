@@ -27,11 +27,11 @@ module alu(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,re
                                 alu_overflow=1'b0;
                               end
                       ADD   : begin
-                                {a,alu_result[30:0]}=scr[30:0]+scr2[30:0];
+                                {a,alu_result[30:0]}=scr1[30:0]+scr2[30:0];
                                 {b,alu_result[31]}=scr1[31]+scr2[31]+a;
                               end
                       SUB   : begin
-                                {a,alu_result[30:0]}=scr[30:0]-scr2[30:0];
+                                {a,alu_result[30:0]}=scr1[30:0]-scr2[30:0];
                                 {b,alu_result[31]}=scr1[31]-scr2[31]-a;
                                 alu_overflow=a ^ b;
                               end
@@ -66,7 +66,7 @@ module alu(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,re
                               end
                     endcase
         6'b101000 : begin
-                      {a,alu_result[30:0]}=scr[30:0]+scr2[30:0];
+                      {a,alu_result[30:0]}=scr1[30:0]+scr2[30:0];
                       {b,alu_result[31]}=scr1[31]+scr2[31]+a;
                       alu_overflow=a ^ b;
                     end
