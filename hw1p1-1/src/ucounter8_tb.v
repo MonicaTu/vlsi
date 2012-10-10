@@ -61,7 +61,8 @@ module ucounter8_tb;
 
     initial begin
         // _areset test
-        #(`PERIOD*1.5) tb_dcount = 0;
+        #(`PERIOD/2) tb_overflow = 0;
+        #(`PERIOD)   tb_dcount = 0;
         for ( i = 0; i < 5; i = i + 1 ) begin
             #(`PERIOD) tb_dcount = tb_dcount + 1;
         end
