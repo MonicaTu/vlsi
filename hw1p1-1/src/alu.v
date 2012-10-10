@@ -12,7 +12,7 @@ module alu(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,re
   input enable_execute;
   
   reg [63:0]rotate;
-  reb a,b;
+  reg a,b;
   
   always @ ( * )begin
     if(reset)begin
