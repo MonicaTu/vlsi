@@ -18,13 +18,15 @@ module alu32_tb;
     reg reset;
     reg enable_execute;
     
+    reg clk;
+
     alu u(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,reset);
 	
     // setup clk
-//    initial begin
-//        clk = 0; // Start clock from LOW
-//        forever #(`PERIOD/2) clk = ~clk;
-//    end   
+    initial begin
+        clk = 0; // Start clock from LOW
+        forever #(`PERIOD/2) clk = ~clk;
+    end   
 
     initial begin
 //        preld_val = DEFAULT_VAL;
@@ -38,9 +40,14 @@ module alu32_tb;
         #100000 $finish;
     end
 
-	initial begin
-	    
+    initial begin
+        $dumpfile("alu32_tb.vcd");
+        $dumpvars();
     end
-    
+
+//    initial begin
+//        $fsdbDumpfile("alu32_tb.fsdb");
+//        $fsdbDumpvars();
+//    end
     
 endmodule
