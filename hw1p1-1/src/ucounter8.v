@@ -26,9 +26,9 @@ assign local_clk = ( carry_out && _wrapstop == 0 ) ? 1 : clk;
     	    overflow <= 0;
     	else begin
             if (carry_out == 1)
-    		   overflow = 1;
+    		   overflow <= 1;
     		else
-    		   overflow = 0;
+    		   overflow <= 0;
     	end
     end
 
@@ -41,9 +41,9 @@ assign local_clk = ( carry_out && _wrapstop == 0 ) ? 1 : clk;
     	    dcount <= preld_val;
         else if (carry_in) begin
             if (_updown)
-                dcount = dcount + 8'd1;
+                dcount <= dcount + 8'd1;
             else
-                dcount = dcount - 8'd1;
+                dcount <= dcount - 8'd1;
         end
     end
 
