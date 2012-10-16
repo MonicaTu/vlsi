@@ -42,12 +42,12 @@ module alu32_tb;
         scr2 = 32'h000004D2; // (1234) dec
         
         // NOP
-        #(`PERIOD) reset = 1; enable_execute = 0;
-                   sub_opcode = NOP;
+        #(`PERIOD/2) reset = 1; enable_execute = 0;
+        #(`PERIOD) sub_opcode = NOP;
         #(`PERIOD) reset = 0; enable_execute = 1;
         // ADD
         #(`PERIOD) reset = 1; enable_execute = 0;
-                   sub_opcode = ADD;
+        #(`PERIOD) sub_opcode = ADD;
         #(`PERIOD) reset = 0; enable_execute = 1;
         // SUB
         #(`PERIOD) reset = 1; enable_execute = 0;
@@ -104,41 +104,54 @@ module alu32_tb;
     initial begin
 
         // NOP
+        #(`PERIOD/2); 
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 0;  
+        #(`PERIOD); 
         // ADD
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'h00001B00;  
+        #(`PERIOD) tb_result = 0; 
         // SUB
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'h0000115C;  
+        #(`PERIOD) tb_result = 0; 
         // AND
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'h00000402;  
+        #(`PERIOD) tb_result = 0; 
         // OR
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'h000016FE;  
+        #(`PERIOD) tb_result = 0; 
         // XOR
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'h000012FC;  
+        #(`PERIOD) tb_result = 0; 
         // SRLI
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'h000002C5;  
+        #(`PERIOD) tb_result = 0; 
         // SLLI
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'h0000B170;  
+        #(`PERIOD) tb_result = 0; 
         // ROTRI
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'hC00002C5;  
+        #(`PERIOD) tb_result = 0; 
         // ADDI
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'h0001071E;  
+        #(`PERIOD) tb_result = 0; 
         // ORI
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'h00001020;  
+        #(`PERIOD) tb_result = 0; 
         // XORI
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'h000066DE;  
+        #(`PERIOD) tb_result = 0; 
         // MOVI
 //        #(`PERIOD) tb_result = 0; 
 //        #(`PERIOD) tb_result = 32'h0000F0F0;  
