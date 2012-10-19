@@ -1,4 +1,4 @@
-module alu(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,reset);
+module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,reset);
   parameter NOP=5'b01001,ADD=5'b00000,SUB=5'b00001,AND=5'b00010,
             OR=5'b00100,XOR=5'b00011,SRLI=5'b01001,SLLI=5'b01000,
             ROTRI=5'b01011;

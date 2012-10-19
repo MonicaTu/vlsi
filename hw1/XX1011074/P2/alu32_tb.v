@@ -27,7 +27,7 @@ module alu32_tb;
     reg clk;
     reg [31:0]tb_result;
 
-    alu u(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,reset);
+    alu32 alu(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,reset);
 	
     // setup clk
     initial begin
