@@ -14,7 +14,7 @@ module top_tb;
   reg [4:0]imm_5bit;
   reg [14:0]imm_15bit;
   reg [19:0]imm_20bit;
-  reg [1:0]mux3to1_select;
+  reg [1:0]mux4to1_select;
   reg mux2to1_select;
   reg imm_reg_select;
   //ALU
@@ -40,7 +40,7 @@ top TOP(
   imm_5bit,
   imm_15bit,
   imm_20bit,
-  mux3to1_select,
+  mux4to1_select,
   mux2to1_select,
   imm_reg_select,
   //ALU
@@ -68,7 +68,7 @@ top TOP(
   imm_5bit='d0;
   imm_15bit='d0;
   imm_20bit='d0;
-  mux3to1_select=2'b0;
+  mux4to1_select=2'b0;
   mux2to1_select=1'b0;
   imm_reg_select=1'b0;
   //ALU
@@ -90,7 +90,7 @@ top TOP(
   imm_5bit='d0;
   imm_15bit='d0;
   imm_20bit='d200;
-  mux3to1_select=2'b11;
+  mux4to1_select=2'b11;
   mux2to1_select=1'b1;
   imm_reg_select=1'b1;
   //ALU
@@ -109,7 +109,7 @@ top TOP(
   imm_5bit='d0;
   imm_15bit='d100;
   imm_20bit='d0;
-  mux3to1_select=2'b1;
+  mux4to1_select=2'b1;
   mux2to1_select=1'b0;
   imm_reg_select=1'b1;
   //ALU
@@ -128,7 +128,7 @@ top TOP(
   imm_5bit='d0;
   imm_15bit='d100;
   imm_20bit='d0;
-  mux3to1_select=2'b1;
+  mux4to1_select=2'b1;
   mux2to1_select=1'b0;
   imm_reg_select=1'b1;
   //ALU
@@ -146,7 +146,7 @@ top TOP(
   imm_5bit='d0;
   imm_15bit='d0;
   imm_20bit='d0;
-  mux3to1_select=2'b0;
+  mux4to1_select=2'b0;
   mux2to1_select=1'b0;
   imm_reg_select=1'b0;
   //ALU

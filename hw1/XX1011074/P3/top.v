@@ -1,15 +1,18 @@
 `include "regfile.v"
 `include "alu32.v"
 
-module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, enable_writeback, imm_5bit, imm_15bit, imm_20bit, mux3to1_select, mux2to1_select, imm_reg_select, enable_execute, opcode, sub_opcode, alu_overflow);
+module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, enable_writeback, imm_5bit, imm_15bit, imm_20bit, mux4to1_select, mux2to1_select, imm_reg_select, enable_execute, opcode, sub_opcode, alu_overflow);
   
   parameter DataSize = 32;
   parameter AddrSize = 5;
   // top
 //  input clk;
   input rst, enable_fetch, enable_writeback; 
-  input imm_5bit, imm_15bit, imm_20bit;
-  input mux3to1_select, mux2to1_select, imm_reg_select;
+  input [4:0]imm_5bit;
+  input [14:0]imm_15bit;
+  input [19:0]imm_20bit;
+  input [1:0]mux4to1_select;
+  input mux2to1_select, imm_reg_select;
 //  input enable_execute;
 
   // alu
