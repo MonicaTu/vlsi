@@ -1,3 +1,5 @@
+`timescale 1ns/10ps
+
 module top_tb;
 
   parameter DataSize = 32;
@@ -28,6 +30,10 @@ module top_tb;
   reg [DataSize-1:0]golden_reg[31:0];
 
 top TOP(
+  //OUTPUT
+  alu_result,
+  alu_overflow,
+  // controller
   clk,
   rst,
   //Register
@@ -46,9 +52,7 @@ top TOP(
   //ALU
   enable_execute,
   opcode,
-  sub_opcode,
-  //OUTPUT
-  alu_overflow
+  sub_opcode
 );
 
   //clock gen.
@@ -159,7 +163,6 @@ top TOP(
 
 //  $fsdbDumpfile("top.fsdb");
 //  $fsdbDumpvars;
-
-  $finish;
+  #1000 $finish;
   end
 endmodule
