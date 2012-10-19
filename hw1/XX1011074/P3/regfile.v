@@ -14,7 +14,7 @@ module regfile(read_data1, read_data2, read_address1, read_address2,
   input clk, reset, read, write;
 
   reg [DataSize-1:0]rw_reg[31:0];
-  interger i;
+  integer i;
 
   always@(posedge clk, posedge reset)begin
     if(reset)begin
