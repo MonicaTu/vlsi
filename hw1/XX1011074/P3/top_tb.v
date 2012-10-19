@@ -1,5 +1,3 @@
-
-
 module top_tb;
 
   parameter DataSize = 32;
@@ -29,7 +27,7 @@ module top_tb;
   //test &debug
   reg [DataSize-1:0]golden_reg[31:0];
 
-top TOP{
+top TOP(
   clk,
   rst,
   //Register
@@ -51,7 +49,7 @@ top TOP{
   sub_opcode,
   //OUTPUT
   alu_overflow
-};
+);
 
   //clock gen.
   always #5 clk=~clk;
@@ -155,9 +153,13 @@ top TOP{
   enable_execute=1'b0;
   opcode='b0;
   sub_opcode='d0;
+ 
+  $dumpfile("top");
+  $dumpvars;
 
-  initial begin
-  $fsdbDumpfile("top.fsdb");
-  $fsdbDumpvars;
+//  $fsdbDumpfile("top.fsdb");
+//  $fsdbDumpvars;
+
+  $finish;
   end
 endmodule
