@@ -25,6 +25,7 @@ module top_tb;
   reg [4:0] sub_opcode;
   //OUT
   wire alu_overflow;
+  wire [31:0]alu_result;
   integer i,err_num;
   //test &debug
   reg [DataSize-1:0]golden_reg[31:0];
@@ -61,6 +62,7 @@ top TOP(
   initial begin
   clk=0;
   rst=1'b0;
+  golden_reg[0] = 32'd200;
 //IDLE
   //Register
   read_address1='d0;
