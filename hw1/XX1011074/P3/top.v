@@ -21,7 +21,7 @@ module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, 
   input [19:0]imm_20bit;
   //mux
   input [1:0]mux4to1_select;
-  input mux2to1_select;
+  input mux2to1_select; // writeback_select
   input imm_reg_select;
   //ALU
   input enable_execute;
@@ -31,7 +31,21 @@ module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, 
   // others
   wire [DataSize-1:0]read_data1;
   wire [DataSize-1:0]read_data2;
+  wire [DataSize-1:0]scr2;
   wire [DataSize-1:0]alu_result;
+  output reg [DataSize-1:0]mux4to1_out;
+
+  always @ (imm_5bit or imm_15bit or imm_20bit or mux4to1_select) begin
+    case (mux4to1_select)
+      2'b00: mux4to1_out <= imm_5bit; // FIXME: ZE 
+      2'b01: mux4to1_out <= imm_15bit; // FIXME: SE 
+      2'b10: mux4to1_out <= imm_15bit; // FIXME: ZE
+      2'b11: mux4to1_out <= imm_20bit; // FIXME: SE
+      default: mux4to1_out <= 32'bx;
+    endcase
+  end
+  assign scr2 = (imm_reg_select) ? mux4to1_out: read_data2;
+  assign write_data = (mux2to1_select) ? alu_result : scr2;
 
   regfile regfile1 (
     .read_data1(read_data1), 
@@ -42,7 +56,6 @@ module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, 
     .write_data(alu_result),
     .clk(clk),
     .reset(rst),
-//    .reset(reset),
     .read(enable_fetch),
     .write(enable_writeback));
 
@@ -50,11 +63,10 @@ module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, 
     .alu_result(alu_result),
     .alu_overflow(alu_overflow),
     .scr1(read_data1),
-    .scr2(read_data2),
+    .scr2(scr2),
     .opcode(opcode),
     .sub_opcode(sub_opcode),
     .enable_execute(enable_execute),
     .reset(rst));
-//    .reset(reset));
 
 endmodule
