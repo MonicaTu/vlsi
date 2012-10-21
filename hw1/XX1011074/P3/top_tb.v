@@ -81,7 +81,7 @@ top TOP(
   enable_execute=1'b0;
   opcode='b0;
   sub_opcode='d0;
-
+/*
   #5 rst=1'b1;
   #5 rst=1'b0;
 
@@ -159,12 +159,16 @@ top TOP(
   enable_execute=1'b0;
   opcode='b0;
   sub_opcode='d0;
- 
-  $dumpfile("top");
-  $dumpvars;
+  */
+  end
 
-//  $fsdbDumpfile("top.fsdb");
+  /* Dump and finish */
+  initial begin
+  $dumpfile("top_tb.vcd");
+  $dumpvars;
+//  $fsdbDumpfile("top_tb.fsdb");
 //  $fsdbDumpvars;
   #1000 $finish;
   end
+
 endmodule
