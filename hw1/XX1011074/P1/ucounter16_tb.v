@@ -93,9 +93,9 @@ module ucounter16_tb;
         $dumpvars();
     end
 
-    initial begin
-        $fsdbDumpfile("ucounter16_tb.fsdb");
-        $fsdbDumpvars();
-    end
+//    initial begin
+//        $fsdbDumpfile("ucounter16_tb.fsdb");
+//        $fsdbDumpvars();
+//    end
 
 endmodule
