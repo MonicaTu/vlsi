@@ -24,21 +24,7 @@ top TOP (
   always begin
   #`PERIOD clk = ~clk;
   end
-
-  /* Dump vcd and wailt to finish */
-  initial begin
-  $dumpfile("top_tb1.vcd");
-  $dumpvars;
-  #1000 $finish;
-  end
   
-  /* Dump fsdb and wailt to finish */
-//  initial begin
-//  $fsdbDumpfile("top_tb1.fsdb");
-//  $fsdbDumpvars;
-//  #1000 $finish;
-//  end
-
   /* Set signal */
   initial begin
   clk = 1'b0;
@@ -54,6 +40,8 @@ top TOP (
   #`PERIOD reset = 1'b0; 
 
   // TODO: other instructions in p.14/17
+
+  $finish;
   end
 
   /* Create tb waveform */
@@ -82,6 +70,14 @@ top TOP (
   #`PERIOD; // reset = 1'b0  
 
   // TODO: other operations
+  end
+
+  /* Dump and finish */
+  initial begin
+  $dumpfile("top_tb1.vcd");
+  $dumpvars;
+//  $fsdbDumpfile("top_tb1.fsdb");
+//  $fsdbDumpvars;
   end
 
 endmodule
