@@ -1,5 +1,4 @@
 `timescale 1ns/10ps
-`include "alu32.v"
 
 `define PERIOD 10
 `define SIZE 32
@@ -163,9 +162,9 @@ module alu32_tb;
         $dumpvars();
     end
 
-    initial begin
-        $fsdbDumpfile("alu32_tb.fsdb");
-        $fsdbDumpvars();
-    end
+//    initial begin
+//        $fsdbDumpfile("alu32_tb.fsdb");
+//        $fsdbDumpvars();
+//    end
     
 endmodule

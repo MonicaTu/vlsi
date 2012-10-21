@@ -1,5 +1,4 @@
 `timescale 1ns/10ps
-`include "ucounter16.v"
 
 `define PERIOD 10
 `define SIZE 16
@@ -94,9 +93,9 @@ module ucounter16_tb;
         $dumpvars();
     end
 
-    initial begin
-        $fsdbDumpfile("ucounter16_tb.fsdb");
-        $fsdbDumpvars();
-    end
+//    initial begin
+//        $fsdbDumpfile("ucounter16_tb.fsdb");
+//        $fsdbDumpvars();
+//    end
 
 endmodule
