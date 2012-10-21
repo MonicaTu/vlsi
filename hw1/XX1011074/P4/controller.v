@@ -21,7 +21,7 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
   output reg imm_reg_select;
 
   wire [5:0] opcode = ir[30:25];
-  wire [4:0] sub+opcode = ir[4:0];
+  wire [4:0] sub_opcode = ir[4:0];
   reg [1:0] current_state;
   reg [1:0] next_state;
   reg [31:0] present_instruction;
@@ -55,8 +55,9 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
       enable_writeback = 0;
       writeback_select = 0; 
       mux4to1_select = 0;
-      if (imm_reg_select == 0)
+      if (imm_reg_select == 0) begin
         // read from register
+      end
       else
         // read from imm
         begin
@@ -91,12 +92,14 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
       enable_execute = 0;
       enable_writeback = 1;
       mux4to1_select = 0;
-      if (writeback_select == 0)
+      if (writeback_select == 0) begin
         // imm_data; data = ir[] 
+      end
       else
         // alu_result; data = ir[]
-      if (imm_reg_select == 0)
+      if (imm_reg_select == 0) begin
         // read_data; data = ir[]
+      end
       else
         begin
             case (mux4to1_select)
