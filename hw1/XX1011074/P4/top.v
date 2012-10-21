@@ -1,8 +1,8 @@
-`include "regfile.v"
 `include "controller.v"
+`include "regfile.v"
+`include "alu32.v"
 
 module top (instruction, clk, reset);
-
   parameter DataSize = 32;
   parameter AddrSize = 5;
 
@@ -10,6 +10,8 @@ module top (instruction, clk, reset);
   input [DataSize-1:0]instruction;
   input clk;
   input reset;
+  input rst; // FIXME
+
   // instruction
 //  input [4:0] imm_5bit  = instruction[15:10];
 //  input [14:0]imm_15bit = instruction[14:0];
@@ -20,8 +22,8 @@ module top (instruction, clk, reset);
   wire enable_execute;
   wire enable_fetch;
   wire enable_writeback;
-  wire [5:0] opcode = instruction[30:25];
-  wire [4:0] sub_opcode = instruction[4:0];
+  wire [5:0]opcode; // FIXME: = instruction[30:25];
+  wire [4:0]sub_opcode; // FIXME: = instruction[4:0];
   wire mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;
@@ -40,7 +42,8 @@ module top (instruction, clk, reset);
     .writeback_select(writeback_select),
     .imm_reg_select(imm_reg_select),
     .clock(clk),
-    .reset(reset),
+    .reset(rst),
+//    .reset(reset),
     .PC(PC),
     .ir(instruction));
 
@@ -48,10 +51,10 @@ module top (instruction, clk, reset);
   wire [DataSize-1:0]read_data1;
   wire [DataSize-1:0]read_data2;
 
-  input [AddrSize-1:0]read_address1 = instruction[19:15];
-  input [AddrSize-1:0]read_address2 = instruction[14:10];
-  input [AddrSize-1:0]write_address = instruction[24:20];
-  input [DataSize-1:0]write_data    = instruction[19:0];  // TODO: Rt32bit=SE(imm20bit)
+  input [AddrSize-1:0]read_address1;// FIXME: = instruction[19:15];
+  input [AddrSize-1:0]read_address2;// FIXME: = instruction[14:10];
+  input [AddrSize-1:0]write_address;// FIXME: = instruction[24:20];
+  input [DataSize-1:0]write_data   ;// FIXME: = instruction[19:0];  // TODO: Rt32bit=SE(imm20bit)
 //  input clk;
 //  input reset;
 //  input read;
@@ -65,7 +68,8 @@ module top (instruction, clk, reset);
     .write_address(write_address),
     .write_data(write_data),
     .clk(clk),
-    .reset(reset),
+    .reset(rst),
+//    .reset(reset),
     .read(enable_fetch),
     .write(enable_writeback));
 
@@ -74,8 +78,8 @@ module top (instruction, clk, reset);
   wire alu_overflow;
 
 //  input [DataSize-1:0]scr1,scr2;
-  input [5:0] opcode = instruction[30:25];
-  input [4:0] sub_opcode = instruction[4:0];
+//  input [5:0]opcode; // FIXME: = instruction[30:25];
+//  input [4:0]sub_opcode; // FIXME: = instruction[4:0];
 //  input enable_execute;
 //  input reset;
 
@@ -87,6 +91,7 @@ module top (instruction, clk, reset);
     .opcode(opcode),
     .sub_opcode(sub_opcode),
     .enable_execute(enable_execute),
-    .reset(reset));
+    .reset(rst));
+//    .reset(reset));
 
 endmodule
