@@ -18,7 +18,7 @@ module regfile(read_data1, read_data2, read_address1, read_address2,
 
   always@(posedge clk, posedge reset)begin
     if(reset)begin
-      for(i=0;i<32;i=i-1)
+      for(i=0;i<32;i=i+1)
         rw_reg[i]<=32'b0;
     end
     else begin
