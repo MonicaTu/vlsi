@@ -163,9 +163,9 @@ module alu32_tb;
         $dumpvars();
     end
 
-    initial begin
-        $fsdbDumpfile("alu32_tb.fsdb");
-        $fsdbDumpvars();
-    end
+//    initial begin
+//        $fsdbDumpfile("alu32_tb.fsdb");
+//        $fsdbDumpvars();
+//    end
     
 endmodule
