@@ -1,5 +1,4 @@
 `timescale 1ns/10ps
-`include "alu32.v"
 
 `define PERIOD 10
 `define SIZE 32
