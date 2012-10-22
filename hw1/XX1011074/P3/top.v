@@ -36,12 +36,14 @@ module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, 
   wire [DataSize-1:0]write_data;
   output reg [DataSize-1:0]mux4to1_out;
 
+  parameter imm5bitZE = 2'b00, imm15bitSE = 2'b01, imm15bitZE = 2'b10, imm20bitSE =  2'b11;
+
   always @ (imm_5bit or imm_15bit or imm_20bit or mux4to1_select) begin
     case (mux4to1_select)
-      2'b00: mux4to1_out <= imm_5bit; // FIXME: ZE 
-      2'b01: mux4to1_out <= imm_15bit; // FIXME: SE 
-      2'b10: mux4to1_out <= imm_15bit; // FIXME: ZE
-      2'b11: mux4to1_out <= imm_20bit; // FIXME: SE
+      imm5bitZE:  mux4to1_out <= imm_5bit; // FIXME: ZE 
+      imm15bitSE: mux4to1_out <= imm_15bit; // FIXME: SE 
+      imm15bitZE: mux4to1_out <= imm_15bit; // FIXME: ZE
+      imm20bitSE: mux4to1_out <= imm_20bit; // FIXME: SE
       default: mux4to1_out <= 32'bx;
     endcase
   end
