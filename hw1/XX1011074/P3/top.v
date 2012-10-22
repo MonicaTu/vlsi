@@ -45,7 +45,7 @@ module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, 
     endcase
   end
   assign scr2 = (imm_reg_select) ? mux4to1_out: read_data2;
-  assign write_data = (mux2to1_select) ? alu_result : scr2;
+  assign write_data = (mux2to1_select) ? scr2 : alu_result;
 
   regfile regfile1 (
     .read_data1(read_data1), 
