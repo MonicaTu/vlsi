@@ -33,6 +33,7 @@ module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, 
   wire [DataSize-1:0]read_data2;
   wire [DataSize-1:0]scr2;
   wire [DataSize-1:0]alu_result;
+  wire [DataSize-1:0]write_data;
   output reg [DataSize-1:0]mux4to1_out;
 
   always @ (imm_5bit or imm_15bit or imm_20bit or mux4to1_select) begin
