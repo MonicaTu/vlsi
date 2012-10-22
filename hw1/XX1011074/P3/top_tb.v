@@ -30,6 +30,10 @@ module top_tb;
   //test &debug
   reg [DataSize-1:0]golden_reg[31:0];
 
+  parameter imm5bitZE = 2'b00, imm15bitSE = 2'b01, imm15bitZE = 2'b10, imm20bitSE =  2'b11;
+  parameter regOut = 1'b0, immOut = 1'b1;
+  parameter scr2 = 1'b0, aluResult = 1'b1; 
+
 top TOP(
   clk,
   rst,
@@ -72,9 +76,9 @@ top TOP(
   imm_5bit='d0;
   imm_15bit='d0;
   imm_20bit='d0;
-  mux4to1_select=2'b0;
-  mux2to1_select=1'b0;
-  imm_reg_select=1'b0;
+  mux4to1_select=imm5bitZE;
+  mux2to1_select=scr2;
+  imm_reg_select=regOut;
   //ALU
   enable_execute=1'b0;
   opcode='b0;
@@ -94,9 +98,9 @@ top TOP(
   imm_5bit='d0;
   imm_15bit='d0;
   imm_20bit='d200;
-  mux4to1_select=2'b11;
-  mux2to1_select=1'b1;
-  imm_reg_select=1'b1;
+  mux4to1_select=imm20bitSE;
+  mux2to1_select=aluResult;
+  imm_reg_select=immOut;
   //ALU
   enable_execute=1'b0;
   opcode='d0;
@@ -112,9 +116,9 @@ top TOP(
   imm_5bit='d0;
   imm_15bit='d100;
   imm_20bit='d0;
-  mux4to1_select=2'b1;
-  mux2to1_select=1'b0;
-  imm_reg_select=1'b1;
+  mux4to1_select=imm15bitSE;
+  mux2to1_select=scr2;
+  imm_reg_select=immOut;
   //ALU
   enable_execute=1'b1;
   opcode='b101000;
@@ -131,9 +135,9 @@ top TOP(
   imm_5bit='d0;
   imm_15bit='d100;
   imm_20bit='d0;
-  mux4to1_select=2'b1;
-  mux2to1_select=1'b0;
-  imm_reg_select=1'b1;
+  mux4to1_select=imm15bitSE;
+  mux2to1_select=scr2;
+  imm_reg_select=immOut;
   //ALU
   enable_execute=1'b1;
   opcode='b101000;
@@ -149,9 +153,9 @@ top TOP(
   imm_5bit='d0;
   imm_15bit='d0;
   imm_20bit='d0;
-  mux4to1_select=2'b0;
-  mux2to1_select=1'b0;
-  imm_reg_select=1'b0;
+  mux4to1_select=imm5bitZE;
+  mux2to1_select=scr2;
+  imm_reg_select=regOut;
   //ALU
   enable_execute=1'b0;
   opcode='b0;
