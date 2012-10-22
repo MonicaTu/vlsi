@@ -31,10 +31,6 @@ module top_tb;
   reg [DataSize-1:0]golden_reg[31:0];
 
 top TOP(
-  //OUTPUT
-  alu_result,
-  alu_overflow,
-  // controller
   clk,
   rst,
   //Register
@@ -53,7 +49,9 @@ top TOP(
   //ALU
   enable_execute,
   opcode,
-  sub_opcode
+  sub_opcode,
+  //OUTPUT
+  alu_overflow
 );
 
   //clock gen.
@@ -103,7 +101,6 @@ top TOP(
   enable_execute=1'b0;
   opcode='d0;
   sub_opcode='d0;
-
 //TEST ADDI Reg[1]=Reg[0]+100(Dec) read_cycle
   //Register
 #10  read_address1='d0;
@@ -159,12 +156,15 @@ top TOP(
   enable_execute=1'b0;
   opcode='b0;
   sub_opcode='d0;
- 
-  $dumpfile("top");
-  $dumpvars;
-
-//  $fsdbDumpfile("top.fsdb");
-//  $fsdbDumpvars;
-  #1000 $finish;
+  $finish;
   end
+
+  /* Dump and finish */
+  initial begin
+  $dumpfile("top_tb.vcd");
+  $dumpvars;
+//  $fsdbDumpfile("top_tb.fsdb");
+//  $fsdbDumpvars;
+  end
+
 endmodule
