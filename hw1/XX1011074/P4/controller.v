@@ -32,10 +32,6 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
   wire [AddrSize-1:0]read_address1 = ir[19:15];
   wire [AddrSize-1:0]read_address2 = ir[14:10];
   wire [AddrSize-1:0]write_address = ir[24:20];
-  //imm_sel
-  wire [4:0]imm_5bit = ir[14:10];
-  wire [14:0]imm_15bit = ir[14:0];
-  wire [19:0]imm_20bit = ir[19:0];
 
   /* others */
   reg [1:0] current_state;
@@ -52,6 +48,7 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
 
   always @(posedge clock)
   begin
+    $display("state: %b", current_state);
     if(reset)
       current_state = stopState;
     else
@@ -62,6 +59,7 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
   begin
     case(current_state)
     stopState : begin
+      $display("stopState");
       next_state = fetchState;
       enable_fetch = 0;
       enable_execute = 0;
@@ -70,6 +68,7 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
       imm_reg_select = 0;
     end
     fetchState : begin
+      $display("fetchState");
       next_state = exeState;
       enable_fetch = 1;
       enable_execute = 0;
@@ -104,6 +103,7 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
       writeback_select = 0;
     end
     exeState : begin
+      $display("exeState");
       next_state = writeState;
       enable_fetch = 0;
       enable_execute = 1;
@@ -112,6 +112,7 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
       imm_reg_select = 0;
     end
     writeState : begin
+      $display("writeState");
       next_state = stopState;
       enable_fetch = 0;
       enable_execute = 0;

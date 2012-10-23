@@ -32,11 +32,12 @@ module top (instruction, clk, reset);
   // alu
   output alu_overflow;
   
-  // others
+  /* others */
   wire [DataSize-1:0]mux4to1_out;
-  wire [4:0]imm_5bit;
-  wire [14:0]imm_15bit;
-  wire [19:0]imm_20bit;
+  //imm_sel
+  wire [4:0]imm_5bit = instruction[14:10];
+  wire [14:0]imm_15bit = instruction[14:0];
+  wire [19:0]imm_20bit = instruction[19:0];
 
   controller conrtoller1 (
     .enable_execute(enable_execute),
