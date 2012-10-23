@@ -29,25 +29,22 @@ top TOP (
   initial begin
   clk = 1'b0;
   reset = 1'b0;
-  instruction = 0_101000_00000_00000_0000_0000_0001_101; // ADDI
+  #(`PERIOD) reset = 1'b1;  
+  #(`PERIOD*4) reset = 1'b0;
+  instruction = 32'b0_101000_00000_00000_0000_0000_0001_101; // ADDI
 
-  #`PERIOD reset = 1'b1;  
-  #`PERIOD reset = 1'b0; 
-  
-  instruction = 0_101000_00001_00001_0000_0000_0001_100; // ADDI
-
-  #`PERIOD reset = 1'b1;  
-  #`PERIOD reset = 1'b0; 
+  #(`PERIOD*4) reset = 1'b0;
+  instruction = 32'b0_101000_00001_00001_0000_0000_0001_100; // ADDI
 
   // TODO: other instructions in p.14/17
 
-  $finish;
+  #(`PERIOD*12) $finish;
   end
 
   /* Create tb waveform */
   initial begin
 //  reset = 1'b0;
-//  instruction = 0_101000_00000_00000_0000_0000_0001_101; // ADDI
+//  instruction = 32'b0_101000_00000_00000_0000_0000_0001_101; // ADDI
   for ( i = DataSize; i > 0; i = i-1 ) begin
     golden_reg[i] = 32'd0;
   end
