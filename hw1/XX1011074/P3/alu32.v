@@ -86,7 +86,7 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,
                     end
         6'b100010 : begin
                       alu_overflow=1'b0;
-                      alu_result[31:0]=scr1[31:0];
+                      alu_result[31:0]=scr2[31:0];
                     end
         default : begin
                       alu_overflow=1'b0;
