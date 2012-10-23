@@ -38,18 +38,6 @@ module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, 
 
   parameter imm5bitZE = 2'b00, imm15bitSE = 2'b01, imm15bitZE = 2'b10, imm20bitSE =  2'b11;
 
-  always @ (imm_5bit or imm_15bit or imm_20bit or mux4to1_select) begin
-    case (mux4to1_select)
-      imm5bitZE:  mux4to1_out <= imm_5bit; // FIXME: ZE 
-      imm15bitSE: mux4to1_out <= imm_15bit; // FIXME: SE 
-      imm15bitZE: mux4to1_out <= imm_15bit; // FIXME: ZE
-      imm20bitSE: mux4to1_out <= imm_20bit; // FIXME: SE
-      default: mux4to1_out <= 32'bx;
-    endcase
-  end
-  assign scr2 = (imm_reg_select) ? mux4to1_out: read_data2;
-  assign write_data = (mux2to1_select) ? scr2 : alu_result;
-
   regfile regfile1 (
     .read_data1(read_data1), 
     .read_data2(read_data2),
@@ -71,5 +59,18 @@ module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, 
     .sub_opcode(sub_opcode),
     .enable_execute(enable_execute),
     .reset(rst));
+
+  assign scr2 = (imm_reg_select) ? mux4to1_out: read_data2;
+  assign write_data = (mux2to1_select) ? scr2 : alu_result;
+
+  always @ (imm_5bit or imm_15bit or imm_20bit or mux4to1_select) begin
+    case (mux4to1_select)
+      imm5bitZE:  mux4to1_out <= imm_5bit; // FIXME: ZE 
+      imm15bitSE: mux4to1_out <= imm_15bit; // FIXME: SE 
+      imm15bitZE: mux4to1_out <= imm_15bit; // FIXME: ZE
+      imm20bitSE: mux4to1_out <= imm_20bit; // FIXME: SE
+      default: mux4to1_out <= 32'bx;
+    endcase
+  end
 
 endmodule
