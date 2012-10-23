@@ -20,7 +20,7 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
   output reg enable_writeback;
   output [5:0] opcode;
   output [4:0] sub_opcode;
-  output reg mux4to1_select;
+  output reg [1:0] mux4to1_select;
   output reg writeback_select;
   output reg imm_reg_select;
   

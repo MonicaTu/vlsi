@@ -16,7 +16,7 @@ module top (instruction, clk, reset);
   wire enable_writeback;
   wire [5:0]opcode;
   wire [4:0]sub_opcode;
-  wire mux4to1_select;
+  wire [1:0]mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;
   input [31:0] PC; // TODO: what is this?
