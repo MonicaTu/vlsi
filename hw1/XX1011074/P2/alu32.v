@@ -22,10 +22,10 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,
     else if(enable_execute)begin
       case(opcode)
         6'b100000 : case (sub_opcode)
-                      NOP   : begin
-                                alu_result=32'b0;
-                                alu_overflow=1'b0;
-                              end
+                      //NOP   : begin
+                      //         alu_result=32'b0;
+                      //         alu_overflow=1'b0;
+                      //        end
                       ADD   : begin
                                 {a,alu_result[30:0]}=scr1[30:0]+scr2[30:0];
                                 {b,alu_result[31]}=scr1[31]+scr2[31]+a;
@@ -33,7 +33,7 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,
                       SUB   : begin
                                 {a,alu_result[30:0]}=scr1[30:0]-scr2[30:0];
                                 {b,alu_result[31]}=scr1[31]-scr2[31]-a;
-                                alu_overflow=a ^ b;
+                                alu_overflow=a^b;
                               end
                       AND   : begin
                                 alu_overflow=1'b0;
@@ -48,8 +48,14 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,
                                 alu_result=scr1^scr2;
                               end
                       SRLI  : begin
-                                alu_overflow=1'b0;
-                                alu_result=scr1>>scr2;
+                                if(scr2!=0)begin 
+                                  alu_overflow=1'b0;
+                                  alu_result=scr1>>scr2;
+				end
+				else begin
+                                  alu_result=32'b0;
+                                  alu_overflow=1'b0;
+                                end
                               end
                       SLLI  : begin
                                 alu_overflow=1'b0;
@@ -68,7 +74,7 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,
         6'b101000 : begin
                       {a,alu_result[30:0]}=scr1[30:0]+scr2[30:0];
                       {b,alu_result[31]}=scr1[31]+scr2[31]+a;
-                      alu_overflow=a ^ b;
+                      alu_overflow=a^b;
                     end
         6'b101100 : begin
                       alu_overflow=1'b0;
@@ -77,6 +83,10 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,
         6'b101011 : begin
                       alu_overflow=1'b0;
                       alu_result=scr1^scr2;
+                    end
+        6'b100010 : begin
+                      alu_overflow=1'b0;
+                      alu_result[31:0]=scr1[31:0];
                     end
         default : begin
                       alu_overflow=1'b0;
