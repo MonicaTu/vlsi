@@ -34,7 +34,7 @@ module top(clk, rst, read_address1, read_address2, write_address, enable_fetch, 
   wire [DataSize-1:0]scr2;
   wire [DataSize-1:0]alu_result;
   wire [DataSize-1:0]write_data;
-  output reg [DataSize-1:0]mux4to1_out;
+  reg  [DataSize-1:0]mux4to1_out;
 
   parameter imm5bitZE = 2'b00, imm15bitSE = 2'b01, imm15bitZE = 2'b10, imm20bitSE =  2'b11;
 
