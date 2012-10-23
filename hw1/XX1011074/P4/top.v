@@ -24,9 +24,9 @@ module top (instruction, clk, reset);
   // regfile
   wire [DataSize-1:0]read_data1;
   wire [DataSize-1:0]read_data2;
-  wire [AddrSize-1:0]read_address1;
-  wire [AddrSize-1:0]read_address2;
-  wire [AddrSize-1:0]write_address;
+  wire [AddrSize-1:0]read_address1 = instruction[19:15];
+  wire [AddrSize-1:0]read_address2 = instruction[14:10];
+  wire [AddrSize-1:0]write_address = instruction[24:20];
   wire [DataSize-1:0]write_data;
   
   // alu

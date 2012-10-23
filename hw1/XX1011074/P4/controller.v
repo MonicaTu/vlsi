@@ -38,17 +38,21 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
   reg [1:0] next_state;
   reg [DataSize-1:0] present_instruction;
 
+  // sub_opcode
   parameter NOP=5'b01001,ADD=5'b00000,SUB=5'b00001,AND=5'b00010,
             OR=5'b00100,XOR=5'b00011,SRLI=5'b01001,SLLI=5'b01000,
             ROTRI=5'b01011;
+  // state
   parameter stopState = 2'b00, fetchState = 2'b01, exeState = 2'b10, writeState =  2'b11;
+  // mux4to1_select
   parameter imm5bitZE = 2'b00, imm15bitSE = 2'b01, imm15bitZE = 2'b10, imm20bitSE =  2'b11;
+  // mux2to1_select
   parameter aluResult = 1'b0, scr2Out = 1'b1; 
+  // imm_reg_select
   parameter regOut = 1'b0, immOut = 1'b1;
 
   always @(posedge clock)
   begin
-    $display("state: %b", current_state);
     if(reset)
       current_state = stopState;
     else
@@ -59,67 +63,60 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
   begin
     case(current_state)
     stopState : begin
-      $display("stopState");
       next_state = fetchState;
       enable_fetch = 0;
       enable_execute = 0;
       enable_writeback = 0;
-      writeback_select = 0;
-      imm_reg_select = 0;
     end
     fetchState : begin
-      $display("fetchState");
       next_state = exeState;
       enable_fetch = 1;
       enable_execute = 0;
       enable_writeback = 0;
-      case(opcode)
-        6'b100000 : if (sub_opcode == SRLI | sub_opcode == SLLI | sub_opcode == ROTRI) begin
-      			mux4to1_select = imm5bitZE; 
-      			imm_reg_select = immOut;
-	            end
-        6'b101000 : begin
-	              mux4to1_select = imm15bitSE;
-		      imm_reg_select = immOut;
-		    end
-        6'b101100 : begin
-		      mux4to1_select = imm15bitZE;
-		      imm_reg_select = immOut;
-		    end
-        6'b101011 : begin
-		      mux4to1_select = imm15bitZE;
-		      imm_reg_select = immOut;
-		    end
-        6'b100010 : begin
-      		      next_state = writeState; // MOVI
-		      mux4to1_select = imm20bitSE;
-		      imm_reg_select = immOut;
-		    end
-        default   : begin 
-      		    mux4to1_select = imm5bitZE; 
-      		    imm_reg_select = regOut;
-      		    end
-      endcase
-      writeback_select = 0;
     end
     exeState : begin
-      $display("exeState");
       next_state = writeState;
       enable_fetch = 0;
       enable_execute = 1;
       enable_writeback = 0;
-      writeback_select = 0;
-      imm_reg_select = 0;
     end
     writeState : begin
-      $display("writeState");
       next_state = stopState;
       enable_fetch = 0;
       enable_execute = 0;
       enable_writeback = 1;
-      writeback_select = (opcode == 6'b100010) ? scr2Out : aluResult;
-      imm_reg_select = 0;
     end
+    endcase
+
+    writeback_select = (opcode == 6'b100010) ? scr2Out : aluResult;
+    case(opcode)
+      6'b100000 : begin
+            if (sub_opcode == SRLI | sub_opcode == SLLI | sub_opcode == ROTRI) begin
+    		mux4to1_select = imm5bitZE; 
+    		imm_reg_select = immOut;
+	    end
+            end
+      6'b101000 : begin
+              mux4to1_select = imm15bitSE;
+      	      imm_reg_select = immOut;
+      	    end
+      6'b101100 : begin
+      	      mux4to1_select = imm15bitZE;
+      	      imm_reg_select = immOut;
+      	    end
+      6'b101011 : begin
+      	      mux4to1_select = imm15bitZE;
+      	      imm_reg_select = immOut;
+      	    end
+      6'b100010 : begin
+    	      next_state = writeState; // MOVI
+      	      mux4to1_select = imm20bitSE;
+      	      imm_reg_select = immOut;
+      	    end
+      default   : begin 
+    	      mux4to1_select = imm5bitZE; 
+    	      imm_reg_select = regOut;
+    	    end
     endcase
   end
 

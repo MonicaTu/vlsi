@@ -28,27 +28,26 @@ top TOP (
   /* Set signal */
   initial begin
   clk = 1'b0;
-  #(`PERIOD/2) reset = 1'b1;  
-  #(`PERIOD/2) reset = 1'b0;
+  #(`PERIOD) reset = 1'b0;
+  #(`PERIOD) reset = 1'b1;  
+  #(`PERIOD) reset = 1'b0;
+  #(`PERIOD*4) instruction = 32'b0_101000_00000_00000_0000_0000_0001_101; // ADDI
+  #(`PERIOD*4) instruction = 32'b0_101000_00001_00001_0000_0000_0001_100; // ADDI
+  #(`PERIOD*4) instruction = 32'b0_100000_00011_00000_00001_00000_00000; // ADD
+  #(`PERIOD*4) instruction = 32'b0_100000_00100_00000_00001_00000_00001; // SUB
+  #(`PERIOD*4) instruction = 32'b0_100000_00101_00011_00100_00000_00010; // AND
+  #(`PERIOD*4) instruction = 32'b0_100000_00110_00011_00100_00000_00100; // OR
+  #(`PERIOD*4) instruction = 32'b0_100000_00111_00011_00100_00000_00011; // XOR
+  #(`PERIOD*4) instruction = 32'b0_100000_01000_00000_00100_00000_01000; // SLLI
+  #(`PERIOD*4) instruction = 32'b0_100000_01001_00001_01000_00000_01011; // SRLI
+  #(`PERIOD*4) instruction = 32'b0_101011_00001_00001_0000_0000_0010_101; // XORI
+  #(`PERIOD*4) instruction = 32'b0_100010_00010_0000_0000_0000_0001_0000; // MOVI
 
-  #`PERIOD instruction = 32'b0_101000_00000_00000_0000_0000_0001_101; // ADDI
-  #`PERIOD instruction = 32'b0_101000_00001_00001_0000_0000_0001_100; // ADDI
-  #`PERIOD instruction = 32'b0_100000_00011_00000_00001_00000_00000; // ADD
-  #`PERIOD instruction = 32'b0_100000_00100_00000_00001_00000_00001; // SUB
-  #`PERIOD instruction = 32'b0_100000_00101_00011_00100_00000_00010; // AND
-  #`PERIOD instruction = 32'b0_100000_00110_00011_00100_00000_00100; // OR
-  #`PERIOD instruction = 32'b0_100000_00111_00011_00100_00000_00011; // XOR
-  #`PERIOD instruction = 32'b0_100000_01000_00000_00100_00000_01000; // SLLI
-  #`PERIOD instruction = 32'b0_100000_01001_00001_01000_00000_01011; // SRLI
-  #`PERIOD instruction = 32'b0_101011_00001_00001_0000_0000_0010_101; // XORI
-  #`PERIOD instruction = 32'b0_100010_00010_0000_0000_0000_0001_0000; // MOVI
-
-  $finish;
+  #(`PERIOD*12) $finish;
   end
 
   /* Create tb waveform */
   initial begin
-  // clean golden_reg array.
   for ( i = DataSize; i > 0; i = i-1 ) begin
     golden_reg[i] = 32'd0;
   end
@@ -99,8 +98,6 @@ top TOP (
   #`PERIOD
   tb_writedata = 32'b01100;
   golden_reg[1] = 32'b01100;
-
-  $finish;
   end
 //  golden_reg[0] = golden_reg[0] + 5'b01101
 //  golden_reg[0] = 5'b01101;
