@@ -16,7 +16,7 @@ module top (instruction, clk, reset);
   wire enable_writeback;
   wire [5:0]opcode;
   wire [4:0]sub_opcode;
-  wire mux4to1_select;
+  wire [1:0]mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;
   input [31:0] PC; // TODO: what is this?
@@ -32,11 +32,12 @@ module top (instruction, clk, reset);
   // alu
   output alu_overflow;
   
-  // others
+  /* others */
   wire [DataSize-1:0]mux4to1_out;
-  wire [4:0]imm_5bit;
-  wire [14:0]imm_15bit;
-  wire [19:0]imm_20bit;
+  //imm_sel
+  wire [4:0]imm_5bit = instruction[14:10];
+  wire [14:0]imm_15bit = instruction[14:0];
+  wire [19:0]imm_20bit = instruction[19:0];
 
   controller conrtoller1 (
     .enable_execute(enable_execute),
