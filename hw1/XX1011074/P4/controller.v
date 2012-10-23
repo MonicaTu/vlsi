@@ -63,28 +63,24 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
   begin
     case(current_state)
     stopState : begin
-      $display("stopState");
       next_state = fetchState;
       enable_fetch = 0;
       enable_execute = 0;
       enable_writeback = 0;
     end
     fetchState : begin
-      $display("fetchState");
       next_state = exeState;
       enable_fetch = 1;
       enable_execute = 0;
       enable_writeback = 0;
     end
     exeState : begin
-      $display("exeState");
       next_state = writeState;
       enable_fetch = 0;
       enable_execute = 1;
       enable_writeback = 0;
     end
     writeState : begin
-      $display("writeState");
       next_state = stopState;
       enable_fetch = 0;
       enable_execute = 0;
