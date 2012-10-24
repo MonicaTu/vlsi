@@ -35,6 +35,7 @@ module p3_top(clk, rst, read_address1, read_address2, write_address, enable_fetc
   wire [DataSize-1:0]alu_result;
   wire [DataSize-1:0]write_data;
   reg  [DataSize-1:0]mux4to1_out;
+  integer i;
 
   parameter imm5bitZE = 2'b00, imm15bitSE = 2'b01, imm15bitZE = 2'b10, imm20bitSE =  2'b11;
 
@@ -65,10 +66,26 @@ module p3_top(clk, rst, read_address1, read_address2, write_address, enable_fetc
 
   always @ (imm_5bit or imm_15bit or imm_20bit or mux4to1_select) begin
     case (mux4to1_select)
-      imm5bitZE:  mux4to1_out <= imm_5bit; // FIXME: ZE 
-      imm15bitSE: mux4to1_out <= imm_15bit; // FIXME: SE 
-      imm15bitZE: mux4to1_out <= imm_15bit; // FIXME: ZE
-      imm20bitSE: mux4to1_out <= imm_20bit; // FIXME: SE
+      imm5bitZE: begin
+        mux4to1_out <= imm_5bit;
+      end
+      imm15bitSE: begin
+        for (i = 31; i > 14; i = i-1)
+          mux4to1_out[i] = imm_15bit[14];
+        mux4to1_out[14:0] = imm_15bit;
+	$display("imm_15bit: %b", imm_15bit);
+	$display("mux4to1_out: %b", mux4to1_out);
+      end
+      imm15bitZE: begin
+        mux4to1_out <= imm_15bit;
+      end
+      imm20bitSE: begin
+        for (i = 31; i > 19; i = i-1)
+          mux4to1_out[i] = imm_20bit[19];
+        mux4to1_out[19:0] = imm_20bit;
+	$display("imm_20bit: %b", imm_20bit);
+	$display("mux4to1_out: %b", mux4to1_out);
+      end
       default: mux4to1_out <= 32'bx;
     endcase
   end
