@@ -92,12 +92,7 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
     end
     endcase
 
-// FIXME
     writeback_select <= (opcode == 6'b100010) ? scr2Out : aluResult;
-//    if (opcode == 6'b100010)
-//      writeback_select <= scr2Out;
-//    else
-//      writeback_select <= aluResult;
 
     case(opcode)
       6'b100000 : begin
@@ -123,7 +118,6 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
       	      imm_reg_select <= immOut;
       	    end
       6'b100010 : begin
-//                  next_state <= writeState; // MOVI
       	      mux4to1_select <= imm20bitSE;
       	      imm_reg_select <= immOut;
       	    end
