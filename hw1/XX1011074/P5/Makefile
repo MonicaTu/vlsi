@@ -1,7 +1,6 @@
 tb:
-	iverilog top_tb.v top.v 
-	./a.out
-	gtkwave top_tb.vcd
+	ncverilog top_tb.v top.v +access+r
 
 clean:
-	rm a.out top_tb.vcd
+	rm top_tb.vcd
+	rm top_tb.fsdb

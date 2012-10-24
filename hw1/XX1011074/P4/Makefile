@@ -1,14 +1,11 @@
 tb1:
-	iverilog top_tb1.v top.v 
-	./a.out
-	gtkwave top_tb1.vcd
+	ncverilog top_tb1.v top.v +access+r
 
 tb2:
-	iverilog top_tb2.v top.v 
-	./a.out
-	gtkwave top_tb2.vcd
+	ncverilog top_tb2.v top.v +access+r 
 
 clean:
-	rm a.out 
 	rm top_tb1.vcd
 	rm top_tb2.vcd
+	rm top_tb1.fsdb
+	rm top_tb2.fsdb
