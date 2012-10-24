@@ -115,12 +115,13 @@ module alu32_tb;
     end
     
     initial begin
-
+	tb_alu_overflow = 1'b0;
         // NOP
         #(`PERIOD/2); 
         #(`PERIOD) tb_result = 0;
         #(`PERIOD) tb_result = 0; 
         // ADD
+        #(`PERIOD)
         #(`PERIOD) tb_result = 0; 
         #(`PERIOD) tb_result = 32'h00001B00; 
         #(`PERIOD) tb_result = 0; 
@@ -167,7 +168,7 @@ module alu32_tb;
         #(`PERIOD) tb_result = 0; 
         // MOVI - imm[31] = 0
         #(`PERIOD) tb_result = 0; 
-        #(`PERIOD) tb_result = 32'h0000162E;  
+        #(`PERIOD) tb_result = 32'h0000F0F0;  
         #(`PERIOD) tb_result = 0; 
 
         // ADDI - imm[31] = 1
@@ -176,7 +177,7 @@ module alu32_tb;
         #(`PERIOD) tb_result = 0; tb_alu_overflow = 1'b0;
         // MOVI - imm[31] = 1
         #(`PERIOD) tb_result = 0; 
-        #(`PERIOD) tb_result = 32'hF000162E;
+        #(`PERIOD) tb_result = 32'hF0F0F0F0;
         #(`PERIOD) $finish;
 
     end

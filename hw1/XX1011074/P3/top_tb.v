@@ -639,9 +639,9 @@ top TOP(
         // NOP
         #(`PERIOD*4);
         // MOVI
-        #(`PERIOD*4) tb_rw_reg_2 = 32'h00C8;
+        #(`PERIOD*4) tb_rw_reg_0 = 32'h00C8;
         // ADDI
-        #(`PERIOD*4) tb_rw_reg_2 = 32'h012C;
+        #(`PERIOD*4) tb_rw_reg_1 = 32'h012C;
         // ADD
         #(`PERIOD*4) tb_rw_reg_2 = 32'h01F4;
         // SUB
