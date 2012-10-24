@@ -10,7 +10,7 @@ module top_tb1;
   reg reset;
   
   //test &debug
-  reg [DataSize-1:0]golden_reg[31:0];
+//  reg [DataSize-1:0]golden_reg[31:0];
   reg [31:0]tb_rw_reg_0;
   reg [31:0]tb_rw_reg_1;
   reg [31:0]tb_rw_reg_2;
@@ -22,7 +22,7 @@ module top_tb1;
   reg [31:0]tb_rw_reg_8;
   reg [31:0]tb_rw_reg_9;
   integer i;
-  integer err_num; // TODO
+  integer err_num;
 
 top TOP (
   instruction,
@@ -58,60 +58,85 @@ top TOP (
 
   /* Create tb waveform */
   initial begin
-  for ( i = DataSize; i > 0; i = i-1 ) begin
-    golden_reg[i] = 32'd0;
-  end
+//  for ( i = DataSize; i > 0; i = i-1 ) begin
+//    golden_reg[i] = 32'd0;
+//  end
 
-  #(`PERIOD) 
-  #(`PERIOD) 
-  #(`PERIOD) 
-  #(`PERIOD*3.5)
+  tb_rw_reg_0 = 32'd0;
+  tb_rw_reg_1 = 32'd0;
+  tb_rw_reg_2 = 32'd0;
+  tb_rw_reg_3 = 32'd0;
+  tb_rw_reg_4 = 32'd0;
+  tb_rw_reg_5 = 32'd0;
+  tb_rw_reg_6 = 32'd0;
+  tb_rw_reg_7 = 32'd0;
+  tb_rw_reg_8 = 32'd0;
+  tb_rw_reg_9 = 32'd0;
+  err_num = 0;
+
+  #(`PERIOD*6.5)
   #(`PERIOD*4) //ADDI
   tb_rw_reg_0 = 32'b01101;
 
   #(`PERIOD*4) //ADDI
   tb_rw_reg_1 = 32'b01100;
+  if (tb_rw_reg_0 != TOP.p3.regfile1.rw_reg_0)
+    err_num = err_num + 1;
 
   #(`PERIOD*4) //MOVI
   tb_rw_reg_2 = 32'b10000;
+  if (tb_rw_reg_1 != TOP.p3.regfile1.rw_reg_1)
+    err_num = err_num + 1;
 
   #(`PERIOD*4) //ADD
   tb_rw_reg_3 = 32'b11001;
+  if (tb_rw_reg_2 != TOP.p3.regfile1.rw_reg_2)
+    err_num = err_num + 1;
 
   #(`PERIOD*4) //SUB
   tb_rw_reg_4 = 32'b00001;
+  if (tb_rw_reg_3 != TOP.p3.regfile1.rw_reg_3)
+    err_num = err_num + 1;
 
   #(`PERIOD*4) //AND
   tb_rw_reg_5 = 32'b00001;
+  if (tb_rw_reg_4 != TOP.p3.regfile1.rw_reg_4)
+    err_num = err_num + 1;
 
   #(`PERIOD*4) //OR
   tb_rw_reg_6 = 32'b11001;
+  if (tb_rw_reg_5 != TOP.p3.regfile1.rw_reg_5)
+    err_num = err_num + 1;
 
   #(`PERIOD*4) //XOR
   tb_rw_reg_7 = 32'b11000;
+  if (tb_rw_reg_6 != TOP.p3.regfile1.rw_reg_6)
+    err_num = err_num + 1;
 
   #(`PERIOD*4) //SLLI
   tb_rw_reg_8 = 32'b11010000;
+  if (tb_rw_reg_7 != TOP.p3.regfile1.rw_reg_7)
+    err_num = err_num + 1;
 
   #(`PERIOD*4) //ROTRI
   tb_rw_reg_9 = 32'h0C000000;
+  if (tb_rw_reg_8 != TOP.p3.regfile1.rw_reg_8)
+    err_num = err_num + 1;
 
   #(`PERIOD*4) //ORI
   tb_rw_reg_0 = 32'b11111;
-  
+  if (tb_rw_reg_9 != TOP.p3.regfile1.rw_reg_9)
+    err_num = err_num + 1;
+
   #(`PERIOD*4) //XORI
   tb_rw_reg_1 = 32'b11001;
-
-  #(`PERIOD*4) $finish;
+  if (tb_rw_reg_0 != TOP.p3.regfile1.rw_reg_0)
+    err_num = err_num + 1;
+  
+  #(`PERIOD*4) //IDEL
+  if (tb_rw_reg_1 != TOP.p3.regfile1.rw_reg_1)
+    err_num = err_num + 1;
   end
-//  golden_reg[0] = golden_reg[0] + 5'b01101
-//  golden_reg[0] = 5'b01101;
-
-//  #`PERIOD; // reset = 1'b1  
-//  for ( i = DataSize; i > 0; i = i-1 ) begin
-//    golden_reg[i] = 32'd0;
-//  end
-//  #`PERIOD; // reset = 1'b0  
 
   /* Dump and finish */
   initial begin
