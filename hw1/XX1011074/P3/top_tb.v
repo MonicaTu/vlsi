@@ -28,13 +28,13 @@ module top_tb;
   wire [31:0]alu_result;
   integer i,err_num;
   //test &debug
-  reg [DataSize-1:0]golden_reg[31:0];
+  //reg [DataSize-1:0]golden_reg[31:0];
 
   parameter imm5bitZE = 2'b00, imm15bitSE = 2'b01, imm15bitZE = 2'b10, imm20bitSE =  2'b11;
   parameter regOut = 1'b0, immOut = 1'b1;
   parameter aluResult = 1'b0, scr2 = 1'b1; 
 
-  reg [31:0]tb_write_data;
+  reg [31:0]tb_reg_data;
 
 top TOP(
   clk,
@@ -67,9 +67,11 @@ top TOP(
   clk=0;
   rst=1'b0;
 //  golden_reg[0] = 32'd200;
+
 //IDLE
   //Register
-  #10 read_address1='d0;
+
+  read_address1='d0;
   read_address2='d0;
   write_address='d0;
   enable_fetch=1'b0;
@@ -91,7 +93,7 @@ top TOP(
 
 //TEST NOP
   //Register
-#10  read_address1='d0;
+#(`PERIOD)  read_address1='d0;
   read_address2='d0;
   write_address='d0;
   enable_fetch=1'b0;
@@ -104,12 +106,12 @@ top TOP(
   mux2to1_select=1'b0;
   imm_reg_select=1'b0;
   //ALU
-#10  enable_execute=1'b0;
+#(`PERIOD)  enable_execute=1'b0;
   opcode='b100000; sub_opcode='b01001;
 
 //TEST MOVEI Reg[0]=200(Dec)
   //Register
-#10  read_address1='d0;
+#(`PERIOD)  read_address1='d0;
   read_address2='d1;
   write_address='d0;
   enable_fetch=1'b0;
@@ -122,13 +124,12 @@ top TOP(
   mux2to1_select=scr2;
   imm_reg_select=immOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b100010; sub_opcode='d0;
-//#10  enable_execute=1'b0;
 
 //TEST ADDI Reg[1]=Reg[0]+100(Dec)=300 read_cycle
 //Register
-#10  read_address1='d0;
+#(`PERIOD)  read_address1='d0;
   read_address2='d1;
   write_address='d0;
   enable_fetch=1'b1;
@@ -141,13 +142,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
 //ALU
-#10  enable_execute=1'b0;
+#(`PERIOD)  enable_execute=1'b0;
   opcode='b101000; sub_opcode='d0;
-//#10  enable_execute=1'b0;
 
 //TEST ADDI Reg[1]=Reg[0]+100(Dec)=300 writeback_cycle
   //Register
-#10  read_address1='d0;
+#(`PERIOD)  read_address1='d0;
   read_address2='d1;
   write_address='d1;
   enable_fetch=1'b0;
@@ -160,13 +160,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#10 enable_execute=1'b1;
+#(`PERIOD) enable_execute=1'b1;
   opcode='b101000; sub_opcode='d0;
-//#10 enable_execute=1'b0;
 
 //TEST ADD. Rt=Ra+Rb (read)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b1;
@@ -179,13 +178,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=regOut;
   //ALU
-#10 enable_execute=1'b0;
+#(`PERIOD) enable_execute=1'b0;
   opcode='b100000; sub_opcode='b00000;
-//#10 enable_execute=1'b0;
 
 //TEST ADD. Rt=Ra+Rb (write)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b0;
@@ -198,13 +196,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=regOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b100000; sub_opcode='b00000;
-//#10 enable_execute=1'b0;
 
 //TEST SUB  Rt=Rb-Ra (read)
   //Register
-  #10 read_address1='d1;
+  #(`PERIOD) read_address1='d1;
   read_address2='d0;
   write_address='d2;
   enable_fetch=1'b1;
@@ -217,13 +214,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=regOut;
   //ALU
-#10  enable_execute=1'b0;
+#(`PERIOD)  enable_execute=1'b0;
   opcode='b100000; sub_opcode='b00001;
-//#10  enable_execute=1'b0;
 
 //TEST SUB  Rt=Rb-Ra (write)
   //Register
-#10 read_address1='d1;
+#(`PERIOD) read_address1='d1;
   read_address2='d0;
   write_address='d2;
   enable_fetch=1'b0;
@@ -236,13 +232,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=regOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b100000; sub_opcode='b00001;
-//#10  enable_execute=1'b0;
 
 //TEST AND  Rt=Ra&Rb (read)
   //Register
-#10 read_address1='d0;
+#(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b1;
@@ -255,13 +250,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=regOut;
   //ALU
-#10  enable_execute=1'b0;
+#(`PERIOD)  enable_execute=1'b0;
   opcode='b100000; sub_opcode='b00010;
-//#10  enable_execute=1'b0;
 
 //TEST AND  Rt=Ra&Rb (write)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b0;
@@ -274,13 +268,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=regOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b100000; sub_opcode='b00010;
-//#10  enable_execute=1'b0;
 
 //TEST OR Rt=Ra|Rb (read)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b1;
@@ -293,13 +286,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=regOut;
   //ALU
-#10  enable_execute=1'b0;
+#(`PERIOD)  enable_execute=1'b0;
   opcode='b100000; sub_opcode='d00100;
-//#10  enable_execute=1'b0;
 
 //TEST OR Rt=Ra|Rb (write)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b0;
@@ -312,13 +304,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=regOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b100000; sub_opcode='d00100;
-//#10  enable_execute=1'b0;
 
 //TEST XOR Rt=Ra^Rb (read)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b1;
@@ -331,13 +322,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=regOut;
   //ALU
-#10  enable_execute=1'b0;
+#(`PERIOD)  enable_execute=1'b0;
   opcode='b100000; sub_opcode='b00011;
-//#10  enable_execute=1'b0;
 
 //TEST XOR Rt=Ra^Rb (write)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b0;
@@ -350,13 +340,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=regOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b100000; sub_opcode='b00011;
-//#10  enable_execute=1'b0;
 
 //TEST SRLI  Rt=Ra>>Rb (read)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b1;
@@ -369,13 +358,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#10  enable_execute=1'b0;
+#(`PERIOD)  enable_execute=1'b0;
   opcode='b100000; sub_opcode='d01001;
-//#10  enable_execute=1'b0;
 
 //TEST SRLI  Rt=Ra>>Rb (write)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b0;
@@ -388,13 +376,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b100000; sub_opcode='d01001;
-//#10  enable_execute=1'b1;
 
 //TEST SLLI Rt=Ra<<Rb (read)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b1;
@@ -407,13 +394,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#10  enable_execute=1'b0;
+#(`PERIOD)  enable_execute=1'b0;
   opcode='b100000; sub_opcode='b01000;
-//#10  enable_execute=1'b0;
 
 //TEST SLLI Rt=Ra<<Rb (write)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b0;
@@ -426,13 +412,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b100000; sub_opcode='b01000;
-//#10  enable_execute=1'b0;
 
 //TEST ROTRI Rt=Ra>>Rb (read)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b1;
@@ -445,14 +430,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#10  enable_execute=1'b0;
+#(`PERIOD)  enable_execute=1'b0;
   opcode='b100000; sub_opcode='b01011;
-//#10  enable_execute=1'b0;
-
 
 //TEST ROTRI Rt=Ra>>Rb (write)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b0;
@@ -465,13 +448,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b100000; sub_opcode='b01011;
-//#10  enable_execute=1'b0;
 
 //TEST ORI Rt=Ra|ZE(imm) (read)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b1;
@@ -484,13 +466,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#10  enable_execute=1'b0;
+#(`PERIOD)  enable_execute=1'b0;
   opcode='b101100; sub_opcode='d0;
-//#10  enable_execute=1'b0;
 
 //TEST ORI Rt=Ra|ZE(imm) (write)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b0;
@@ -503,13 +484,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b101100; sub_opcode='d0;
-//#10  enable_execute=1'b0;
 
 //TEST XORI  Rt=Ra^ZE(imm) (read)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b1;
@@ -522,13 +502,12 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b101011; sub_opcode='d0;
-//#10  enable_execute=1'b0;
 
 //TEST XORI  Rt=Ra^ZE(imm) (write)
   //Register
-  #10 read_address1='d0;
+  #(`PERIOD) read_address1='d0;
   read_address2='d1;
   write_address='d2;
   enable_fetch=1'b0;
@@ -541,12 +520,11 @@ top TOP(
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#10  enable_execute=1'b1;
+#(`PERIOD)  enable_execute=1'b1;
   opcode='b101011; sub_opcode='d0;
-//#10  enable_execute=1'b0;
 
 //IDLE
-#10  read_address1='d0;
+#(`PERIOD)  read_address1='d0;
   read_address2='d0;
   write_address='d0;
   enable_fetch=1'b0;
@@ -572,31 +550,33 @@ top TOP(
         #(`PERIOD*2) 
         // MOVI
         #5 
-        #(`PERIOD*2) tb_write_data = 32'h00C8;
+        #(`PERIOD) tb_reg_data = 32'h00C8;
         // ADDI
-        #(`PERIOD*4) tb_write_data = 32'h012C;
+        #(`PERIOD*4) tb_reg_data = 32'h012C;
         // ADD
-        #(`PERIOD*4) tb_write_data = 32'h01F4;
+        #(`PERIOD*4) tb_reg_data = 32'h01F4;
         // SUB
-        #(`PERIOD*4) tb_write_data = 32'h0064;
+	#(`PERIOD*2)
+	#(`PERIOD)
+        #(`PERIOD) tb_reg_data = 32'h0064;
         // AND
-        #(`PERIOD*4) tb_write_data = 32'h0008;
+        #(`PERIOD*4) tb_reg_data = 32'h0008;
         // OR
-        #(`PERIOD*4) tb_write_data = 32'h01EC;
+        #(`PERIOD*4) tb_reg_data = 32'h01EC;
         // XOR
-        #(`PERIOD*4) tb_write_data = 32'h01E4;
+        #(`PERIOD*4) tb_reg_data = 32'h01E4;
         // SRLI
-        #(`PERIOD*4) tb_write_data = 32'h0019;
+        #(`PERIOD*4) tb_reg_data = 32'h0019;
         // SLLI
-        #(`PERIOD*4) tb_write_data = 32'h0640;
+        #(`PERIOD*4) tb_reg_data = 32'h0640;
         // ROTRI
-        #(`PERIOD*4) tb_write_data = 32'hC8000019;
+        #(`PERIOD*4) tb_reg_data = 32'hC8000019;
         // ORI
-        #(`PERIOD*4) tb_write_data = 32'h00EC;
+        #(`PERIOD*4) tb_reg_data = 32'h00EC;
         // XORI
-        #(`PERIOD*3) tb_write_data = 32'h00AC;
-        #(`PERIOD) $finish;
-   end
+        #(`PERIOD*3) tb_reg_data = 32'h00AC;
+        #(`PERIOD*3) $finish;
+  end
 
   /* Dump and finish */
   initial begin
