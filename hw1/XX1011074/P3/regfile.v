@@ -14,6 +14,9 @@ module regfile(read_data1, read_data2, read_address1, read_address2,
   input clk, reset, read, write;
 
   reg [DataSize-1:0]rw_reg[31:0];
+  wire [DataSize-1:0]R0=rw_reg[0];
+  wire [DataSize-1:0]R1=rw_reg[1];
+  wire [DataSize-1:0]R2=rw_reg[2];
   integer i;
 
   always@(posedge clk, posedge reset)begin
