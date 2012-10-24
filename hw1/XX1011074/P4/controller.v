@@ -46,7 +46,7 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
   parameter stopState = 2'b00, fetchState = 2'b01, exeState = 2'b10, writeState =  2'b11;
   // mux4to1_select
   parameter imm5bitZE = 2'b00, imm15bitSE = 2'b01, imm15bitZE = 2'b10, imm20bitSE =  2'b11;
-  // mux2to1_select
+  // writeback_select
   parameter aluResult = 1'b0, scr2Out = 1'b1; 
   // imm_reg_select
   parameter regOut = 1'b0, immOut = 1'b1;
@@ -54,68 +54,82 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
   always @(posedge clock)
   begin
     if(reset)
-      current_state = stopState;
+      current_state <= stopState;
     else
-      current_state = next_state;
+      current_state <= next_state;
   end
 
   always @(current_state)
   begin
     case(current_state)
     stopState : begin
-      next_state = fetchState;
-      enable_fetch = 0;
-      enable_execute = 0;
-      enable_writeback = 0;
+    $display("stop");
+      next_state <= fetchState;
+      enable_fetch <= 0;
+      enable_execute <= 0;
+      enable_writeback <= 0;
     end
     fetchState : begin
-      next_state = exeState;
-      enable_fetch = 1;
-      enable_execute = 0;
-      enable_writeback = 0;
+    $display("fetch");
+      next_state <= exeState;
+      enable_fetch <= 1;
+      enable_execute <= 0;
+      enable_writeback <= 0;
     end
     exeState : begin
-      next_state = writeState;
-      enable_fetch = 0;
-      enable_execute = 1;
-      enable_writeback = 0;
+    $display("exe");
+      next_state <= writeState;
+      enable_fetch <= 0;
+      enable_execute <= 1;
+      enable_writeback <= 0;
     end
     writeState : begin
-      next_state = stopState;
-      enable_fetch = 0;
-      enable_execute = 0;
-      enable_writeback = 1;
+    $display("write");
+      next_state <= stopState;
+      enable_fetch <= 0;
+      enable_execute <= 0;
+      enable_writeback <= 1;
     end
     endcase
 
-    writeback_select = (opcode == 6'b100010) ? scr2Out : aluResult;
+// FIXME
+    writeback_select <= (opcode == 6'b100010) ? scr2Out : aluResult;
+//    if (opcode == 6'b100010)
+//      writeback_select <= scr2Out;
+//    else
+//      writeback_select <= aluResult;
+
     case(opcode)
       6'b100000 : begin
             if (sub_opcode == SRLI | sub_opcode == SLLI | sub_opcode == ROTRI) begin
-    		mux4to1_select = imm5bitZE; 
-    		imm_reg_select = immOut;
+    		mux4to1_select <= imm5bitZE; 
+    		imm_reg_select <= immOut;
 	    end
+	    else begin
+    		mux4to1_select <= imm5bitZE; 
+    		imm_reg_select <= regOut;
             end
+	    end
       6'b101000 : begin
-              mux4to1_select = imm15bitSE;
-      	      imm_reg_select = immOut;
+              mux4to1_select <= imm15bitSE;
+      	      imm_reg_select <= immOut;
       	    end
       6'b101100 : begin
-      	      mux4to1_select = imm15bitZE;
-      	      imm_reg_select = immOut;
+      	      mux4to1_select <= imm15bitZE;
+      	      imm_reg_select <= immOut;
       	    end
       6'b101011 : begin
-      	      mux4to1_select = imm15bitZE;
-      	      imm_reg_select = immOut;
+      	      mux4to1_select <= imm15bitZE;
+      	      imm_reg_select <= immOut;
       	    end
       6'b100010 : begin
-    	      next_state = writeState; // MOVI
-      	      mux4to1_select = imm20bitSE;
-      	      imm_reg_select = immOut;
+//                  next_state <= writeState; // MOVI
+      	      mux4to1_select <= imm20bitSE;
+      	      imm_reg_select <= immOut;
       	    end
       default   : begin 
-    	      mux4to1_select = imm5bitZE; 
-    	      imm_reg_select = regOut;
+    	      mux4to1_select <= imm5bitZE; 
+    	      imm_reg_select <= regOut;
     	    end
     endcase
   end
@@ -123,9 +137,9 @@ module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_op
   always @(posedge enable_fetch)
   begin
     if(PC == 0)
-      present_instruction = 0;
+      present_instruction <= 0;
     else
-      present_instruction = ir;
+      present_instruction <= ir;
   end
 
 endmodule
