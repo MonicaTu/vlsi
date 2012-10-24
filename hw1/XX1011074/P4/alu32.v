@@ -18,6 +18,7 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,
     if(reset)begin
       alu_result=32'b0;
       alu_overflow=1'b0;
+		      $display("(alu)reset");
     end
     else if(enable_execute)begin
       case(opcode)
@@ -29,74 +30,90 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,
                       ADD   : begin
                                 {a,alu_result[30:0]}=scr1[30:0]+scr2[30:0];
                                 {b,alu_result[31]}=scr1[31]+scr2[31]+a;
+		      $display("(alu)ADD, alu_result:%b", alu_result);
                               end
                       SUB   : begin
                                 {a,alu_result[30:0]}=scr1[30:0]-scr2[30:0];
                                 {b,alu_result[31]}=scr1[31]-scr2[31]-a;
+		      $display("(alu)SUB, alu_result:%b", alu_result);
                                 alu_overflow=a^b;
                               end
                       AND   : begin
                                 alu_overflow=1'b0;
                                 alu_result=scr1&scr2;
+		      $display("(alu)AND, alu_result:%b", alu_result);
                               end
                       OR    : begin
                                 alu_overflow=1'b0;
                                 alu_result=scr1|scr2;
+		      $display("(alu)OR, alu_result:%b", alu_result);
                               end
                       XOR   : begin
                                 alu_overflow=1'b0;
                                 alu_result=scr1^scr2;
+		      $display("(alu)XOR, alu_result:%b", alu_result);
                               end
                       SRLI  : begin
                                 if(scr2!=0)begin 
                                   alu_overflow=1'b0;
                                   alu_result=scr1>>scr2;
+		      $display("(alu)SRLI, alu_result:%b", alu_result);
 				end
 				else begin
                                   alu_result=32'b0;
                                   alu_overflow=1'b0;
+		      $display("(alu)NOP, alu_result:%b", alu_result);
                                 end
                               end
                       SLLI  : begin
                                 alu_overflow=1'b0;
                                 alu_result=scr1<<scr2;
+		      $display("(alu)SLLI, alu_result:%b", alu_result);
                               end
                       ROTRI : begin
                                 alu_overflow=1'b0;
                                 rotate={scr1,scr1}>>scr2;
                                 alu_result=rotate[31:0];
+		      $display("(alu)ROTRI, alu_result:%b", alu_result);
                               end
                       default : begin
                                   alu_overflow=1'b0;
                                   alu_result=32'b0;
+		      $display("(alu)default, alu_result:%b", alu_result);
                               end
                     endcase
         6'b101000 : begin
                       {a,alu_result[30:0]}=scr1[30:0]+scr2[30:0];
                       {b,alu_result[31]}=scr1[31]+scr2[31]+a;
                       alu_overflow=a^b;
+		      $display("(alu)ADDI, alu_result:%b", alu_result);
                     end
         6'b101100 : begin
                       alu_overflow=1'b0;
                       alu_result=scr1|scr2;
+		      $display("(alu)ORI, alu_result:%b", alu_result);
                     end
         6'b101011 : begin
                       alu_overflow=1'b0;
                       alu_result=scr1^scr2;
+		      $display("(alu)XORI, alu_result:%b", alu_result);
                     end
         6'b100010 : begin
                       alu_overflow=1'b0;
                       alu_result[31:0]=scr2[31:0];
+		      $display("(alu)MOVI, alu_result:%b", alu_result);
                     end
         default : begin
                       alu_overflow=1'b0;
                       alu_result=32'b0;
+		      $display("(alu)default_op, alu_result:%b", alu_result);
                   end
       endcase
     end
-    else begin
-      alu_result=32'b0;
-      alu_overflow=1'b0;
-    end
+//    else begin
+//      alu_result=32'b0;
+//      alu_overflow=1'b0;
+//                      $display("+116");
+//    end
   end
 endmodule                                                                                                                                                                                                                                                                              
