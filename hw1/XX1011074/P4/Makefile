@@ -9,5 +9,6 @@ tb2:
 	gtkwave top_tb2.vcd
 
 clean:
+	rm a.out 
 	rm top_tb1.vcd
 	rm top_tb2.vcd
