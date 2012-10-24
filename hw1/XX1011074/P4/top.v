@@ -19,7 +19,7 @@ module top (instruction, clk, reset);
   wire [1:0]mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;
-  input [31:0] PC;
+  wire [31:0] PC;
   
   /* p3_top */
   // regfile
@@ -31,7 +31,7 @@ module top (instruction, clk, reset);
   wire [14:0]imm_15bit = instruction[14:0];
   wire [19:0]imm_20bit = instruction[19:0];
   // alu
-  output alu_overflow;
+  wire alu_overflow;
 
   controller conrtoller1 (
     .enable_execute(enable_execute),

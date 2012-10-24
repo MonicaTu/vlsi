@@ -1,7 +1,7 @@
 `timescale 1ns/10ps
 `define PERIOD 10
 
-module top_tb1;
+module top_tb2;
 
   parameter DataSize = 32;
 
