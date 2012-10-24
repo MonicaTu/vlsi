@@ -19,25 +19,19 @@ module top (instruction, clk, reset);
   wire [1:0]mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;
-  input [31:0] PC; // TODO: what is this?
+  input [31:0] PC;
   
+  /* p3_top */
   // regfile
-  wire [DataSize-1:0]read_data1;
-  wire [DataSize-1:0]read_data2;
   wire [AddrSize-1:0]read_address1 = instruction[19:15];
   wire [AddrSize-1:0]read_address2 = instruction[14:10];
   wire [AddrSize-1:0]write_address = instruction[24:20];
-  wire [DataSize-1:0]write_data;
-  
-  // alu
-  output alu_overflow;
-  
-  /* others */
-  wire [DataSize-1:0]mux4to1_out;
   //imm_sel
   wire [4:0]imm_5bit = instruction[14:10];
   wire [14:0]imm_15bit = instruction[14:0];
   wire [19:0]imm_20bit = instruction[19:0];
+  // alu
+  output alu_overflow;
 
   controller conrtoller1 (
     .enable_execute(enable_execute),
@@ -65,7 +59,7 @@ module top (instruction, clk, reset);
     .imm_15bit(imm_15bit),
     .imm_20bit(imm_20bit),
     .mux4to1_select(mux4to1_select),
-    .mux2to1_select(mux2to1_select),
+    .mux2to1_select(writeback_select),
     .imm_reg_select(imm_reg_select),
     .enable_execute(enable_execute),
     .opcode(opcode),
