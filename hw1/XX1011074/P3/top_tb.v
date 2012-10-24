@@ -28,7 +28,7 @@ module top_tb;
   wire [31:0]alu_result;
   integer i,err_num;
   //test &debug
-  //reg [DataSize-1:0]golden_reg[31:0];
+  reg [DataSize-1:0]golden_reg[31:0];
   reg [31:0]tb_rw_reg_0;
   reg [31:0]tb_rw_reg_1;
   reg [31:0]tb_rw_reg_2;
@@ -636,42 +636,58 @@ top TOP(
   
   initial begin
         #(`PERIOD*3.5) 
+        for ( i = 0; i < DataSize; i = i+1) begin
+	  golden_reg[i] = 32'b0;
+	end
         // NOP
         #(`PERIOD*4);
         // MOVI
         #(`PERIOD*4) tb_rw_reg_2 = 32'h00C8;
+	golden_reg[2] = 32'h00C8;
         // ADDI
         #(`PERIOD*4) tb_rw_reg_2 = 32'h012C;
+	golden_reg[2] = 32'h012C;
         // ADD
         #(`PERIOD*4) tb_rw_reg_2 = 32'h01F4;
+	golden_reg[2] = 32'h01F4;
         // SUB
         #(`PERIOD*4) tb_rw_reg_2 = 32'h0064;
+	golden_reg[2] = 32'h0064;
         // AND
         #(`PERIOD*4) tb_rw_reg_2 = 32'h0008;
+	golden_reg[2] = 32'h0008;
         // OR
         #(`PERIOD*4) tb_rw_reg_2 = 32'h01EC;
+	golden_reg[2] = 32'h01EC;
         // XOR
         #(`PERIOD*4) tb_rw_reg_2 = 32'h01E4;
+	golden_reg[2] = 32'h01E4;
         // SRLI
         #(`PERIOD*4) tb_rw_reg_2 = 32'h0019;
+	golden_reg[2] = 32'h0019;
         // SLLI
         #(`PERIOD*4) tb_rw_reg_2 = 32'h0640;
+	golden_reg[2] = 32'h0640;
         // ROTRI
         #(`PERIOD*4) tb_rw_reg_2 = 32'h0019;
+	golden_reg[2] = 32'h0019;
         // ORI
         #(`PERIOD*4) tb_rw_reg_2 = 32'h00EC;
+	golden_reg[2] = 32'h00EC;
         // XORI
         #(`PERIOD*4) tb_rw_reg_2 = 32'h00AC;
+	golden_reg[2] = 32'h00AC;
 	// IDEL
-        #(`PERIOD*4) $finish;
+        #(`PERIOD*4); $finish;
   end
 
   /* Dump and finish */
   initial begin
   $dumpfile("top_tb.vcd");
   $dumpvars;
-//  $fsdbDumpfile("top_tb.fsdb");
-//  $fsdbDumpvars;
+  $fsdbDumpfile("top_tb.fsdb");
+  $fsdbDumpvars;
+  $fsdbDumpvars(0, top_tb, "+mda");
   end
 
 endmodule

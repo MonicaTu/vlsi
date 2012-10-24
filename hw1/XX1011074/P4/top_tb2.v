@@ -10,7 +10,7 @@ module top_tb1;
   reg reset;
   
   //test &debug
-//  reg [DataSize-1:0]golden_reg[31:0];
+  reg [DataSize-1:0]golden_reg[31:0];
   reg [31:0]tb_rw_reg_0;
   reg [31:0]tb_rw_reg_1;
   reg [31:0]tb_rw_reg_2;
@@ -61,9 +61,9 @@ top TOP (
 
   /* Create tb waveform */
   initial begin
-//  for ( i = DataSize; i > 0; i = i-1 ) begin
-//    golden_reg[i] = 32'd0;
-//  end
+  for ( i = 0; i < DataSize; i = i+1) begin
+    golden_reg[i] = 32'd0;
+  end
 
   tb_rw_reg_0 = 32'd0;
   tb_rw_reg_1 = 32'd0;
@@ -82,59 +82,71 @@ top TOP (
   #(`PERIOD*4) //NOP
   #(`PERIOD*4) //MOVI
   tb_rw_reg_0 = 32'h00C8;
+  golden_reg[0] = 32'h00C8;
 
   #(`PERIOD*4) //ADDI
   tb_rw_reg_1 = 32'h012C;
+  golden_reg[1] = 32'h012C;
   if (tb_rw_reg_0 != TOP.p3.regfile1.rw_reg_0)
     err_num = err_num + 1;
 
   #(`PERIOD*4) //ADD
   tb_rw_reg_2 = 32'h01F4;
+  golden_reg[2] = 32'h01F4;
   if (tb_rw_reg_1 != TOP.p3.regfile1.rw_reg_1)
     err_num = err_num + 1;
 
   #(`PERIOD*4) //SUB
   tb_rw_reg_2 = 32'h0064;
+  golden_reg[2] = 32'h0064;
   if (tb_rw_reg_2 != TOP.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
 
   #(`PERIOD*4) //AND
   tb_rw_reg_2 = 32'h0008;
+  golden_reg[2] = 32'h0008;
   if (tb_rw_reg_2 != TOP.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
 
   #(`PERIOD*4) //OR
   tb_rw_reg_2 = 32'h01EC;
+  golden_reg[2] = 32'h01EC;
   if (tb_rw_reg_2 != TOP.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
 
   #(`PERIOD*4) //XOR
   tb_rw_reg_2 = 32'h01E4;
+  golden_reg[2] = 32'h01E4;
   if (tb_rw_reg_2 != TOP.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
 
   #(`PERIOD*4) //SRLI
   tb_rw_reg_2 = 32'h0019;
+  golden_reg[2] = 32'h0019;
   if (tb_rw_reg_2 != TOP.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
 
   #(`PERIOD*4) //SLLI
   tb_rw_reg_2 = 32'h0640;
+  golden_reg[2] = 32'h0640;
   if (tb_rw_reg_2 != TOP.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
 
   #(`PERIOD*4) //ROTRI
   tb_rw_reg_2 = 32'h0019;
+  golden_reg[2] = 32'h0019;
   if (tb_rw_reg_2 != TOP.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
 
   #(`PERIOD*4) //ORI
   tb_rw_reg_2 = 32'h00EC;
+  golden_reg[2] = 32'h00EC;
   if (tb_rw_reg_2 != TOP.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
 
   #(`PERIOD*4) //XORI
   tb_rw_reg_2 = 32'h00AC;
+  golden_reg[2] = 32'h00AC;
   if (tb_rw_reg_2 != TOP.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
   
@@ -147,8 +159,9 @@ top TOP (
   initial begin
   $dumpfile("top_tb2.vcd");
   $dumpvars;
-//  $fsdbDumpfile("top_tb1.fsdb");
-//  $fsdbDumpvars;
+  $fsdbDumpfile("top_tb2.fsdb");
+  $fsdbDumpvars;
+  $fsdbDumpvars(0, top_tb2, "+mda");
   end
 
 endmodule
