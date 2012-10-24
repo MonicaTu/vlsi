@@ -29,12 +29,14 @@ module top_tb;
   integer i,err_num;
   //test &debug
   //reg [DataSize-1:0]golden_reg[31:0];
+  reg [31:0]tb_rw_reg_0;
+  reg [31:0]tb_rw_reg_1;
+  reg [31:0]tb_rw_reg_2;
 
   parameter imm5bitZE = 2'b00, imm15bitSE = 2'b01, imm15bitZE = 2'b10, imm20bitSE =  2'b11;
   parameter regOut = 1'b0, immOut = 1'b1;
   parameter aluResult = 1'b0, scr2 = 1'b1; 
 
-  reg [31:0]tb_reg_data;
 
 top TOP(
   clk,
@@ -64,518 +66,604 @@ top TOP(
   always #5 clk=~clk;
 
   initial begin
-  clk=0;
-  rst=1'b0;
-//  golden_reg[0] = 32'd200;
+  clk = 1'b0;
+  #(`PERIOD) rst = 1'b0;
+  #(`PERIOD) rst = 1'b1;  
+  #(`PERIOD) rst = 1'b0;
+  #(`PERIOD*1.5);
 
-//IDLE
+/* TEST NOP */
   //Register
-
   read_address1='d0;
   read_address2='d0;
   write_address='d0;
-  enable_fetch=1'b0;
-  enable_writeback=1'b0;
   //imm_sel
   imm_5bit='d0;
   imm_15bit='d0;
   imm_20bit='d0;
+  //mux
   mux4to1_select=imm5bitZE;
   mux2to1_select=aluResult;
   imm_reg_select=regOut;
   //ALU
-  enable_execute=1'b0;
-  opcode='b0;
-  sub_opcode='d0;
-
-  #5 rst=1'b1;
-  #5 rst=1'b0;
-
-//TEST NOP
-  //Register
-#(`PERIOD)  read_address1='d0;
-  read_address2='d0;
-  write_address='d0;
-  enable_fetch=1'b0;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=2'b0;
-  mux2to1_select=1'b0;
-  imm_reg_select=1'b0;
-  //ALU
-#(`PERIOD)  enable_execute=1'b0;
   opcode='b100000; sub_opcode='b01001;
 
-//TEST MOVEI Reg[0]=200(Dec)
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST MOVI Reg[0]=200(Dec)
   //Register
-#(`PERIOD)  read_address1='d0;
+  read_address1='d0;
   read_address2='d1;
   write_address='d0;
-  enable_fetch=1'b0;
-  enable_writeback=1'b1;
   //imm_sel
   imm_5bit='d0;
   imm_15bit='d0;
   imm_20bit='d200;
+  //mux
   mux4to1_select=imm20bitSE;
   mux2to1_select=scr2;
   imm_reg_select=immOut;
   //ALU
-#(`PERIOD)  enable_execute=1'b1;
   opcode='b100010; sub_opcode='d0;
 
-//TEST ADDI Reg[1]=Reg[0]+100(Dec)=300 read_cycle
-//Register
-#(`PERIOD)  read_address1='d0;
-  read_address2='d1;
-  write_address='d0;
-  enable_fetch=1'b1;
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
   enable_writeback=1'b0;
-//imm_sel
-  imm_5bit='d0;
-  imm_15bit='d100;
-  imm_20bit='d0;
-  mux4to1_select=imm15bitSE;
-  mux2to1_select=aluResult;
-  imm_reg_select=immOut;
-//ALU
-#(`PERIOD)  enable_execute=1'b0;
-  opcode='b101000; sub_opcode='d0;
+#(`PERIOD);
 
-//TEST ADDI Reg[1]=Reg[0]+100(Dec)=300 writeback_cycle
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST ADDI Reg[1]=Reg[0]+100(Dec)=300
   //Register
-#(`PERIOD)  read_address1='d0;
+  read_address1='d0;
   read_address2='d1;
   write_address='d1;
-  enable_fetch=1'b0;
-  enable_writeback=1'b1;
   //imm_sel
   imm_5bit='d0;
   imm_15bit='d100;
   imm_20bit='d0;
+  //mux
   mux4to1_select=imm15bitSE;
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
-#(`PERIOD) enable_execute=1'b1;
   opcode='b101000; sub_opcode='d0;
 
-//TEST ADD. Rt=Ra+Rb (read)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b1;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=regOut;
-  //ALU
-#(`PERIOD) enable_execute=1'b0;
-  opcode='b100000; sub_opcode='b00000;
-
-//TEST ADD. Rt=Ra+Rb (write)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
+//stopState
   enable_fetch=1'b0;
-  enable_writeback=1'b1;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=regOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b1;
-  opcode='b100000; sub_opcode='b00000;
-
-//TEST SUB  Rt=Rb-Ra (read)
-  //Register
-  #(`PERIOD) read_address1='d1;
-  read_address2='d0;
-  write_address='d2;
-  enable_fetch=1'b1;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=regOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b0;
-  opcode='b100000; sub_opcode='b00001;
-
-//TEST SUB  Rt=Rb-Ra (write)
-  //Register
-#(`PERIOD) read_address1='d1;
-  read_address2='d0;
-  write_address='d2;
-  enable_fetch=1'b0;
-  enable_writeback=1'b1;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=regOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b1;
-  opcode='b100000; sub_opcode='b00001;
-
-//TEST AND  Rt=Ra&Rb (read)
-  //Register
-#(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b1;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=regOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b0;
-  opcode='b100000; sub_opcode='b00010;
-
-//TEST AND  Rt=Ra&Rb (write)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b0;
-  enable_writeback=1'b1;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=regOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b1;
-  opcode='b100000; sub_opcode='b00010;
-
-//TEST OR Rt=Ra|Rb (read)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b1;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=regOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b0;
-  opcode='b100000; sub_opcode='d00100;
-
-//TEST OR Rt=Ra|Rb (write)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b0;
-  enable_writeback=1'b1;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=regOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b1;
-  opcode='b100000; sub_opcode='d00100;
-
-//TEST XOR Rt=Ra^Rb (read)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b1;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=regOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b0;
-  opcode='b100000; sub_opcode='b00011;
-
-//TEST XOR Rt=Ra^Rb (write)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b0;
-  enable_writeback=1'b1;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=regOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b1;
-  opcode='b100000; sub_opcode='b00011;
-
-//TEST SRLI  Rt=Ra>>Rb (read)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b1;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d3;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=immOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b0;
-  opcode='b100000; sub_opcode='d01001;
-
-//TEST SRLI  Rt=Ra>>Rb (write)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b0;
-  enable_writeback=1'b1;
-  //imm_sel
-  imm_5bit='d3;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=immOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b1;
-  opcode='b100000; sub_opcode='d01001;
-
-//TEST SLLI Rt=Ra<<Rb (read)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b1;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d3;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=immOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b0;
-  opcode='b100000; sub_opcode='b01000;
-
-//TEST SLLI Rt=Ra<<Rb (write)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b0;
-  enable_writeback=1'b1;
-  //imm_sel
-  imm_5bit='d3;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=immOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b1;
-  opcode='b100000; sub_opcode='b01000;
-
-//TEST ROTRI Rt=Ra>>Rb (read)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b1;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d3;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=immOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b0;
-  opcode='b100000; sub_opcode='b01011;
-
-//TEST ROTRI Rt=Ra>>Rb (write)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b0;
-  enable_writeback=1'b1;
-  //imm_sel
-  imm_5bit='d3;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=immOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b1;
-  opcode='b100000; sub_opcode='b01011;
-
-//TEST ORI Rt=Ra|ZE(imm) (read)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b1;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d100;
-  imm_20bit='d00;
-  mux4to1_select=imm15bitSE;
-  mux2to1_select=aluResult;
-  imm_reg_select=immOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b0;
-  opcode='b101100; sub_opcode='d0;
-
-//TEST ORI Rt=Ra|ZE(imm) (write)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b0;
-  enable_writeback=1'b1;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d100;
-  imm_20bit='d00;
-  mux4to1_select=imm15bitSE;
-  mux2to1_select=aluResult;
-  imm_reg_select=immOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b1;
-  opcode='b101100; sub_opcode='d0;
-
-//TEST XORI  Rt=Ra^ZE(imm) (read)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b1;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d100;
-  imm_20bit='d0;
-  mux4to1_select=imm15bitSE;
-  mux2to1_select=aluResult;
-  imm_reg_select=immOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b1;
-  opcode='b101011; sub_opcode='d0;
-
-//TEST XORI  Rt=Ra^ZE(imm) (write)
-  //Register
-  #(`PERIOD) read_address1='d0;
-  read_address2='d1;
-  write_address='d2;
-  enable_fetch=1'b0;
-  enable_writeback=1'b1;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d100;
-  imm_20bit='d0;
-  mux4to1_select=imm15bitSE;
-  mux2to1_select=aluResult;
-  imm_reg_select=immOut;
-  //ALU
-#(`PERIOD)  enable_execute=1'b1;
-  opcode='b101011; sub_opcode='d0;
-
-//IDLE
-#(`PERIOD)  read_address1='d0;
-  read_address2='d0;
-  write_address='d0;
-  enable_fetch=1'b0;
-  enable_writeback=1'b0;
-  //imm_sel
-  imm_5bit='d0;
-  imm_15bit='d0;
-  imm_20bit='d0;
-  mux4to1_select=imm5bitZE;
-  mux2to1_select=aluResult;
-  imm_reg_select=regOut;
-  //ALU
   enable_execute=1'b0;
-  opcode='b0;
-  sub_opcode='d0;
-  $finish;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST ADD. Rt=Ra+Rb
+  //Register
+  read_address1='d0;
+  read_address2='d1;
+  write_address='d2;
+  //imm_sel
+  imm_5bit='d0;
+  imm_15bit='d0;
+  imm_20bit='d0;
+  //mux
+  mux4to1_select=imm5bitZE;
+  mux2to1_select=aluResult;
+  imm_reg_select=regOut;
+  //ALU
+  opcode='b100000; sub_opcode='b00000;
+
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST SUB  Rt=Rb-Ra
+  //Register
+  read_address1='d1;
+  read_address2='d0;
+  write_address='d2;
+  //imm_sel
+  imm_5bit='d0;
+  imm_15bit='d0;
+  imm_20bit='d0;
+  //mux
+  mux4to1_select=imm5bitZE;
+  mux2to1_select=aluResult;
+  imm_reg_select=regOut;
+  //ALU
+  opcode='b100000; sub_opcode='b00001;
+
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST AND  Rt=Ra&Rb
+  //Register
+  read_address1='d0;
+  read_address2='d1;
+  write_address='d2;
+  //imm_sel
+  imm_5bit='d0;
+  imm_15bit='d0;
+  imm_20bit='d0;
+  //mux
+  mux4to1_select=imm5bitZE;
+  mux2to1_select=aluResult;
+  imm_reg_select=regOut;
+  //ALU
+  opcode='b100000; sub_opcode='b00010;
+
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST OR Rt=Ra|Rb
+  //Register
+  read_address1='d0;
+  read_address2='d1;
+  write_address='d2;
+  //imm_sel
+  imm_5bit='d0;
+  imm_15bit='d0;
+  imm_20bit='d0;
+  //mux
+  mux4to1_select=imm5bitZE;
+  mux2to1_select=aluResult;
+  imm_reg_select=regOut;
+  //ALU
+  opcode='b100000; sub_opcode='d00100;
+
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST XOR Rt=Ra^Rb
+  //Register
+  read_address1='d0;
+  read_address2='d1;
+  write_address='d2;
+  //imm_sel
+  imm_5bit='d0;
+  imm_15bit='d0;
+  imm_20bit='d0;
+  //mux
+  mux4to1_select=imm5bitZE;
+  mux2to1_select=aluResult;
+  imm_reg_select=regOut;
+  //ALU
+  opcode='b100000; sub_opcode='b00011;
+
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST SRLI  Rt=Ra>>Rb
+  //Register
+  read_address1='d0;
+  read_address2='d1;
+  write_address='d2;
+  //imm_sel
+  imm_5bit='d3;
+  imm_15bit='d0;
+  imm_20bit='d0;
+  //mux
+  mux4to1_select=imm5bitZE;
+  mux2to1_select=aluResult;
+  imm_reg_select=immOut;
+  //ALU
+  opcode='b100000; sub_opcode='d01001;
+
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST SLLI Rt=Ra<<Rb
+  //Register
+  read_address1='d0;
+  read_address2='d1;
+  write_address='d2;
+  //imm_sel
+  imm_5bit='d3;
+  imm_15bit='d0;
+  imm_20bit='d0;
+  //mux
+  mux4to1_select=imm5bitZE;
+  mux2to1_select=aluResult;
+  imm_reg_select=immOut;
+  //ALU
+  opcode='b100000; sub_opcode='b01000;
+
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST ROTRI Rt=Ra>>Rb
+  //Register
+  read_address1='d0;
+  read_address2='d1;
+  write_address='d2;
+  //imm_sel
+  imm_5bit='d3;
+  imm_15bit='d0;
+  imm_20bit='d0;
+  //mux
+  mux4to1_select=imm5bitZE;
+  mux2to1_select=aluResult;
+  imm_reg_select=immOut;
+  //ALU
+  opcode='b100000; sub_opcode='b01011;
+
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST ORI Rt=Ra|ZE(imm)
+  //Register
+  read_address1='d0;
+  read_address2='d1;
+  write_address='d2;
+  //imm_sel
+  imm_5bit='d0;
+  imm_15bit='d100;
+  imm_20bit='d00;
+  //mux
+  mux4to1_select=imm15bitSE;
+  mux2to1_select=aluResult;
+  imm_reg_select=immOut;
+  //ALU
+  opcode='b101100; sub_opcode='d0;
+
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+//TEST XORI  Rt=Ra^ZE(imm)
+  //Register
+  read_address1='d0;
+  read_address2='d1;
+  write_address='d2;
+  //imm_sel
+  imm_5bit='d0;
+  imm_15bit='d100;
+  imm_20bit='d0;
+  //mux
+  mux4to1_select=imm15bitSE;
+  mux2to1_select=aluResult;
+  imm_reg_select=immOut;
+  //ALU
+  opcode='b101011; sub_opcode='d0;
+
+//stopState
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//fetchState
+  //controller
+  enable_fetch=1'b1;
+  enable_execute=1'b0;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//exeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b1;
+  enable_writeback=1'b0;
+#(`PERIOD);
+
+//writeState
+  //controller
+  enable_fetch=1'b0;
+  enable_execute=1'b0;
+  enable_writeback=1'b1;
+#(`PERIOD);
+
+#(`PERIOD*4); $finish;
   end
   
   initial begin
-	//IDLE
-	#(`PERIOD*2)
+        #(`PERIOD*3.5) 
         // NOP
-        #(`PERIOD*2) 
+        #(`PERIOD*4);
         // MOVI
-        #5 
-        #(`PERIOD) tb_reg_data = 32'h00C8;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h00C8;
         // ADDI
-        #(`PERIOD*4) tb_reg_data = 32'h012C;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h012C;
         // ADD
-        #(`PERIOD*4) tb_reg_data = 32'h01F4;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h01F4;
         // SUB
-	#(`PERIOD*2)
-	#(`PERIOD)
-        #(`PERIOD) tb_reg_data = 32'h0064;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h0064;
         // AND
-        #(`PERIOD*4) tb_reg_data = 32'h0008;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h0008;
         // OR
-        #(`PERIOD*4) tb_reg_data = 32'h01EC;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h01EC;
         // XOR
-        #(`PERIOD*4) tb_reg_data = 32'h01E4;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h01E4;
         // SRLI
-        #(`PERIOD*4) tb_reg_data = 32'h0019;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h0019;
         // SLLI
-        #(`PERIOD*4) tb_reg_data = 32'h0640;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h0640;
         // ROTRI
-        #(`PERIOD*4) tb_reg_data = 32'hC8000019;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h0019;
         // ORI
-        #(`PERIOD*4) tb_reg_data = 32'h00EC;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h00EC;
         // XORI
-        #(`PERIOD*3) tb_reg_data = 32'h00AC;
-        #(`PERIOD*3) $finish;
+        #(`PERIOD*4) tb_rw_reg_2 = 32'h00AC;
+	// IDEL
+        #(`PERIOD*4) $finish;
   end
 
   /* Dump and finish */
