@@ -73,8 +73,6 @@ module p3_top(clk, rst, read_address1, read_address2, write_address, enable_fetc
         for (i = 31; i > 14; i = i-1)
           mux4to1_out[i] = imm_15bit[14];
         mux4to1_out[14:0] = imm_15bit;
-	$display("imm_15bit: %b", imm_15bit);
-	$display("mux4to1_out: %b", mux4to1_out);
       end
       imm15bitZE: begin
         mux4to1_out <= imm_15bit;
@@ -83,8 +81,6 @@ module p3_top(clk, rst, read_address1, read_address2, write_address, enable_fetc
         for (i = 31; i > 19; i = i-1)
           mux4to1_out[i] = imm_20bit[19];
         mux4to1_out[19:0] = imm_20bit;
-	$display("imm_20bit: %b", imm_20bit);
-	$display("mux4to1_out: %b", mux4to1_out);
       end
       default: mux4to1_out <= 32'bx;
     endcase
