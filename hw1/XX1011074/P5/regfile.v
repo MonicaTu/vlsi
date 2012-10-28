@@ -41,11 +41,11 @@ module regfile(read_data1, read_data2, read_address1, read_address2,
       else if(write)begin
         rw_reg[write_address]<=write_data;
       end
-      // FIXME
-      else begin
-	read_data1<=32'b0;
-	read_data2<=32'b0;
-      end
+  // FIXME
+//      else begin
+//        read_data1<=32'b0;
+//        read_data2<=32'b0;
+//      end
     end
   end
 endmodule
