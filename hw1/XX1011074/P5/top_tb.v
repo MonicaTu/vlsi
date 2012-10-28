@@ -38,9 +38,9 @@ top TOP (
   clk = 1'b0;
   #(`PERIOD) reset = 1'b0;
   #(`PERIOD) reset = 1'b1;  
-  #(`PERIOD) reset = 1'b0;
-  #(`PERIOD*1.5);
+  #(`PERIOD*2.5);
   #(`PERIOD*4) instruction = 32'b0_101000_00000_00000_0000_0000_0001_101; // ADDI
+  reset = 1'b0;
   #(`PERIOD*4) instruction = 32'b0_101000_00001_00001_0000_0000_0001_100; // ADDI
   #(`PERIOD*4) instruction = 32'b0_100010_00010_0000_0000_0000_0001_0000; // MOVI
   #(`PERIOD*4) instruction = 32'b0_100000_00011_00000_00001_00000_00000; // ADD
@@ -58,23 +58,25 @@ top TOP (
 
   /* Create tb waveform */
   initial begin
-  for ( i = 0; i < DataSize; i = i+1) begin
-    golden_reg[i] = 32'd0;
-  end
+  #(`PERIOD*2) 
+    for ( i = 0; i < DataSize; i = i+1) begin
+      golden_reg[i] = 32'd0;
+    end
 
-  tb_rw_reg_0 = 32'd0;
-  tb_rw_reg_1 = 32'd0;
-  tb_rw_reg_2 = 32'd0;
-  tb_rw_reg_3 = 32'd0;
-  tb_rw_reg_4 = 32'd0;
-  tb_rw_reg_5 = 32'd0;
-  tb_rw_reg_6 = 32'd0;
-  tb_rw_reg_7 = 32'd0;
-  tb_rw_reg_8 = 32'd0;
-  tb_rw_reg_9 = 32'd0;
-  err_num = 0;
+    tb_rw_reg_0 = 32'd0;
+    tb_rw_reg_1 = 32'd0;
+    tb_rw_reg_2 = 32'd0;
+    tb_rw_reg_3 = 32'd0;
+    tb_rw_reg_4 = 32'd0;
+    tb_rw_reg_5 = 32'd0;
+    tb_rw_reg_6 = 32'd0;
+    tb_rw_reg_7 = 32'd0;
+    tb_rw_reg_8 = 32'd0;
+    tb_rw_reg_9 = 32'd0;
+    err_num = 0;
 
-  #(`PERIOD*6.5)
+  #(`PERIOD*1.5)
+  #(`PERIOD*4)
   #(`PERIOD*4) //ADDI
   tb_rw_reg_0 = 32'b01101;
   golden_reg[0] = 32'b01101;
