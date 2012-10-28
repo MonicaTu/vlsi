@@ -635,18 +635,19 @@ top TOP(
   end
   
   initial begin
-        #(`PERIOD*3.5) 
+        #(`PERIOD*2) 
         for ( i = 0; i < DataSize; i = i+1) begin
 	  golden_reg[i] = 32'b0;
 	end
+        #(`PERIOD*1.5) 
         // NOP
         #(`PERIOD*4);
         // MOVI
-        #(`PERIOD*4) tb_rw_reg_2 = 32'h00C8;
-	golden_reg[2] = 32'h00C8;
+        #(`PERIOD*4) tb_rw_reg_0 = 32'h00C8;
+	golden_reg[0] = 32'h00C8;
         // ADDI
-        #(`PERIOD*4) tb_rw_reg_2 = 32'h012C;
-	golden_reg[2] = 32'h012C;
+        #(`PERIOD*4) tb_rw_reg_1 = 32'h012C;
+	golden_reg[1] = 32'h012C;
         // ADD
         #(`PERIOD*4) tb_rw_reg_2 = 32'h01F4;
 	golden_reg[2] = 32'h01F4;
