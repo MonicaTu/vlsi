@@ -1,11 +1,11 @@
-//concroller
+//alu_controller
 `define OPCODE ir[30:25]
 `define SUBOPCODE ir[4:0]
 `define SRLI 5'b01001
 `define SLLI 5'b01000
 `define ROTRI 5'b01011
 
-module controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_opcode, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
+module alu_controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_opcode, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
   parameter DataSize = 32;
   parameter AddrSize = 5;
 

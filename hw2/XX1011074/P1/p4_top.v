@@ -1,4 +1,4 @@
-`include "controller.v"
+`include "alu_controller.v"
 `include "p3_top.v"
 
 module p4_top (instruction, clk, reset);
@@ -10,7 +10,7 @@ module p4_top (instruction, clk, reset);
   input clk;
   input reset;
   
-  // controller
+  // alu_controller
   wire enable_execute;
   wire enable_fetch;
   wire enable_writeback;
@@ -33,7 +33,7 @@ module p4_top (instruction, clk, reset);
   // alu
   wire alu_overflow;
 
-  controller conrtoller1 (
+  alu_controller alu_conrtoller1 (
     .enable_execute(enable_execute),
     .enable_fetch(enable_fetch),
     .enable_writeback(enable_writeback),
