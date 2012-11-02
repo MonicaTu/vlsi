@@ -555,7 +555,7 @@ top TOP(
   imm_15bit='d100;
   imm_20bit='d00;
   //mux
-  mux4to1_select=imm15bitSE;
+  mux4to1_select=imm15bitZE;
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
@@ -598,7 +598,7 @@ top TOP(
   imm_15bit='d100;
   imm_20bit='d0;
   //mux
-  mux4to1_select=imm15bitSE;
+  mux4to1_select=imm15bitZE;
   mux2to1_select=aluResult;
   imm_reg_select=immOut;
   //ALU
