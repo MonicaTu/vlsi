@@ -1,25 +1,29 @@
+`include "IM.v"
+`include "pc_tick.v"
 `include "ir_controller.v"
 `include "p3_top.v"
 
-module p4_top (instruction, clk, reset);
+module p4_top (clk, reset);
   parameter DataSize = 32;
+  parameter MemSize  = 10;
   parameter AddrSize = 5;
 
   // top
-  input [DataSize-1:0]instruction;
   input clk;
   input reset;
   
   // ir_controller
+  wire [DataSize-1:0] instruction; 
   wire enable_alu_execute;
   wire enable_reg_read;
   wire enable_reg_write;
-  wire [5:0]opcode;
-  wire [4:0]sub_opcode;
-  wire [1:0]mux4to1_select;
+  wire [5:0] opcode;
+  wire [4:0] sub_opcode;
+  wire [1:0] mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;
-  wire [31:0] PC;
+  wire [MemSize-1:0] PC;
+  wire [127:0] tick;
   
   /* p3_top */
   // regfile
@@ -32,6 +36,28 @@ module p4_top (instruction, clk, reset);
   wire [19:0]imm_20bit = instruction[19:0];
   // alu
   wire alu_overflow;
+  
+  // FIXME: for test
+  reg enable_mem_fetch = 1;
+  reg enable_mem_write = 0;
+  reg enable_mem = 1;
+  reg [DataSize-1:0] mem_data_in;
+  
+  IM IM1 (
+    .clk(clk), 
+    .rst(reset), 
+    .IM_address(PC), 
+    .enable_fetch(enable_mem_fetch), 
+    .enable_write(enable_mem_write), 
+    .enable_mem(enable_mem), 
+    .IMin(mem_data_in), 
+    .IMout(instruction));
+
+  pc_tick pc_tick1 (
+    .clock(clk), 
+    .reset(reset), 
+    .pc(PC), 
+    .tick(tick));
 
   ir_controller ir_conrtoller1 (
     .enable_alu_execute(enable_alu_execute),
