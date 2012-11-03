@@ -42,7 +42,7 @@ module top_tb;
   #(`PERIOD*4);
   reset = 1'b0;
     
-  $readmemb("mins1.prog", TOP.p4.IM1.mem_data);
+  $readmemb("mins.prog", TOP.p4.IM1.mem_data);
   for (i = 0; i < MemSize; i = i+1) begin
     if (TOP.p4.IM1.mem_data[i])
       $display("memdata[%d]: %h", i, TOP.p4.IM1.mem_data[i]); 
@@ -72,6 +72,7 @@ module top_tb;
 
   #(`PERIOD*1.5)
   #(`PERIOD*4)
+/*
   #(`PERIOD*4) //ADDI
   tb_rw_reg_0 = 32'b01101;
   golden_reg[0] = 32'b01101;
@@ -146,7 +147,7 @@ module top_tb;
   if (tb_rw_reg_1 != TOP.p4.p3.regfile1.rw_reg_1)
     err_num = err_num + 1;
   end
-
+*/
   /* Dump and finish */
   initial begin
   $dumpfile("top_tb.vcd");
