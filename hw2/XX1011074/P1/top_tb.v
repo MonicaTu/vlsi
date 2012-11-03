@@ -42,7 +42,7 @@ module top_tb;
   #(`PERIOD*4);
   reset = 1'b0;
     
-  $readmemb("top_tb.prog", TOP.p4.IM1.mem_data);
+  $readmemb("mins1.prog", TOP.p4.IM1.mem_data);
   for (i = 0; i < MemSize; i = i+1) begin
     if (TOP.p4.IM1.mem_data[i])
       $display("memdata[%d]: %h", i, TOP.p4.IM1.mem_data[i]); 
