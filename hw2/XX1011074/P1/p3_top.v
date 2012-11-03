@@ -64,20 +64,20 @@ module p3_top(clk, rst, read_address1, read_address2, write_address, enable_reg_
     .enable_execute(enable_alu_execute),
     .reset(rst));
 
-  mux4to1_select_mux MUX4TO1_SELECT_MUX (
+  mux4to1_select_mux mux4to1_select_mux1 (
     .mux4to1_out(mux4to1_out),
     .imm_5bit(imm_5bit),
     .imm_15bit(imm_15bit),
     .imm_20bit(imm_20bit),
     .mux4to1_select(mux4to1_select));
 
-  imm_reg_select_mux IMM_REG_SELECT_MUX (
+  imm_reg_select_mux imm_reg_select_mux1 (
     .imm_reg_out(imm_reg_out),
     .mux4to1_out(mux4to1_out),
     .read_data2(read_data2), 
     .imm_reg_select(imm_reg_select));
 
-  writeback_select_mux WRITEBACK_SELECT_MUX (
+  writeback_select_mux writeback_select_mux1 (
     .write_data(write_data),
     .imm_reg_out(imm_reg_out),
     .alu_result(alu_result),
