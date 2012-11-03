@@ -5,7 +5,7 @@
 `include "writeback_select_mux.v"
 
 // according to spec 
-module p3_top(clk, rst, read_address1, read_address2, write_address, enable_fetch, enable_writeback, imm_5bit, imm_15bit, imm_20bit, mux4to1_select, mux2to1_select, imm_reg_select, enable_execute, opcode, sub_opcode, alu_overflow);
+module p3_top(clk, rst, read_address1, read_address2, write_address, enable_reg_read, enable_reg_write, imm_5bit, imm_15bit, imm_20bit, mux4to1_select, mux2to1_select, imm_reg_select, enable_alu_execute, opcode, sub_opcode, alu_overflow);
   
   parameter DataSize = 32;
   parameter AddrSize = 5;
@@ -16,8 +16,8 @@ module p3_top(clk, rst, read_address1, read_address2, write_address, enable_fetc
   input [AddrSize-1:0]read_address1;
   input [AddrSize-1:0]read_address2;
   input [AddrSize-1:0]write_address;
-  input enable_fetch;
-  input enable_writeback;
+  input enable_reg_read;
+  input enable_reg_write;
   //imm_sel
   input [4:0]imm_5bit;
   input [14:0]imm_15bit;
@@ -27,7 +27,7 @@ module p3_top(clk, rst, read_address1, read_address2, write_address, enable_fetc
   input mux2to1_select; // writeback_select
   input imm_reg_select;
   //ALU
-  input enable_execute;
+  input enable_alu_execute;
   input [5:0]opcode;
   input [4:0]sub_opcode;
   output alu_overflow;
@@ -51,8 +51,8 @@ module p3_top(clk, rst, read_address1, read_address2, write_address, enable_fetc
     .write_data(write_data),
     .clk(clk),
     .reset(rst),
-    .read(enable_fetch),
-    .write(enable_writeback));
+    .read(enable_reg_read),
+    .write(enable_reg_write));
 
   alu32 alu1 ( 
     .alu_result(alu_result),
@@ -61,7 +61,7 @@ module p3_top(clk, rst, read_address1, read_address2, write_address, enable_fetc
     .scr2(imm_reg_out),
     .opcode(opcode),
     .sub_opcode(sub_opcode),
-    .enable_execute(enable_execute),
+    .enable_execute(enable_alu_execute),
     .reset(rst));
 
   mux4to1_select_mux MUX4TO1_SELECT_MUX (

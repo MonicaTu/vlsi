@@ -1,10 +1,4 @@
-`define OPCODE ir[30:25]
-`define SUBOPCODE ir[4:0]
-`define SRLI 5'b01001
-`define SLLI 5'b01000
-`define ROTRI 5'b01011
-
-module ir_controller(enable_execute, enable_fetch, enable_writeback, opcode, sub_opcode, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
+module ir_controller(enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
   parameter DataSize = 32;
   parameter AddrSize = 5;
 
@@ -14,9 +8,9 @@ module ir_controller(enable_execute, enable_fetch, enable_writeback, opcode, sub
   input [DataSize-1:0] PC;
   input [DataSize-1:0] ir;
 
-  output reg enable_execute;
-  output reg enable_fetch;
-  output reg enable_writeback;
+  output reg enable_alu_execute;
+  output reg enable_reg_read;
+  output reg enable_reg_write;
   output [5:0] opcode;
   output [4:0] sub_opcode;
   output reg [1:0] mux4to1_select;
@@ -63,27 +57,27 @@ module ir_controller(enable_execute, enable_fetch, enable_writeback, opcode, sub
     case(current_state)
     stopState : begin
       next_state <= fetchState;
-      enable_fetch <= 0;
-      enable_execute <= 0;
-      enable_writeback <= 0;
+      enable_reg_read <= 0;
+      enable_alu_execute <= 0;
+      enable_reg_write <= 0;
     end
     fetchState : begin
       next_state <= exeState;
-      enable_fetch <= 1;
-      enable_execute <= 0;
-      enable_writeback <= 0;
+      enable_reg_read <= 1;
+      enable_alu_execute <= 0;
+      enable_reg_write <= 0;
     end
     exeState : begin
       next_state <= writeState;
-      enable_fetch <= 0;
-      enable_execute <= 1;
-      enable_writeback <= 0;
+      enable_reg_read <= 0;
+      enable_alu_execute <= 1;
+      enable_reg_write <= 0;
     end
     writeState : begin
       next_state <= stopState;
-      enable_fetch <= 0;
-      enable_execute <= 0;
-      enable_writeback <= 1;
+      enable_reg_read <= 0;
+      enable_alu_execute <= 0;
+      enable_reg_write <= 1;
     end
     endcase
 
@@ -123,7 +117,8 @@ module ir_controller(enable_execute, enable_fetch, enable_writeback, opcode, sub
     endcase
   end
 
-  always @(posedge enable_fetch)
+  // FIXME
+  always @(posedge enable_reg_read)
   begin
     if(PC == 0)
       present_instruction <= 0;

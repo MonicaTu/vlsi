@@ -11,9 +11,9 @@ module p4_top (instruction, clk, reset);
   input reset;
   
   // ir_controller
-  wire enable_execute;
-  wire enable_fetch;
-  wire enable_writeback;
+  wire enable_alu_execute;
+  wire enable_reg_read;
+  wire enable_reg_write;
   wire [5:0]opcode;
   wire [4:0]sub_opcode;
   wire [1:0]mux4to1_select;
@@ -34,9 +34,9 @@ module p4_top (instruction, clk, reset);
   wire alu_overflow;
 
   ir_controller ir_conrtoller1 (
-    .enable_execute(enable_execute),
-    .enable_fetch(enable_fetch),
-    .enable_writeback(enable_writeback),
+    .enable_alu_execute(enable_alu_execute),
+    .enable_reg_read(enable_reg_read),
+    .enable_reg_write(enable_reg_write),
     .opcode(opcode),
     .sub_opcode(sub_opcode),
     .mux4to1_select(mux4to1_select),
@@ -53,15 +53,15 @@ module p4_top (instruction, clk, reset);
     .read_address1(read_address1),
     .read_address2(read_address2),
     .write_address(write_address),
-    .enable_fetch(enable_fetch),
-    .enable_writeback(enable_writeback),
+    .enable_reg_read(enable_reg_read),
+    .enable_reg_write(enable_reg_write),
     .imm_5bit(imm_5bit),
     .imm_15bit(imm_15bit),
     .imm_20bit(imm_20bit),
     .mux4to1_select(mux4to1_select),
     .mux2to1_select(writeback_select),
     .imm_reg_select(imm_reg_select),
-    .enable_execute(enable_execute),
+    .enable_alu_execute(enable_alu_execute),
     .opcode(opcode),
     .sub_opcode(sub_opcode),
     .alu_overflow(alu_overflow));
