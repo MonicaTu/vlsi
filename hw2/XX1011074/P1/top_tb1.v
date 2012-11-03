@@ -142,11 +142,64 @@ module top_tb1;
   if (tb_rw_reg_0 != TOP.p4.p3.regfile1.rw_reg_0)
     err_num = err_num + 1;
   
-  #(`PERIOD*4); //IDEL
+  #(`PERIOD*4); // ADD
+  tb_rw_reg_2 = 32'h38;
+  golden_reg[2] = 32'h38;
   if (tb_rw_reg_1 != TOP.p4.p3.regfile1.rw_reg_1)
     err_num = err_num + 1;
+  
+  #(`PERIOD*4); // SUB
+  tb_rw_reg_1 = 32'h06;
+  golden_reg[1] = 32'h06;
+  if (tb_rw_reg_2 != TOP.p4.p3.regfile1.rw_reg_2)
+    err_num = err_num + 1;
+  
+  #(`PERIOD*4); // AND
+  tb_rw_reg_3 = 32'h00;
+  golden_reg[3] = 32'h00;
+  if (tb_rw_reg_1 != TOP.p4.p3.regfile1.rw_reg_1)
+    err_num = err_num + 1;
+  
+  #(`PERIOD*4); // ADDI
+  tb_rw_reg_4 = 32'h64;
+  golden_reg[4] = 32'h64;
+  if (tb_rw_reg_3 != TOP.p4.p3.regfile1.rw_reg_3)
+    err_num = err_num + 1;
+  
+  #(`PERIOD*4); // MOVI
+  tb_rw_reg_5 = 32'h12C;
+  golden_reg[5] = 32'h12C;
+  if (tb_rw_reg_4 != TOP.p4.p3.regfile1.rw_reg_4)
+    err_num = err_num + 1;
+  
+  #(`PERIOD*4); // XOR
+  tb_rw_reg_6 = 32'h148;
+  golden_reg[6] = 32'h148;
+  if (tb_rw_reg_5 != TOP.p4.p3.regfile1.rw_reg_5)
+    err_num = err_num + 1;
+  
+  #(`PERIOD*4); // ORI
+  tb_rw_reg_7 = 32'h15D;
+  golden_reg[7] = 32'h15D;
+  if (tb_rw_reg_6 != TOP.p4.p3.regfile1.rw_reg_6)
+    err_num = err_num + 1;
+  
+  #(`PERIOD*4); // ROTI
+  tb_rw_reg_8 = 32'hD0000000;
+  golden_reg[8] = 32'hD0000000;
+  if (tb_rw_reg_7 != TOP.p4.p3.regfile1.rw_reg_7)
+    err_num = err_num + 1;
+  
+  #(`PERIOD*4); // SUB
+  tb_rw_reg_0 = 32'hCFFFFEA3;
+  golden_reg[0] = 32'hCFFFFEA3;
+  if (tb_rw_reg_8 != TOP.p4.p3.regfile1.rw_reg_8)
+    err_num = err_num + 1;
+  
+  #(`PERIOD*4); //IDEL
+  if (tb_rw_reg_0 != TOP.p4.p3.regfile1.rw_reg_0)
+    err_num = err_num + 1;
   end
-
   /* Dump and finish */
   initial begin
     $dumpfile("top_tb1.vcd");
