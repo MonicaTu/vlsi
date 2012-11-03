@@ -4,8 +4,10 @@
 module top_tb;
 
   parameter DataSize = 32;
+  parameter MemSize = 1024;
 
-  reg [DataSize-1:0]instruction;
+  reg [DataSize-1:0] instruction;
+  reg [DataSize-1:0] mem_data [0:MemSize-1];
   reg clk;
   reg reset;
   
@@ -33,26 +35,22 @@ top TOP (
   always begin
   	#(`PERIOD/2) clk = ~clk;
   end
+
+  initial begin
+    $readmemb("top_tb.prog", mem_data);
+  end
+
   /* Set signal */
   initial begin
   clk = 1'b0;
   #(`PERIOD) reset = 1'b0;
   #(`PERIOD) reset = 1'b1;  
   #(`PERIOD*2.5);
-  #(`PERIOD*4) instruction = 32'b0_101000_00000_00000_0000_0000_0001_101; // ADDI
+  #(`PERIOD*4) instruction = mem_data[0]; 
   reset = 1'b0;
-  #(`PERIOD*4) instruction = 32'b0_101000_00001_00001_0000_0000_0001_100; // ADDI
-  #(`PERIOD*4) instruction = 32'b0_100010_00010_0000_0000_0000_0001_0000; // MOVI
-  #(`PERIOD*4) instruction = 32'b0_100000_00011_00000_00001_00000_00000; // ADD
-  #(`PERIOD*4) instruction = 32'b0_100000_00100_00000_00001_00000_00001; // SUB
-  #(`PERIOD*4) instruction = 32'b0_100000_00101_00011_00100_00000_00010; // AND
-  #(`PERIOD*4) instruction = 32'b0_100000_00110_00011_00100_00000_00100; // OR
-  #(`PERIOD*4) instruction = 32'b0_100000_00111_00011_00100_00000_00011; // XOR
-  #(`PERIOD*4) instruction = 32'b0_100000_01000_00000_00100_00000_01000; // SLLI
-  #(`PERIOD*4) instruction = 32'b0_100000_01001_00001_01000_00000_01011; // ROTRI
-  #(`PERIOD*4) instruction = 32'b0_101100_00000_00000_0000_0000_0011_111; // ORI
-  #(`PERIOD*4) instruction = 32'b0_101011_00001_00001_0000_0000_0010_101; // XORI
-
+  for (i = 1; i < MemSize; i = i+1) begin
+    #(`PERIOD*4) instruction = mem_data[i]; 
+  end
   #(`PERIOD*4) $finish;
   end
 
