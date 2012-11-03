@@ -6,8 +6,6 @@ module top_tb;
   parameter DataSize = 32;
   parameter MemSize = 1024;
 
-  reg [DataSize-1:0] instruction;
-  reg [DataSize-1:0] mem_data [0:MemSize-1];
   reg clk;
   reg reset;
   
@@ -26,18 +24,13 @@ module top_tb;
   integer i;
   integer err_num;
 
-top TOP (
-  instruction,
-  clk,
-  reset
-);
+  top TOP (
+    clk,
+    reset
+  );
   
   always begin
   	#(`PERIOD/2) clk = ~clk;
-  end
-
-  initial begin
-    $readmemb("top_tb.prog", mem_data);
   end
 
   /* Set signal */
@@ -46,12 +39,16 @@ top TOP (
   #(`PERIOD) reset = 1'b0;
   #(`PERIOD) reset = 1'b1;  
   #(`PERIOD*2.5);
-  #(`PERIOD*4) instruction = mem_data[0]; 
+  #(`PERIOD*4);
   reset = 1'b0;
-  for (i = 1; i < MemSize; i = i+1) begin
-    #(`PERIOD*4) instruction = mem_data[i]; 
+    
+  $readmemb("top_tb.prog", TOP.p4.IM1.mem_data);
+  for (i = 0; i < MemSize; i = i+1) begin
+    if (TOP.p4.IM1.mem_data[i])
+      $display("memdata[%d]: %h", i, TOP.p4.IM1.mem_data[i]); 
   end
-  #(`PERIOD*4) $finish;
+
+  #(`PERIOD*4*20) $finish;
   end
 
   /* Create tb waveform */
