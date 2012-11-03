@@ -1,4 +1,4 @@
-module ir_controller(enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
+module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
   parameter MemSize = 10;
   parameter DataSize = 32;
   parameter AddrSize = 5;
@@ -9,6 +9,10 @@ module ir_controller(enable_alu_execute, enable_reg_read, enable_reg_write, opco
   input [MemSize-1:0] PC;
   input [DataSize-1:0] ir;
 
+  output reg enable_mem_fetch;
+  output reg enable_mem_write;
+  output reg enable_mem;
+  
   output reg enable_alu_execute;
   output reg enable_reg_read;
   output reg enable_reg_write;
@@ -58,24 +62,36 @@ module ir_controller(enable_alu_execute, enable_reg_read, enable_reg_write, opco
     case(current_state)
     stopState : begin
       next_state <= fetchState;
+      enable_mem <= 1;
+      enable_mem_fetch <= 1;
+      enable_mem_write <= 0;
       enable_reg_read <= 0;
       enable_alu_execute <= 0;
       enable_reg_write <= 0;
     end
     fetchState : begin
       next_state <= exeState;
+      enable_mem <= 1;
+      enable_mem_fetch <= 1;
+      enable_mem_write <= 0;
       enable_reg_read <= 1;
       enable_alu_execute <= 0;
       enable_reg_write <= 0;
     end
     exeState : begin
       next_state <= writeState;
+      enable_mem <= 1;
+      enable_mem_fetch <= 1;
+      enable_mem_write <= 0;
       enable_reg_read <= 0;
       enable_alu_execute <= 1;
       enable_reg_write <= 0;
     end
     writeState : begin
       next_state <= stopState;
+      enable_mem <= 1;
+      enable_mem_fetch <= 1;
+      enable_mem_write <= 0;
       enable_reg_read <= 0;
       enable_alu_execute <= 0;
       enable_reg_write <= 1;
@@ -86,15 +102,15 @@ module ir_controller(enable_alu_execute, enable_reg_read, enable_reg_write, opco
 
     case(opcode)
       6'b100000 : begin
-            if (sub_opcode == SRLI | sub_opcode == SLLI | sub_opcode == ROTRI) begin
-    		mux4to1_select <= imm5bitZE; 
-    		imm_reg_select <= immOut;
-	    end
-	    else begin
-    		mux4to1_select <= imm5bitZE; 
-    		imm_reg_select <= regOut;
-            end
-	    end
+              if (sub_opcode == SRLI | sub_opcode == SLLI | sub_opcode == ROTRI) begin
+    	        	mux4to1_select <= imm5bitZE; 
+    	        	imm_reg_select <= immOut;
+	            end
+	            else begin
+    	        	mux4to1_select <= imm5bitZE; 
+    	        	imm_reg_select <= regOut;
+              end
+	          end
       6'b101000 : begin
               mux4to1_select <= imm15bitSE;
       	      imm_reg_select <= immOut;
