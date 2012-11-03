@@ -8,6 +8,11 @@ pc_tick:
 	./a.out
 	gtkwave pc_tick_tb.vcd
 
+IM:
+	iverilog IM_tb.v IM.v 
+	./a.out
+
 clean:
-	rm a.out top_tb.vcd
-	rm a.out pc_tick_tb.vcd
+	rm a.out
+	rm top_tb.vcd
+	rm pc_tick_tb.vcd
