@@ -14,9 +14,9 @@ module p4_top (clk, reset);
   
   // ir_controller
   wire [DataSize-1:0] instruction; 
-  wire enable_mem_fetch = 1;
-  wire enable_mem_write = 0;
-  wire enable_mem = 1;
+  wire enable_mem_fetch;
+  wire enable_mem_write;
+  wire enable_mem;
   wire enable_alu_execute;
   wire enable_reg_read;
   wire enable_reg_write;
