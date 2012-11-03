@@ -1,11 +1,12 @@
 module ir_controller(enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
+  parameter MemSize = 10;
   parameter DataSize = 32;
   parameter AddrSize = 5;
 
   /* top */
   input clock;
   input reset;
-  input [DataSize-1:0] PC;
+  input [MemSize-1:0] PC;
   input [DataSize-1:0] ir;
 
   output reg enable_alu_execute;
@@ -19,12 +20,12 @@ module ir_controller(enable_alu_execute, enable_reg_read, enable_reg_write, opco
   
   /* module */
   //ALU
-  wire [5:0] opcode = ir[30:25];
-  wire [4:0] sub_opcode = ir[4:0];
+  wire [5:0] opcode = present_instruction[30:25];
+  wire [4:0] sub_opcode = present_instruction[4:0];
   //register
-  wire [AddrSize-1:0]read_address1 = ir[19:15];
-  wire [AddrSize-1:0]read_address2 = ir[14:10];
-  wire [AddrSize-1:0]write_address = ir[24:20];
+  wire [AddrSize-1:0]read_address1 = present_instruction[19:15];
+  wire [AddrSize-1:0]read_address2 = present_instruction[14:10];
+  wire [AddrSize-1:0]write_address = present_instruction[24:20];
 
   /* others */
   reg [1:0] current_state;
@@ -118,12 +119,16 @@ module ir_controller(enable_alu_execute, enable_reg_read, enable_reg_write, opco
   end
 
   // FIXME
-  always @(posedge enable_reg_read)
+//  always @(posedge enable_reg_read)
+  always @(posedge clock)
   begin
     if(PC == 0)
       present_instruction <= 0;
     else
       present_instruction <= ir;
+      
+    if (ir)
+      $display("(%d) %h:%h", PC, ir, present_instruction);
   end
 
 endmodule
