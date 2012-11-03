@@ -45,7 +45,7 @@ module ir_controller(enable_alu_execute, enable_reg_read, enable_reg_write, opco
   // imm_reg_select
   parameter regOut = 1'b0, immOut = 1'b1;
 
-  always @(posedge clock)
+  always @(negedge clock)
   begin
     if(reset)
       current_state <= stopState;
@@ -119,12 +119,13 @@ module ir_controller(enable_alu_execute, enable_reg_read, enable_reg_write, opco
   end
 
   // FIXME
-//  always @(posedge enable_reg_read)
-  always @(posedge clock)
+//  always @(negedge enable_reg_read)
+  always @(negedge clock)
   begin
-    if(PC == 0)
-      present_instruction <= 0;
-    else
+  // FIXME
+//    if(PC == 0)
+//      present_instruction <= 0;
+//    else
       present_instruction <= ir;
       
     if (ir)
