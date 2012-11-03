@@ -14,6 +14,9 @@ module p4_top (clk, reset);
   
   // ir_controller
   wire [DataSize-1:0] instruction; 
+  wire enable_mem_fetch = 1;
+  wire enable_mem_write = 0;
+  wire enable_mem = 1;
   wire enable_alu_execute;
   wire enable_reg_read;
   wire enable_reg_write;
@@ -38,9 +41,6 @@ module p4_top (clk, reset);
   wire alu_overflow;
   
   // FIXME: for test
-  reg enable_mem_fetch = 1;
-  reg enable_mem_write = 0;
-  reg enable_mem = 1;
   reg [DataSize-1:0] mem_data_in;
   
   IM IM1 (
@@ -60,6 +60,9 @@ module p4_top (clk, reset);
     .tick(tick));
 
   ir_controller ir_conrtoller1 (
+    .enable_mem_fetch(enable_mem_fetch), 
+    .enable_mem_write(enable_mem_write), 
+    .enable_mem(enable_mem), 
     .enable_alu_execute(enable_alu_execute),
     .enable_reg_read(enable_reg_read),
     .enable_reg_write(enable_reg_write),
