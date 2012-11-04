@@ -95,6 +95,8 @@ module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_
       enable_reg_read <= 0;
       enable_alu_execute <= 0;
       enable_reg_write <= 1;
+      if (sub_opcode == SRLI && read_address2 == 5'b0) // NOP
+        enable_reg_write <= 0;
     end
     endcase
 
