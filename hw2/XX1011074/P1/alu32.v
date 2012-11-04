@@ -51,8 +51,9 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,
                                 if(scr2!=0)begin 
                                   alu_overflow=1'b0;
                                   alu_result=scr1>>scr2;
-				end
-				else begin
+				                      end
+                    //NOP   :
+				                      else begin
                                   alu_result=32'b0;
                                   alu_overflow=1'b0;
                                 end
