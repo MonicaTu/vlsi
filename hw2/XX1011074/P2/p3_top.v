@@ -107,7 +107,7 @@ module p3_top(clk, rst, read_address1, read_address2, write_address, enable_dm_f
 
   writeback_select_mux writeback_select_mux1 (
     .write_data(reg_write_data),
-    .DMout(DMout),
+    .DMout(DM1.mem_data[alu12_result]),
     .alu_result(alu32_result),
     .mux2to1_select(mux2to1_select));
 
