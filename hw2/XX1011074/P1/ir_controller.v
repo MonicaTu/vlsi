@@ -22,16 +22,11 @@ module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_
   output reg writeback_select;
   output reg imm_reg_select;
   
-  /* module */
-  //ALU
+  /* internal */
   wire [5:0] opcode = present_instruction[30:25];
   wire [4:0] sub_opcode = present_instruction[4:0];
-  //register
-  wire [AddrSize-1:0]read_address1 = present_instruction[19:15];
-  wire [AddrSize-1:0]read_address2 = present_instruction[14:10];
-  wire [AddrSize-1:0]write_address = present_instruction[24:20];
+  wire [AddrSize-1:0] imm5ZE = present_instruction[14:10];
 
-  /* others */
   reg [1:0] current_state;
   reg [1:0] next_state;
   reg [DataSize-1:0] present_instruction;
@@ -43,11 +38,11 @@ module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_
   // state
   parameter stopState = 2'b00, fetchState = 2'b01, exeState = 2'b10, writeState =  2'b11;
   // mux4to1_select
-  parameter imm5bitZE = 2'b00, imm15bitSE = 2'b01, imm15bitZE = 2'b10, imm20bitSE =  2'b11;
+  parameter sel_imm5ZE = 2'b00, sel_imm15SE = 2'b01, sel_imm15ZE = 2'b10, sel_imm20SE =  2'b11;
   // writeback_select
-  parameter aluResult = 1'b0, scr2Out = 1'b1; 
+  parameter sel_aluResult = 1'b0, sel_src2Out = 1'b1; 
   // imm_reg_select
-  parameter regOut = 1'b0, immOut = 1'b1;
+  parameter sel_regOut = 1'b0, sel_immOut = 1'b1;
 
   always @(negedge clock)
   begin
@@ -95,43 +90,43 @@ module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_
       enable_reg_read <= 0;
       enable_alu_execute <= 0;
       enable_reg_write <= 1;
-      if (sub_opcode == SRLI && read_address2 == 5'b0) // NOP
+      if (sub_opcode == SRLI && imm5ZE == 5'b0) // NOP
         enable_reg_write <= 0;
     end
     endcase
 
-    writeback_select <= (opcode == 6'b100010) ? scr2Out : aluResult;
+    writeback_select <= (opcode == 6'b100010) ? sel_src2Out : sel_aluResult;
 
     case(opcode)
       6'b100000 : begin
               if (sub_opcode == SRLI | sub_opcode == SLLI | sub_opcode == ROTRI) begin
-    	        	mux4to1_select <= imm5bitZE; 
-    	        	imm_reg_select <= immOut;
+    	        	mux4to1_select <= sel_imm5ZE; 
+    	        	imm_reg_select <= sel_immOut;
 	            end
 	            else begin
-    	        	mux4to1_select <= imm5bitZE; 
-    	        	imm_reg_select <= regOut;
+    	        	mux4to1_select <= sel_imm5ZE; 
+    	        	imm_reg_select <= sel_regOut;
               end
 	          end
       6'b101000 : begin
-              mux4to1_select <= imm15bitSE;
-      	      imm_reg_select <= immOut;
+              mux4to1_select <= sel_imm15SE;
+      	      imm_reg_select <= sel_immOut;
       	    end
       6'b101100 : begin
-      	      mux4to1_select <= imm15bitZE;
-      	      imm_reg_select <= immOut;
+      	      mux4to1_select <= sel_imm15ZE;
+      	      imm_reg_select <= sel_immOut;
       	    end
       6'b101011 : begin
-      	      mux4to1_select <= imm15bitZE;
-      	      imm_reg_select <= immOut;
+      	      mux4to1_select <= sel_imm15ZE;
+      	      imm_reg_select <= sel_immOut;
       	    end
       6'b100010 : begin
-      	      mux4to1_select <= imm20bitSE;
-      	      imm_reg_select <= immOut;
+      	      mux4to1_select <= sel_imm20SE;
+      	      imm_reg_select <= sel_immOut;
       	    end
       default   : begin 
-    	      mux4to1_select <= imm5bitZE; 
-    	      imm_reg_select <= regOut;
+    	      mux4to1_select <= sel_imm5ZE; 
+    	      imm_reg_select <= sel_regOut;
     	    end
     endcase
   end
