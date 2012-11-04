@@ -1,4 +1,4 @@
-module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
+module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
   parameter MemSize = 10;
   parameter DataSize = 32;
   parameter AddrSize = 5;
@@ -17,24 +17,35 @@ module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_
   output reg enable_reg_read;
   output reg enable_reg_write;
   output [5:0] opcode;
-  output [4:0] sub_opcode;
+  output [4:0] sub_opcode_5bit;
+  output [7:0] sub_opcode_8bit;
   output reg [1:0] mux4to1_select;
   output reg writeback_select;
   output reg imm_reg_select;
   
   /* internal */
   wire [5:0] opcode = present_instruction[30:25];
-  wire [4:0] sub_opcode = present_instruction[4:0];
+  wire [4:0] sub_opcode_5bit = present_instruction[4:0];
+  wire [7:0] sub_opcode_8bit = present_instruction[7:0];
   wire [AddrSize-1:0] imm5ZE = present_instruction[14:10];
 
   reg [1:0] current_state;
   reg [1:0] next_state;
   reg [DataSize-1:0] present_instruction;
 
-  // sub_opcode
-  parameter NOP=5'b01001,ADD=5'b00000,SUB=5'b00001,AND=5'b00010,
-            OR=5'b00100,XOR=5'b00011,SRLI=5'b01001,SLLI=5'b01000,
+  // op & sub_op
+  parameter TYPE_BASIC=6'b100000;
+  parameter NOP=5'b01001, ADD=5'b00000, SUB=5'b00001, AND=5'b00010,
+            OR=5'b00100, XOR=5'b00011, SRLI=5'b01001, SLLI=5'b01000,
             ROTRI=5'b01011;
+
+  parameter ADDI=6'b101000, ORI=6'b101100, XORI=6'b101011, LWI=6'b000010, SWI=6'b001010;
+
+  parameter MOVI=6'b100010;
+
+  parameter TYPE_LS=6'b011100;
+  parameter LW=8'b00000010, SW=8'b00001010;
+
   // state
   parameter stopState = 2'b00, fetchState = 2'b01, exeState = 2'b10, writeState =  2'b11;
   // mux4to1_select
@@ -89,46 +100,64 @@ module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_
       enable_mem_write <= 0;
       enable_reg_read <= 0;
       enable_alu_execute <= 0;
-      if (opcode == 6'b100000 && sub_opcode == SRLI && imm5ZE == 5'b0) // NOP
+      if (opcode == TYPE_BASIC && sub_opcode_5bit == SRLI && imm5ZE == 5'b0) // NOP
         enable_reg_write <= 0;
       else
         enable_reg_write <= 1;
     end
     endcase
 
-    writeback_select <= (opcode == 6'b100010) ? sel_src2Out : sel_aluResult;
+    writeback_select <= (opcode == MOVI) ? sel_src2Out : sel_aluResult;
 
     case(opcode)
-      6'b100000 : begin
-              if (sub_opcode == SRLI | sub_opcode == SLLI | sub_opcode == ROTRI) begin
-    	        	mux4to1_select <= sel_imm5ZE; 
-    	        	imm_reg_select <= sel_immOut;
-	            end
-	            else begin
-    	        	mux4to1_select <= sel_imm5ZE; 
-    	        	imm_reg_select <= sel_regOut;
-              end
-	          end
-      6'b101000 : begin
-              mux4to1_select <= sel_imm15SE;
-      	      imm_reg_select <= sel_immOut;
-      	    end
-      6'b101100 : begin
-      	      mux4to1_select <= sel_imm15ZE;
-      	      imm_reg_select <= sel_immOut;
-      	    end
-      6'b101011 : begin
-      	      mux4to1_select <= sel_imm15ZE;
-      	      imm_reg_select <= sel_immOut;
-      	    end
-      6'b100010 : begin
+      TYPE_BASIC : begin
+               if (sub_opcode_5bit == SRLI | sub_opcode_5bit == SLLI | sub_opcode_5bit == ROTRI) begin
+    	         	mux4to1_select <= sel_imm5ZE; 
+    	         	imm_reg_select <= sel_immOut;
+	             end
+	             else begin
+    	         	mux4to1_select <= sel_imm5ZE; 
+    	         	imm_reg_select <= sel_regOut;
+               end
+	           end
+      ADDI : begin
+               mux4to1_select <= sel_imm15SE;
+      	       imm_reg_select <= sel_immOut;
+      	     end
+      ORI  : begin
+      	       mux4to1_select <= sel_imm15ZE;
+      	       imm_reg_select <= sel_immOut;
+      	     end
+      XORI : begin
+      	       mux4to1_select <= sel_imm15ZE;
+      	       imm_reg_select <= sel_immOut;
+      	     end
+      LWI  : begin
+//               mux4to1_select <= sel_imm15ZE;
+//               imm_reg_select <= sel_immOut;
+      	     end
+      SWI  : begin
+//               mux4to1_select <= sel_imm15ZE;
+//               imm_reg_select <= sel_immOut;
+      	     end
+      MOVI : begin
       	      mux4to1_select <= sel_imm20SE;
       	      imm_reg_select <= sel_immOut;
-      	    end
-      default   : begin 
-    	      mux4to1_select <= sel_imm5ZE; 
-    	      imm_reg_select <= sel_regOut;
-    	    end
+      	     end
+      TYPE_LS : case (sub_opcode_8bit)
+                  LW : begin
+//                        mux4to1_select <= sel_imm20SE;
+//                        imm_reg_select <= sel_immOut;
+                       end
+                  SW : begin
+//                        mux4to1_select <= sel_imm20SE;
+//                        imm_reg_select <= sel_immOut;
+                       end
+                endcase
+      default : begin 
+    	        mux4to1_select <= sel_imm5ZE; 
+    	        imm_reg_select <= sel_regOut;
+    	       end
     endcase
   end
 

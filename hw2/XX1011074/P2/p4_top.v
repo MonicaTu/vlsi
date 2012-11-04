@@ -21,7 +21,8 @@ module p4_top (clk, reset);
   wire enable_reg_read;
   wire enable_reg_write;
   wire [5:0] opcode;
-  wire [4:0] sub_opcode;
+  wire [4:0] sub_opcode_5bit;
+  wire [7:0] sub_opcode_8bit;
   wire [1:0] mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;
@@ -67,7 +68,8 @@ module p4_top (clk, reset);
     .enable_reg_read(enable_reg_read),
     .enable_reg_write(enable_reg_write),
     .opcode(opcode),
-    .sub_opcode(sub_opcode),
+    .sub_opcode_5bit(sub_opcode_5bit),
+    .sub_opcode_8bit(sub_opcode_8bit),
     .mux4to1_select(mux4to1_select),
     .writeback_select(writeback_select),
     .imm_reg_select(imm_reg_select),
@@ -92,7 +94,8 @@ module p4_top (clk, reset);
     .imm_reg_select(imm_reg_select),
     .enable_alu_execute(enable_alu_execute),
     .opcode(opcode),
-    .sub_opcode(sub_opcode),
+    .sub_opcode_5bit(sub_opcode_5bit),
+    .sub_opcode_8bit(sub_opcode_8bit),
     .alu_overflow(alu_overflow));
 
 endmodule
