@@ -1,4 +1,4 @@
-module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit, sub_opcode_8bit ,enable_execute,reset);
+module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit, enable_execute,reset);
   parameter TYPE_BASIC=6'b100000;
   parameter NOP=5'b01001, ADD=5'b00000, SUB=5'b00001, AND=5'b00010,
             OR=5'b00100, XOR=5'b00011, SRLI=5'b01001, SLLI=5'b01000,
@@ -17,7 +17,6 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit, sub_opcod
   input [31:0]scr1,scr2;
   input [5:0]opcode;
   input [4:0]sub_opcode_5bit;
-  input [7:0]sub_opcode_8bit;
   input reset;
   input enable_execute;
   
@@ -91,29 +90,10 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit, sub_opcod
                        alu_overflow=1'b0;
                        alu_result=scr1^scr2;
                      end
-        LWI        : begin
-//                       alu_overflow=1'b0;
-//                       alu_result=scr1^scr2;
-                     end
-        SWI        : begin
-//                       alu_overflow=1'b0;
-//                       alu_result=scr1^scr2;
-                     end
         MOVI       : begin
                        alu_overflow=1'b0;
                        alu_result[31:0]=scr2[31:0];
                      end
-        TYPE_LS    : case (sub_opcode_8bit)
-                       LW : begin
-//                              {a,alu_result[30:0]}=scr1[30:0]+scr2[30:0];
-//                              {b,alu_result[31]}=scr1[31]+scr2[31]+a;
-                            end
-                       SW : begin
-//                             {a,alu_result[30:0]}=scr1[30:0]-scr2[30:0];
-//                             {b,alu_result[31]}=scr1[31]-scr2[31]-a;
-//                             alu_overflow=a^b;
-                            end
-                     endcase
         default    : begin
                          alu_overflow=1'b0;
                          alu_result=32'b0;
