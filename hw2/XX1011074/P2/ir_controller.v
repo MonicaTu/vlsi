@@ -125,15 +125,28 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
       enable_im <= 0;
       enable_im_fetch <= 0;
       enable_im_write <= 0;
-      enable_reg_read <= 0;
-      enable_dm <= 1;
-      enable_dm_fetch <= 0;
-      enable_dm_write <= 1;
       enable_alu_execute <= 0;
-      if (opcode == TYPE_BASIC && sub_opcode_5bit == SRLI && imm5 == 5'b0) // NOP
+      if (opcode == TYPE_BASIC && sub_opcode_5bit == SRLI && imm5 == 5'b0) begin// NOP
+        enable_reg_read <= 0;
         enable_reg_write <= 0;
-      else
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end
+      else if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+        enable_reg_read <= 1;
+        enable_reg_write <= 0;
+        enable_dm <= 1;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 1;
+      end
+      else begin
+        enable_reg_read <= 0;
         enable_reg_write <= 1;
+        enable_dm <= 1;
+        enable_dm_fetch <= 1;
+        enable_dm_write <= 0;
+      end
     end
     endcase
 
