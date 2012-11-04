@@ -17,16 +17,16 @@ module regfile(read_data1, read_data2, read_address1, read_address2,
   integer i;
 
   // for test and debug  
-//  wire [DataSize-1:0]rw_reg_0 = rw_reg[0];
-//  wire [DataSize-1:0]rw_reg_1 = rw_reg[1];
-//  wire [DataSize-1:0]rw_reg_2 = rw_reg[2];
-//  wire [DataSize-1:0]rw_reg_3 = rw_reg[3];
-//  wire [DataSize-1:0]rw_reg_4 = rw_reg[4];
-//  wire [DataSize-1:0]rw_reg_5 = rw_reg[5];
-//  wire [DataSize-1:0]rw_reg_6 = rw_reg[6];
-//  wire [DataSize-1:0]rw_reg_7 = rw_reg[7];
-//  wire [DataSize-1:0]rw_reg_8 = rw_reg[8];
-//  wire [DataSize-1:0]rw_reg_9 = rw_reg[9];
+  wire [DataSize-1:0]rw_reg_0 = rw_reg[0];
+  wire [DataSize-1:0]rw_reg_1 = rw_reg[1];
+  wire [DataSize-1:0]rw_reg_2 = rw_reg[2];
+  wire [DataSize-1:0]rw_reg_3 = rw_reg[3];
+  wire [DataSize-1:0]rw_reg_4 = rw_reg[4];
+  wire [DataSize-1:0]rw_reg_5 = rw_reg[5];
+  wire [DataSize-1:0]rw_reg_6 = rw_reg[6];
+  wire [DataSize-1:0]rw_reg_7 = rw_reg[7];
+  wire [DataSize-1:0]rw_reg_8 = rw_reg[8];
+  wire [DataSize-1:0]rw_reg_9 = rw_reg[9];
 
   always@(posedge clk, posedge reset)begin
     if(reset)begin
