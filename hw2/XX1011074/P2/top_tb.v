@@ -72,7 +72,7 @@ module top_tb;
 
   #(`PERIOD*1.5);
   #(`PERIOD*4);
-
+/*
   #(`PERIOD*4); // MOVI R0=20'd4
   tb_rw_reg_0 = 32'h04;
   golden_reg[0] = 32'h04;
@@ -148,7 +148,7 @@ module top_tb;
   #(`PERIOD*4); //IDEL
   if (tb_rw_reg_2 != TOP.p4.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
-
+*/
   end
 
   /* Dump and finish */
