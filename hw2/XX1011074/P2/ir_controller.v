@@ -1,4 +1,4 @@
-module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
+module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im_write, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2, write_address, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
   parameter MemSize = 10;
   parameter DataSize = 32;
   parameter AddrSize = 5;
@@ -9,25 +9,43 @@ module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_
   input [MemSize-1:0] PC;
   input [DataSize-1:0] ir;
 
-  output reg enable_mem_fetch;
-  output reg enable_mem_write;
-  output reg enable_mem;
+  output reg enable_im_fetch;
+  output reg enable_im_write;
+  output reg enable_im;
+  output reg enable_dm_fetch;
+  output reg enable_dm_write;
+  output reg enable_dm;
   
   output reg enable_alu_execute;
   output reg enable_reg_read;
   output reg enable_reg_write;
-  output [5:0] opcode;
-  output [4:0] sub_opcode_5bit;
-  output [7:0] sub_opcode_8bit;
+
   output reg [1:0] mux4to1_select;
   output reg writeback_select;
   output reg imm_reg_select;
+
+  output [5:0] opcode;
+  output [4:0] sub_opcode_5bit;
+  output [7:0] sub_opcode_8bit;
+  output [1:0] sv; 
+  output [4:0]  imm5;
+  output [14:0] imm15;
+  output [19:0] imm20;
+  output [AddrSize-1:0]read_address1;
+  output [AddrSize-1:0]read_address2;
+  output [AddrSize-1:0]write_address;
   
   /* internal */
   wire [5:0] opcode = present_instruction[30:25];
   wire [4:0] sub_opcode_5bit = present_instruction[4:0];
   wire [7:0] sub_opcode_8bit = present_instruction[7:0];
-  wire [AddrSize-1:0] imm5ZE = present_instruction[14:10];
+  wire [1:0] sv = present_instruction[9:8]; 
+  wire [4:0]   imm5 = present_instruction[14:10];
+  wire [14:0] imm15 = present_instruction[14:0];
+  wire [19:0] imm20 = present_instruction[19:0];
+  wire [AddrSize-1:0]read_address1 = present_instruction[19:15];
+  wire [AddrSize-1:0]read_address2 = present_instruction[14:10];
+  wire [AddrSize-1:0]write_address = present_instruction[24:20];
 
   reg [1:0] current_state;
   reg [1:0] next_state;
@@ -51,7 +69,7 @@ module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_
   // mux4to1_select
   parameter sel_imm5ZE = 2'b00, sel_imm15SE = 2'b01, sel_imm15ZE = 2'b10, sel_imm20SE =  2'b11;
   // writeback_select
-  parameter sel_aluResult = 1'b0, sel_src2Out = 1'b1; 
+  parameter sel_aluResult = 1'b0, sel_DMout = 1'b1; 
   // imm_reg_select
   parameter sel_regOut = 1'b0, sel_immOut = 1'b1;
 
@@ -68,46 +86,58 @@ module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_
     case(current_state)
     stopState : begin
       next_state <= fetchState;
-      enable_mem <= 1;
-      enable_mem_fetch <= 1;
-      enable_mem_write <= 0;
+      enable_im <= 1;
+      enable_im_fetch <= 1;
+      enable_im_write <= 0;
+      enable_dm <= 0;
+      enable_dm_fetch <= 0;
+      enable_dm_write <= 0;
       enable_reg_read <= 0;
       enable_alu_execute <= 0;
       enable_reg_write <= 0;
     end
     fetchState : begin
       next_state <= exeState;
-      enable_mem <= 1;
-      enable_mem_fetch <= 1;
-      enable_mem_write <= 0;
+      enable_im <= 1;
+      enable_im_fetch <= 1;
+      enable_im_write <= 0;
+      enable_dm <= 0;
+      enable_dm_fetch <= 0;
+      enable_dm_write <= 0;
       enable_reg_read <= 1;
       enable_alu_execute <= 0;
       enable_reg_write <= 0;
     end
     exeState : begin
       next_state <= writeState;
-      enable_mem <= 1;
-      enable_mem_fetch <= 1;
-      enable_mem_write <= 0;
+      enable_im <= 0;
+      enable_im_fetch <= 0;
+      enable_im_write <= 0;
+      enable_dm <= 0;
+      enable_dm_fetch <= 0;
+      enable_dm_write <= 0;
       enable_reg_read <= 0;
       enable_alu_execute <= 1;
       enable_reg_write <= 0;
     end
     writeState : begin
       next_state <= stopState;
-      enable_mem <= 1;
-      enable_mem_fetch <= 1;
-      enable_mem_write <= 0;
+      enable_im <= 0;
+      enable_im_fetch <= 0;
+      enable_im_write <= 0;
       enable_reg_read <= 0;
+      enable_dm <= 1;
+      enable_dm_fetch <= 0;
+      enable_dm_write <= 1;
       enable_alu_execute <= 0;
-      if (opcode == TYPE_BASIC && sub_opcode_5bit == SRLI && imm5ZE == 5'b0) // NOP
+      if (opcode == TYPE_BASIC && sub_opcode_5bit == SRLI && imm5 == 5'b0) // NOP
         enable_reg_write <= 0;
       else
         enable_reg_write <= 1;
     end
     endcase
 
-    writeback_select <= (opcode == MOVI) ? sel_src2Out : sel_aluResult;
+    writeback_select <= (opcode == LWI | (opcode == TYPE_LS && sub_opcode_8bit == LW) ) ? sel_DMout : sel_aluResult;
 
     case(opcode)
       TYPE_BASIC : begin
@@ -133,12 +163,12 @@ module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_
       	       imm_reg_select <= sel_immOut;
       	     end
       LWI  : begin
-//               mux4to1_select <= sel_imm15ZE;
-//               imm_reg_select <= sel_immOut;
+               mux4to1_select <= sel_imm15ZE;
+               imm_reg_select <= sel_immOut; // FIXME
       	     end
       SWI  : begin
-//               mux4to1_select <= sel_imm15ZE;
-//               imm_reg_select <= sel_immOut;
+               mux4to1_select <= sel_imm15ZE;
+               imm_reg_select <= sel_immOut;
       	     end
       MOVI : begin
       	      mux4to1_select <= sel_imm20SE;
@@ -146,12 +176,12 @@ module ir_controller(enable_mem_fetch, enable_mem_write, enable_mem, enable_alu_
       	     end
       TYPE_LS : case (sub_opcode_8bit)
                   LW : begin
-//                        mux4to1_select <= sel_imm20SE;
-//                        imm_reg_select <= sel_immOut;
+                          mux4to1_select <= sel_imm5ZE;
+                          imm_reg_select <= sel_regOut; // FIXME
                        end
                   SW : begin
-//                        mux4to1_select <= sel_imm20SE;
-//                        imm_reg_select <= sel_immOut;
+    	                    mux4to1_select <= sel_imm5ZE; 
+                          imm_reg_select <= sel_regOut;
                        end
                 endcase
       default : begin 
