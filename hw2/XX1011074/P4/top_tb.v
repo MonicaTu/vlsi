@@ -9,6 +9,11 @@ module top_tb;
   reg clk;
   reg reset;
 
+  wire ROM_read;
+  wire ROM_enable;
+  wire [7:0]ROM_address;
+  wire [DataSize-1:0]ROM_dout;
+
   wire IM_read;
   wire IM_write;
   wire IM_enable;
@@ -40,6 +45,13 @@ module top_tb;
   integer i;
   integer err_num;
 
+  ROM ROM1 (
+    .clk(clk), 
+    .read(ROM_read), 
+    .enable(ROM_enable), 
+    .address(IM_address), 
+    .dout(ROM_dout));
+
   IM IM1 (
     .clk(clk), 
     .rst(reset), 
@@ -65,6 +77,10 @@ module top_tb;
     .reset(reset),
     .instruction(instruction), 
     .DM_out(DM_out),
+    .rom_out(ROM_dout),
+    .rom_enable(ROM_enable),
+    .rom_read(ROM_read),
+    .rom_address(ROM_address),
     .DM_read(DM_read),
     .DM_write(DM_write),
     .DM_enable(DM_enable),

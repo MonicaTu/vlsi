@@ -2,7 +2,7 @@
 `include "ir_controller.v"
 `include "p3_top.v"
 
-module top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, DM_out, instruction, clk, reset);
+module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, rom_out, DM_out, instruction, clk, reset);
   parameter DataSize = 32;
   parameter MemSize  = 10;
   parameter AddrSize = 5;
@@ -12,7 +12,11 @@ module top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_wri
   input reset;
   input [DataSize-1:0] instruction; 
   input [DataSize-1:0] DM_out;
- 
+  input [DataSize-1:0] rom_out;
+  
+  output rom_read;
+  output rom_enable;
+  output [7:0]rom_address;
   output DM_read;
   output DM_write;
   output DM_enable;
@@ -24,6 +28,9 @@ module top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_wri
   output [MemSize-1:0] PC;
 //  output [9:0]IM_address;
 
+  wire rom_read;
+  wire rom_enable;
+  wire [7:0]rom_address;
   wire DM_read;
   wire DM_write;
   wire DM_enable;
