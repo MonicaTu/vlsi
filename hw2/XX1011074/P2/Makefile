@@ -1,15 +1,15 @@
 tb:
-	iverilog top_tb.v top.v 
+	iverilog top_tb.v top.v IM.v DM.v 
 	./a.out
 	gtkwave top_tb.vcd
 
 tb1:
-	iverilog top_tb1.v top.v 
+	iverilog top_tb1.v top.v IM.v DM.v
 	./a.out
 	gtkwave top_tb1.vcd
 
 tb2:
-	iverilog top_tb2.v top.v 
+	iverilog top_tb2.v top.v IM.v DM.v
 	./a.out
 	gtkwave top_tb2.vcd
 
