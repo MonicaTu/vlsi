@@ -2,7 +2,7 @@
 `include "ir_controller.v"
 `include "p3_top.v"
 
-module p4_top (PC, IM_read, IM_write, IM_enable, instruction, clk, reset);
+module p4_top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, DM_out, instruction, clk, reset);
   parameter DataSize = 32;
   parameter MemSize  = 10;
   parameter AddrSize = 5;
@@ -11,18 +11,31 @@ module p4_top (PC, IM_read, IM_write, IM_enable, instruction, clk, reset);
   input clk;
   input reset;
   input [DataSize-1:0] instruction; 
+  input [DataSize-1:0] DM_out;
  
-  output [MemSize-1:0] PC;
+  output DM_read;
+  output DM_write;
+  output DM_enable;
+  output [DataSize-1:0]DM_in;
+  output [11:0]DM_address;
   output IM_read;
   output IM_write;
   output IM_enable;
-//  output [9:0] IM_address; // TODO
-  
-  // internal // FIXME
+  output [MemSize-1:0] PC;
+//  output [9:0]IM_address;
+
+  wire DM_read;
+  wire DM_write;
+  wire DM_enable;
+  wire [DataSize-1:0] DM_in = p3.regfile1.rw_reg[write_address];
+  wire [11:0]DM_address = p3.alu12_result;
   wire IM_read;
   wire IM_write;
   wire IM_enable;
-//  wire [9:0] IM_address; // TODO
+  wire [MemSize-1:0] PC;
+//  wire [9:0]IM_address;
+
+  // internal
   wire enable_alu_execute;
   wire enable_reg_read;
   wire enable_reg_write;
@@ -39,7 +52,6 @@ module p4_top (PC, IM_read, IM_write, IM_enable, instruction, clk, reset);
   wire [1:0] mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;
-  wire [MemSize-1:0] PC;
   wire [127:0] tick;
   wire alu_overflow;
 
@@ -50,9 +62,9 @@ module p4_top (PC, IM_read, IM_write, IM_enable, instruction, clk, reset);
     .tick(tick));
 
   ir_controller ir_conrtoller1 (
-    .enable_dm_fetch(enable_dm_fetch), 
-    .enable_dm_write(enable_dm_write), 
-    .enable_dm(enable_dm), 
+    .enable_dm_fetch(DM_read), 
+    .enable_dm_write(DM_write), 
+    .enable_dm(DM_enable), 
     .enable_im_fetch(IM_read), 
     .enable_im_write(IM_write), 
     .enable_im(IM_enable), 
@@ -83,9 +95,9 @@ module p4_top (PC, IM_read, IM_write, IM_enable, instruction, clk, reset);
     .read_address1(read_address1),
     .read_address2(read_address2),
     .write_address(write_address),
-    .enable_dm_fetch(enable_dm_fetch), 
-    .enable_dm_write(enable_dm_write), 
-    .enable_dm(enable_dm), 
+    .enable_dm_fetch(DM_read), 
+    .enable_dm_write(DM_write), 
+    .enable_dm(DM_enable), 
     .enable_reg_read(enable_reg_read),
     .enable_reg_write(enable_reg_write),
     .imm_5bit(imm5),

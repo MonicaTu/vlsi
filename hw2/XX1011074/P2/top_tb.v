@@ -14,6 +14,13 @@ module top_tb;
   wire IM_enable;
   wire [MemSize-1:0] PC;
   wire [DataSize-1:0] instruction;
+
+  wire DM_read;
+  wire DM_write;
+  wire DM_enable;
+  wire [DataSize-1:0] DM_in;
+  wire [DataSize-1:0] DM_address;
+  wire [DataSize-1:0] DM_out = DM1.mem_data[DM_address];
   
   // FIXME: for test
   reg [DataSize-1:0] mem_data_in;
@@ -43,10 +50,26 @@ module top_tb;
     .IMin(mem_data_in), 
     .IMout(instruction));
   
+  DM DM1 (
+    .clk(clk), 
+    .rst(reset), 
+    .enable_fetch(DM_read), 
+    .enable_write(DM_write), 
+    .enable_dm(DM_enable), 
+    .DMin(DM_in),
+    .DMout(DM_out), 
+    .DM_address(DM_address));
+  
   top top1 (
     .clk(clk), 
     .reset(reset),
     .instruction(instruction), 
+    .DM_out(DM_out),
+    .DM_read(DM_read),
+    .DM_write(DM_write),
+    .DM_enable(DM_enable),
+    .DM_in(DM_in),
+    .DM_address(DM_address),
     .PC(PC),
     .IM_read(IM_read), 
     .IM_write(IM_write), 
