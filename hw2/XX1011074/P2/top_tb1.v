@@ -4,10 +4,26 @@
 module top_tb1;
 
   parameter DataSize = 32;
-  parameter MemSize = 1024;
+  parameter MemSize = 10;
 
   reg clk;
   reg reset;
+
+  wire IM_read;
+  wire IM_write;
+  wire IM_enable;
+  wire [MemSize-1:0] PC;
+  wire [DataSize-1:0] instruction;
+
+  wire DM_read;
+  wire DM_write;
+  wire DM_enable;
+  wire [DataSize-1:0] DM_in;
+  wire [DataSize-1:0] DM_address;
+  wire [DataSize-1:0] DM_out = DM1.mem_data[DM_address];
+  
+  // FIXME: for test
+  reg [DataSize-1:0] mem_data_in;
   
   //test &debug
   reg [DataSize-1:0]golden_reg[31:0];
@@ -24,10 +40,40 @@ module top_tb1;
   integer i;
   integer err_num;
 
-  top TOP (
-    clk,
-    reset
-  );
+  IM IM1 (
+    .clk(clk), 
+    .rst(reset), 
+    .IM_address(PC), 
+    .enable_fetch(IM_read), 
+    .enable_write(IM_write), 
+    .enable_im(IM_enable), 
+    .IMin(mem_data_in), 
+    .IMout(instruction));
+  
+  DM DM1 (
+    .clk(clk), 
+    .rst(reset), 
+    .enable_fetch(DM_read), 
+    .enable_write(DM_write), 
+    .enable_dm(DM_enable), 
+    .DMin(DM_in),
+    .DMout(DM_out), 
+    .DM_address(DM_address));
+  
+  top top1 (
+    .clk(clk), 
+    .reset(reset),
+    .instruction(instruction), 
+    .DM_out(DM_out),
+    .DM_read(DM_read),
+    .DM_write(DM_write),
+    .DM_enable(DM_enable),
+    .DM_in(DM_in),
+    .DM_address(DM_address),
+    .PC(PC),
+    .IM_read(IM_read), 
+    .IM_write(IM_write), 
+    .IM_enable(IM_enable)); 
   
   always begin
   	#(`PERIOD/2) clk = ~clk;
@@ -42,11 +88,7 @@ module top_tb1;
   #(`PERIOD*4);
   reset = 1'b0;
     
-  $readmemb("mins1.prog", TOP.p4.IM1.mem_data);
-  for (i = 0; i < MemSize; i = i+1) begin
-    if (TOP.p4.IM1.mem_data[i])
-      $display("memdata[%d]: %h", i, TOP.p4.IM1.mem_data[i]); 
-  end
+  $readmemb("mins1.prog", IM1.mem_data);
 
   #(`PERIOD*4*20) $finish;
   end
