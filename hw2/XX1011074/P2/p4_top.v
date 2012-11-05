@@ -1,9 +1,8 @@
-`include "IM.v"
 `include "pc_tick.v"
 `include "ir_controller.v"
 `include "p3_top.v"
 
-module p4_top (clk, reset);
+module p4_top (PC, IM_read, IM_write, IM_enable, instruction, clk, reset);
   parameter DataSize = 32;
   parameter MemSize  = 10;
   parameter AddrSize = 5;
@@ -11,12 +10,19 @@ module p4_top (clk, reset);
   // top
   input clk;
   input reset;
+  input [DataSize-1:0] instruction; 
+ 
+  output [MemSize-1:0] PC;
+  output IM_read;
+  output IM_write;
+  output IM_enable;
+//  output [9:0] IM_address; // TODO
   
   // internal // FIXME
-  wire [DataSize-1:0] instruction; 
-  wire enable_im_fetch;
-  wire enable_im_write;
-  wire enable_im;
+  wire IM_read;
+  wire IM_write;
+  wire IM_enable;
+//  wire [9:0] IM_address; // TODO
   wire enable_alu_execute;
   wire enable_reg_read;
   wire enable_reg_write;
@@ -36,19 +42,6 @@ module p4_top (clk, reset);
   wire [MemSize-1:0] PC;
   wire [127:0] tick;
   wire alu_overflow;
-  
-  // FIXME: for test
-  reg [DataSize-1:0] mem_data_in;
-  
-  IM IM1 (
-    .clk(clk), 
-    .rst(reset), 
-    .IM_address(PC), 
-    .enable_fetch(enable_im_fetch), 
-    .enable_write(enable_im_write), 
-    .enable_im(enable_im), 
-    .IMin(mem_data_in), 
-    .IMout(instruction));
 
   pc_tick pc_tick1 (
     .clock(clk), 
@@ -60,9 +53,9 @@ module p4_top (clk, reset);
     .enable_dm_fetch(enable_dm_fetch), 
     .enable_dm_write(enable_dm_write), 
     .enable_dm(enable_dm), 
-    .enable_im_fetch(enable_im_fetch), 
-    .enable_im_write(enable_im_write), 
-    .enable_im(enable_im), 
+    .enable_im_fetch(IM_read), 
+    .enable_im_write(IM_write), 
+    .enable_im(IM_enable), 
     .enable_alu_execute(enable_alu_execute),
     .enable_reg_read(enable_reg_read),
     .enable_reg_write(enable_reg_write),

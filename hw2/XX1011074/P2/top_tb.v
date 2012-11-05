@@ -4,10 +4,19 @@
 module top_tb;
 
   parameter DataSize = 32;
-  parameter MemSize = 1024;
+  parameter MemSize = 10;
 
   reg clk;
   reg reset;
+
+  wire IM_read;
+  wire IM_write;
+  wire IM_enable;
+  wire [MemSize-1:0] PC;
+  wire [DataSize-1:0] instruction;
+  
+  // FIXME: for test
+  reg [DataSize-1:0] mem_data_in;
   
   //test &debug
   reg [DataSize-1:0]golden_reg[31:0];
@@ -24,10 +33,24 @@ module top_tb;
   integer i;
   integer err_num;
 
-  top TOP (
-    clk,
-    reset
-  );
+  IM IM1 (
+    .clk(clk), 
+    .rst(reset), 
+    .IM_address(PC), 
+    .enable_fetch(IM_read), 
+    .enable_write(IM_write), 
+    .enable_im(IM_enable), 
+    .IMin(mem_data_in), 
+    .IMout(instruction));
+  
+  top top1 (
+    .clk(clk), 
+    .reset(reset),
+    .instruction(instruction), 
+    .PC(PC),
+    .IM_read(IM_read), 
+    .IM_write(IM_write), 
+    .IM_enable(IM_enable)); 
   
   always begin
   	#(`PERIOD/2) clk = ~clk;
@@ -42,11 +65,7 @@ module top_tb;
   #(`PERIOD*4);
   reset = 1'b0;
     
-  $readmemb("mins.prog", TOP.p4.IM1.mem_data);
-  for (i = 0; i < MemSize; i = i+1) begin
-    if (TOP.p4.IM1.mem_data[i])
-      $display("memdata[%d]: %h", i, TOP.p4.IM1.mem_data[i]); 
-  end
+  $readmemb("mins.prog", IM1.mem_data);
 
   #(`PERIOD*4*20) $finish;
   end
