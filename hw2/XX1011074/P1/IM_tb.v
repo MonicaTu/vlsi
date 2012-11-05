@@ -13,7 +13,7 @@ module IM_tb;
     .IM_address(IM_address), 
     .enable_fetch(enable_fetch), 
     .enable_write(enable_write), 
-    .enable_mem(enable_mem), 
+    .enable_im(enable_im), 
     .IMin(in), 
     .IMout(out));
   

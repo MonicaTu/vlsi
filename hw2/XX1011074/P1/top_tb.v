@@ -4,10 +4,19 @@
 module top_tb;
 
   parameter DataSize = 32;
-  parameter MemSize = 1024;
+  parameter MemSize = 10;
 
   reg clk;
   reg reset;
+  
+  wire IM_read;
+  wire IM_write;
+  wire IM_enable;
+  wire [MemSize-1:0] PC;
+  wire [DataSize-1:0] instruction;
+  
+  // FIXME: for test
+  reg [DataSize-1:0] mem_data_in;
   
   //test &debug
   reg [DataSize-1:0]golden_reg[31:0];
@@ -24,10 +33,24 @@ module top_tb;
   integer i;
   integer err_num;
 
-  top TOP (
-    clk,
-    reset
-  );
+  IM IM1 (
+    .clk(clk), 
+    .rst(reset), 
+    .IM_address(PC), 
+    .enable_fetch(IM_read), 
+    .enable_write(IM_write), 
+    .enable_im(IM_enable), 
+    .IMin(mem_data_in), 
+    .IMout(instruction));
+  
+  top top1 (
+    .clk(clk), 
+    .reset(reset),
+    .instruction(instruction), 
+    .PC(PC),
+    .IM_read(IM_read), 
+    .IM_write(IM_write), 
+    .IM_enable(IM_enable)); 
   
   always begin
   	#(`PERIOD/2) clk = ~clk;
@@ -42,11 +65,7 @@ module top_tb;
   #(`PERIOD*4);
   reset = 1'b0;
     
-  $readmemb("mins.prog", TOP.p4.IM1.mem_data);
-  for (i = 0; i < MemSize; i = i+1) begin
-    if (TOP.p4.IM1.mem_data[i])
-      $display("memdata[%d]: %h", i, TOP.p4.IM1.mem_data[i]); 
-  end
+  $readmemb("mins.prog", IM1.mem_data);
 
   #(`PERIOD*4*20) $finish;
   end
@@ -80,19 +99,19 @@ module top_tb;
   #(`PERIOD*4); // ADDI R0=R0+4'b1101
   tb_rw_reg_0 = 32'h11;
   golden_reg[0] = 32'h11;
-  if (tb_rw_reg_0 != TOP.p4.p3.regfile1.rw_reg_0)
+  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
     err_num = err_num + 1;
 
   #(`PERIOD*4); // ORI R1=R0|4'b0010
   tb_rw_reg_1 = 32'h13;
   golden_reg[1] = 32'h13;
-  if (tb_rw_reg_0 != TOP.p4.p3.regfile1.rw_reg_0)
+  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
     err_num = err_num + 1;
 
   #(`PERIOD*4); // XORI R1=R1^4'b0111
   tb_rw_reg_1 = 32'h14;
   golden_reg[1] = 32'h14;
-  if (tb_rw_reg_1 != TOP.p4.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
     err_num = err_num + 1;
 
   #(`PERIOD*4); // NOP
@@ -100,53 +119,53 @@ module top_tb;
   #(`PERIOD*4); // ADD R1=R0+R1
   tb_rw_reg_1 = 32'h25;
   golden_reg[1] = 32'h25;
-  if (tb_rw_reg_1 != TOP.p4.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
     err_num = err_num + 1;
 
   #(`PERIOD*4); // SUB R1=R1-R0
   tb_rw_reg_1 = 32'h14;
   golden_reg[1] = 32'h14;
-  if (tb_rw_reg_1 != TOP.p4.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
     err_num = err_num + 1;
 
   #(`PERIOD*4); // AND R1=R1&R0
   tb_rw_reg_1 = 32'h10;
   golden_reg[1] = 32'h10;
-  if (tb_rw_reg_1 != TOP.p4.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
     err_num = err_num + 1;
 
   #(`PERIOD*4); // OR R0=R0|R1
   tb_rw_reg_0 = 32'h11;
   golden_reg[0] = 32'h11;
-  if (tb_rw_reg_1 != TOP.p4.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
     err_num = err_num + 1;
 
   #(`PERIOD*4); // XOR R2=R0^R1
   tb_rw_reg_2 = 32'h01;
   golden_reg[2] = 32'h01;
-  if (tb_rw_reg_0 != TOP.p4.p3.regfile1.rw_reg_0)
+  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
     err_num = err_num + 1;
 
   #(`PERIOD*4); // SRLI R2=R0 SRL(3)
   tb_rw_reg_2 = 32'h02;
   golden_reg[2] = 32'h02;
-  if (tb_rw_reg_2 != TOP.p4.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
 
   #(`PERIOD*4); // SLLI R2=R2 SLL(3)
   tb_rw_reg_2 = 32'h10;
   golden_reg[2] = 32'h10;
-  if (tb_rw_reg_2 != TOP.p4.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
 
   #(`PERIOD*4); // ROTRI R2=R0 ROTR(29)
   tb_rw_reg_2 = 32'h0088;
   golden_reg[2] = 32'h0088;
-  if (tb_rw_reg_2 != TOP.p4.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
   
   #(`PERIOD*4); //IDEL
-  if (tb_rw_reg_2 != TOP.p4.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
     err_num = err_num + 1;
 
   end
