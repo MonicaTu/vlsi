@@ -27,6 +27,7 @@ module top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_wri
   wire DM_read;
   wire DM_write;
   wire DM_enable;
+  wire [AddrSize-1:0]write_address;
   wire [DataSize-1:0] DM_in = p3.regfile1.rw_reg[write_address];
   wire [11:0]DM_address = p3.alu12_result;
   wire IM_read;
@@ -48,7 +49,6 @@ module top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_wri
   wire [19:0]imm20;
   wire [AddrSize-1:0]read_address1;
   wire [AddrSize-1:0]read_address2;
-  wire [AddrSize-1:0]write_address;
   wire [1:0] mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;

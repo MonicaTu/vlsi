@@ -36,6 +36,7 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
   output [AddrSize-1:0]write_address;
   
   /* internal */
+  reg [DataSize-1:0] present_instruction;
   wire [5:0] opcode = present_instruction[30:25];
   wire [4:0] sub_opcode_5bit = present_instruction[4:0];
   wire [7:0] sub_opcode_8bit = present_instruction[7:0];
@@ -49,7 +50,6 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
 
   reg [1:0] current_state;
   reg [1:0] next_state;
-  reg [DataSize-1:0] present_instruction;
 
   // op & sub_op
   parameter TYPE_BASIC=6'b100000;

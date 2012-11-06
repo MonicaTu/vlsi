@@ -31,6 +31,8 @@ module ir_controller(enable_im_fetch, enable_im_write, enable_im, enable_alu_exe
   output [AddrSize-1:0]write_address;
   
   /* internal */
+  reg [DataSize-1:0] present_instruction;
+
   wire [5:0] opcode = present_instruction[30:25];
   wire [4:0] sub_opcode = present_instruction[4:0];
   wire [4:0]   imm5 = present_instruction[14:10];
@@ -42,7 +44,6 @@ module ir_controller(enable_im_fetch, enable_im_write, enable_im, enable_alu_exe
 
   reg [1:0] current_state;
   reg [1:0] next_state;
-  reg [DataSize-1:0] present_instruction;
 
   // op & sub_op
   parameter TYPE_BASIC=6'b100000;
