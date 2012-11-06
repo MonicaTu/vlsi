@@ -1,1 +1,1 @@
-ncverilog top.v top_tb.v +access+r
+ncverilog top_tb.v top.v  +access+r
