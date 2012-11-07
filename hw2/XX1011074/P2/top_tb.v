@@ -150,45 +150,7 @@ module top_tb;
     err_num = err_num + 1;
   golden_reg[0] = 32'h03;
 
-  #(`PERIOD*4); // ADDI R1=R1+4'b1001  => R1=9
-  tb_rw_reg_1 = 32'h09;
-  golden_reg[1] = 32'h09;
-
-  #(`PERIOD*4); // XORI R1=R1^4'b1010  => R1=3
-  tb_rw_reg_1 = 32'h03;
-  golden_reg[1] = 32'h03;
-  //if (tb_rw_reg_1 != TOP.p4.p3.regfile1.rw_reg_1)
-  //  err_num = err_num + 1;
-
-  #(`PERIOD*4); // MOVI R0=20'd3       => R0=3
-  tb_rw_reg_0 = 32'h03;
-  golden_reg[0] = 32'h03;
-  //if (tb_rw_reg_1 != TOP.p4.p3.regfile1.rw_reg_1)
-  //  err_num = err_num + 1;
-
-  #(`PERIOD*4); // SW M0=R0           => M0=3
-  //tb_rw_reg_1 = 32'h14;
-  //golden_reg[1] = 32'h14;
-  //if (tb_rw_reg_0 != TOP.p4.p3.regfile1.rw_reg_0)
-  //  err_num = err_num + 1;
-
-  #(`PERIOD*4); // ORI R0=R0|4'b0100   => R0=7
-  tb_rw_reg_0 = 32'h07;
-  golden_reg[0] = 32'h07;
-  //if (tb_rw_reg_0 != TOP.p4.p3.regfile1.rw_reg_0)
-  //  err_num = err_num + 1;
-
-  #(`PERIOD*4); // AND R1=R1&R0        => R1=3
-  tb_rw_reg_1 = 32'h03;
-  golden_reg[1] = 32'h03;
-  //if (tb_rw_reg_0 != TOP.p4.p3.regfile1.rw_reg_0)
-  //  err_num = err_num + 1;
-
-  #(`PERIOD*4); // LW R0=M0           => R0=3
-  tb_rw_reg_0 = 32'h03;
-  golden_reg[0] = 32'h03;
-  //if (tb_rw_reg_1 != TOP.p4.p3.regfile1.rw_reg_1)
-  //  err_num = err_num + 1;
+  #(`PERIOD*4); // NOP
 
   #(`PERIOD*4); // ADD R1=R0+R1        => R1=6
   if (top1.p3.regfile1.rw_reg[0] != golden_reg[0])
