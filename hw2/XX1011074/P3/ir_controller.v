@@ -214,8 +214,8 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
 //    else
       present_instruction <= ir;
       
-    if (ir)
-      $display("(%d) %h:%h", PC, ir, present_instruction);
+//    if (ir)
+//      $display("(%d) %h:%h", PC, ir, present_instruction);
   end
 
 endmodule
