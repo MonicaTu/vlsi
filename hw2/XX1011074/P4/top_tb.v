@@ -108,6 +108,7 @@ module top_tb;
 
   #(`PERIOD*4*20);
   $display("cycle count: %d", top1.pc_tick1.cycle_cnt);
+  $display("instruction count: %d", top1.pc_tick1.pc);
   $finish;
   end
 
