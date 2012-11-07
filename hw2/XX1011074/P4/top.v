@@ -3,7 +3,7 @@
 `include "rom_controller.v"
 `include "p3_top.v"
 
-module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, rom_out, DM_out, instruction, clk, reset);
+module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, rom_out, DM_out, instruction, clk, reset, system_enable);
   parameter DataSize = 32;
   parameter MemSize  = 10;
   parameter AddrSize = 5;
@@ -11,6 +11,7 @@ module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_
   // top
   input clk;
   input reset;
+  input system_enable;
   input [DataSize-1:0] instruction; 
   input [DataSize-1:0] DM_out;
   input [DataSize-1:0] rom_out;
@@ -73,8 +74,8 @@ module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_
 
   rom_controller rom_controller1 (
     .cycle(cycle),
-    .ROM_enable(ROM_enable),
-    .ROM_read(ROM_read),
+    .ROM_enable(rom_enable),
+    .ROM_read(rom_read),
     .system_enable(system_enable),
     .clock(clk));
 
