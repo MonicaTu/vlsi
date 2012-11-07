@@ -1,5 +1,9 @@
 `timescale 1ns/10ps
 `define PERIOD 10
+`include "IM.v"
+`include "DM.v"
+`include "MEMORY.v"
+`include "ROM.v"
 
 module top_tb;
 
@@ -13,7 +17,7 @@ module top_tb;
   wire ROM_read;
   wire ROM_enable;
   wire [7:0]ROM_address;
-  wire [DataSize-1:0]ROM_dout;
+  wire [35:0]ROM_dout;
 
   wire IM_read;
   wire IM_write;
@@ -27,6 +31,12 @@ module top_tb;
   wire [DataSize-1:0] DM_in;
   wire [DataSize-1:0] DM_address;
   wire [DataSize-1:0] DM_out = DM1.mem_data[DM_address];
+    
+  wire MEM_enable;
+  wire MEM_en_read;
+  wire MEM_en_write;
+  wire [12:0]MEM_addr;
+  wire [DataSize-1:0] MEM_data_out;
   
   // FIXME: for test
   reg [DataSize-1:0] mem_data_in;
@@ -53,6 +63,16 @@ module top_tb;
     .address(PC), 
     .dout(ROM_dout));
 
+  MEMORY MEMORY1 (
+    .clk(clk),
+    .rst(rst),
+    .enable(MEM_enable),
+    .read(MEM_en_read),
+    .write(MEM_en_write),
+    .address(MEM_addr),
+    .Din(ROM_dout),
+    .Dout(MEM_data_out));
+
   IM IM1 (
     .clk(clk), 
     .rst(reset), 
@@ -60,7 +80,7 @@ module top_tb;
     .enable_fetch(IM_read), 
     .enable_write(IM_write), 
     .enable_im(IM_enable), 
-    .IMin(mem_data_in), 
+    .IMin(MEM_data_out), 
     .IMout(instruction));
   
   DM DM1 (
@@ -74,12 +94,10 @@ module top_tb;
     .DM_address(DM_address));
   
   top top1 (
-    .clk(clk), 
-    .reset(reset),
-    .system_enable(system_enable),
-    .instruction(instruction), 
-    .DM_out(DM_out),
-    .rom_out(ROM_dout),
+    .MEM_en(MEM_enable),
+    .MEM_read(MEM_en_read),
+    .MEM_write(MEM_en_write),
+    .MEM_addr(MEM_addr),
     .rom_enable(ROM_enable),
     .rom_read(ROM_read),
     .rom_address(ROM_address),
@@ -88,10 +106,16 @@ module top_tb;
     .DM_enable(DM_enable),
     .DM_in(DM_in),
     .DM_address(DM_address),
-    .PC(PC),
     .IM_read(IM_read), 
     .IM_write(IM_write), 
-    .IM_enable(IM_enable)); 
+    .IM_enable(IM_enable), 
+    .PC(PC),
+    .rom_out(ROM_dout),
+    .DM_out(DM_out),
+    .instruction(instruction), 
+    .system_enable(system_enable),
+    .reset(reset),
+    .clk(clk));
   
   always begin
   	#(`PERIOD/2) clk = ~clk;
@@ -111,7 +135,7 @@ module top_tb;
   reset = 1'b0;
     
   $readmemb("rom.prog", ROM1.mem_data);
-  $readmemb("mins.prog", IM1.mem_data);
+  $readmemb("mins.prog", MEMORY1.mem);
 
   #(`PERIOD*4*20);
   $display("cycle count: %d", top1.pc_tick1.cycle_cnt);

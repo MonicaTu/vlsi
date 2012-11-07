@@ -1,9 +1,10 @@
 `include "pc_tick.v"
 `include "ir_controller.v"
 `include "rom_controller.v"
+`include "mem_controller.v"
 `include "p3_top.v"
 
-module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, rom_out, DM_out, instruction, clk, reset, system_enable);
+module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, rom_out, DM_out, instruction, clk, reset, system_enable);
   parameter DataSize = 32;
   parameter MemSize  = 10;
   parameter AddrSize = 5;
@@ -14,7 +15,7 @@ module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_
   input system_enable;
   input [DataSize-1:0] instruction; 
   input [DataSize-1:0] DM_out;
-  input [DataSize-1:0] rom_out;
+  input [35:0] rom_out;
   
   output rom_read;
   output rom_enable;
@@ -27,8 +28,14 @@ module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_
   output IM_read;
   output IM_write;
   output IM_enable;
+  output [9:0]IM_address;
   output [MemSize-1:0] PC;
-//  output [9:0]IM_address;
+
+  output MEM_en;
+  output MEM_read; 
+  output MEM_write; 
+  output mem_en_write; 
+  output [12:0]MEM_addr; 
 
   wire rom_read;
   wire rom_enable;
@@ -43,6 +50,16 @@ module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_
   wire IM_enable;
   wire [MemSize-1:0] PC;
 //  wire [9:0]IM_address;
+  
+  wire im_reset;
+  wire im_enable;
+  wire im_en_write;
+  wire [12:0]im_addr;
+
+  wire MEM_en;
+  wire MEM_read; 
+  wire mem_en_write; 
+  wire [12:0]MEM_addr; 
 
   // internal
   wire enable_alu_execute;
@@ -77,6 +94,18 @@ module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_
     .ROM_enable(rom_enable),
     .ROM_read(rom_read),
     .system_enable(system_enable),
+    .clock(clk));
+
+  mem_controller mem_controller1 (
+    .im_enable(IM_enable), 
+    .im_en_read(IM_read), 
+    .im_en_write(IM_write), 
+    .im_addr(IM_address), 
+    .mem_enable(MEM_en), 
+    .mem_en_read(MEM_read), 
+    .mem_en_write(MEM_write), 
+    .mem_addr(MEM_addr), 
+    .rom_ir(rom_out), 
     .clock(clk));
 
   ir_controller ir_conrtoller1 (
