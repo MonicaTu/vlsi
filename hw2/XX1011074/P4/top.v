@@ -113,7 +113,6 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_read, rom_enable, rom_add
     .enable_dm_write(DM_write), 
     .enable_dm(DM_enable), 
     .enable_im_fetch(IM_read), 
-    .enable_im_write(IM_write), 
     .enable_im(IM_enable), 
     .enable_alu_execute(enable_alu_execute),
     .enable_reg_read(enable_reg_read),

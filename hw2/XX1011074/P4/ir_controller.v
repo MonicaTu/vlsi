@@ -1,4 +1,4 @@
-module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im_write, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2, write_address, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
+module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2, write_address, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
   parameter MemSize = 10;
   parameter DataSize = 32;
   parameter AddrSize = 5;
@@ -10,7 +10,6 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
   input [DataSize-1:0] ir;
 
   output reg enable_im_fetch;
-  output reg enable_im_write;
   output reg enable_im;
   output reg enable_dm_fetch;
   output reg enable_dm_write;
@@ -88,7 +87,6 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
       next_state <= fetchState;
       enable_im <= 1;
       enable_im_fetch <= 1;
-      enable_im_write <= 0;
       enable_dm <= 0;
       enable_dm_fetch <= 0;
       enable_dm_write <= 0;
@@ -100,7 +98,6 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
       next_state <= exeState;
       enable_im <= 1;
       enable_im_fetch <= 1;
-      enable_im_write <= 0;
       enable_dm <= 0;
       enable_dm_fetch <= 0;
       enable_dm_write <= 0;
@@ -112,7 +109,6 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
       next_state <= writeState;
       enable_im <= 0;
       enable_im_fetch <= 0;
-      enable_im_write <= 0;
       enable_dm <= 0;
       enable_dm_fetch <= 0;
       enable_dm_write <= 0;
@@ -124,7 +120,6 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
       next_state <= stopState;
       enable_im <= 0;
       enable_im_fetch <= 0;
-      enable_im_write <= 0;
       enable_alu_execute <= 0;
       if (opcode == TYPE_BASIC && sub_opcode_5bit == SRLI && imm5 == 5'b0) begin// NOP
         enable_reg_read <= 0;
