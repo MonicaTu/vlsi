@@ -69,7 +69,7 @@ module top_tb;
     .enable(MEM_enable),
     .read(MEM_en_read),
     .write(MEM_en_write),
-    .address(MEM_addr),
+    .address(PC),
     .Din(ROM_dout),
     .Dout(MEM_data_out));
 
