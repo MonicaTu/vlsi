@@ -52,14 +52,14 @@ module top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_wri
   wire [1:0] mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;
-  wire [127:0] tick;
+  wire [127:0] cycle_cnt;
   wire alu_overflow;
 
   pc_tick pc_tick1 (
     .clock(clk), 
     .reset(reset), 
     .pc(PC), 
-    .tick(tick));
+    .cycle_cnt(cycle_cnt));
 
   ir_controller ir_conrtoller1 (
     .enable_dm_fetch(DM_read), 
