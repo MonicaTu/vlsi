@@ -3,12 +3,13 @@
 `define IR_SIZE 'd32     // 32 bits
 `define IR_SIZE_BYTE 'd4 // 32 bits = 4 bytes
 
-module pc_tick(pc, cycle_cnt, cycle, reset, clock);
+module pc_tick(pc, cycle_cnt, reset, clock);
+
+  parameter cycle = 4;
 
   // interface
   input clock;
   input reset;
-  input [2:0]cycle;
   output [`MEM_SIZE-1:0] pc;
   output [`TICK_SIZE-1:0] cycle_cnt;
 

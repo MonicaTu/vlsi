@@ -1,8 +1,9 @@
 `include "pc_tick.v"
 `include "ir_controller.v"
+`include "rom_controller.v"
 `include "p3_top.v"
 
-module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, rom_out, DM_out, instruction, clk, reset);
+module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, rom_out, DM_out, instruction, clk, reset, system_enable);
   parameter DataSize = 32;
   parameter MemSize  = 10;
   parameter AddrSize = 5;
@@ -10,6 +11,7 @@ module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_
   // top
   input clk;
   input reset;
+  input system_enable;
   input [DataSize-1:0] instruction; 
   input [DataSize-1:0] DM_out;
   input [DataSize-1:0] rom_out;
@@ -59,14 +61,23 @@ module top (rom_read, rom_enable, rom_address, DM_read, DM_write, DM_enable, DM_
   wire [1:0] mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;
-  wire [127:0] tick;
+  wire [127:0] cycle_cnt;
   wire alu_overflow;
+  wire [2:0]cycle;
 
   pc_tick pc_tick1 (
     .clock(clk), 
     .reset(reset), 
+    .cycle(cycle),
     .pc(PC), 
-    .tick(tick));
+    .cycle_cnt(cycle_cnt));
+
+  rom_controller rom_controller1 (
+    .cycle(cycle),
+    .ROM_enable(rom_enable),
+    .ROM_read(rom_read),
+    .system_enable(system_enable),
+    .clock(clk));
 
   ir_controller ir_conrtoller1 (
     .enable_dm_fetch(DM_read), 

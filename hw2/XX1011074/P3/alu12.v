@@ -24,12 +24,12 @@ module alu12(alu_result, scr1, scr2, sv, opcode, sub_opcode_8bit, enable_execute
         LWI : begin
                 alu_result=scr1+(scr2<<2);
 //                $display("scr1: %h, scr2: %h", scr1, scr2);
-//                $display("(LWI)alu_result: %b", alu_result);
+//                $display("(LW)alu_result: %b", alu_result);
               end
         SWI : begin
                 alu_result=scr1+(scr2>>2);
 //                $display("scr1: %h, scr2: %h", scr1, scr2);
-//                $display("(SWI)alu_result: %b", alu_result);
+//                $display("(SW)alu_result: %b", alu_result);
               end
       endcase
       case (sub_opcode_8bit)

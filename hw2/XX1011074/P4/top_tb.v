@@ -8,6 +8,7 @@ module top_tb;
 
   reg clk;
   reg reset;
+  reg system_enable;
 
   wire ROM_read;
   wire ROM_enable;
@@ -49,7 +50,7 @@ module top_tb;
     .clk(clk), 
     .read(ROM_read), 
     .enable(ROM_enable), 
-    .address(IM_address), 
+    .address(PC), 
     .dout(ROM_dout));
 
   IM IM1 (
@@ -75,6 +76,7 @@ module top_tb;
   top top1 (
     .clk(clk), 
     .reset(reset),
+    .system_enable(system_enable),
     .instruction(instruction), 
     .DM_out(DM_out),
     .rom_out(ROM_dout),
@@ -95,6 +97,10 @@ module top_tb;
   	#(`PERIOD/2) clk = ~clk;
   end
 
+  initial begin
+    system_enable = 1;
+  end
+
   /* Set signal */
   initial begin
   clk = 1'b0;
@@ -104,9 +110,13 @@ module top_tb;
   #(`PERIOD*4);
   reset = 1'b0;
     
+  $readmemb("rom.prog", ROM1.mem_data);
   $readmemb("mins.prog", IM1.mem_data);
 
-  #(`PERIOD*4*20) $finish;
+  #(`PERIOD*4*20);
+  $display("cycle count: %d", top1.pc_tick1.cycle_cnt);
+  $display("instruction count: %d", top1.pc_tick1.pc);
+  $finish;
   end
 
   /* Create tb waveform */
