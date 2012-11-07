@@ -69,7 +69,6 @@ module top_tb;
     .DM_write(DM_write),
     .DM_enable(DM_enable),
     .DM_in(DM_in),
-    .DM_address(DM_address),
     .PC(PC),
     .IM_read(IM_read), 
     .IM_write(IM_write), 
@@ -90,7 +89,10 @@ module top_tb;
     
   $readmemb("mins.prog", IM1.mem_data);
 
-  #(`PERIOD*4*20) $finish;
+  #(`PERIOD*4*20);
+  $display("cycle count: %d", top1.pc_tick1.cycle_cnt);
+  $display("instruction count: %d", top1.pc_tick1.pc);
+  $finish;
   end
 
   /* Create tb waveform */
