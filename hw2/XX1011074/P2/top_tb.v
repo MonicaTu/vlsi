@@ -243,7 +243,7 @@ module top_tb;
   tb_mem_data_0 = 32'h03;
 
   #(`PERIOD*4); // ORI R0=R0|4'b0100   => R0=7
-  if (tb_mem_data_0 != DM1.mem_data_0)
+  if (tb_mem_data_0 != DM1.dmem_data_0)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_0 = 32'h07;
 
@@ -280,7 +280,7 @@ module top_tb;
   tb_mem_data_19 = 32'h04;
 
   #(`PERIOD*4); // SRLI R2=R0 SRL(1)   => R2=1
-  if (tb_mem_data_19 != DM1.mem_data_19)
+  if (tb_mem_data_19 != DM1.dmem_data_19)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h01;
   
@@ -305,7 +305,7 @@ module top_tb;
   tb_mem_data_35 = 32'h08;
 
   #(`PERIOD*4); //IDEL
-  if (tb_mem_data_35 != DM1.mem_data_35)
+  if (tb_mem_data_35 != DM1.dmem_data_35)
     internel_err_num = internel_err_num + 1;
   end
 
