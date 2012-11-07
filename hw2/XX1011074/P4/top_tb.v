@@ -106,7 +106,9 @@ module top_tb;
     
   $readmemb("mins.prog", IM1.mem_data);
 
-  #(`PERIOD*4*20) $finish;
+  #(`PERIOD*4*20);
+  $display("cycle count: %d", top1.pc_tick1.cycle_cnt);
+  $finish;
   end
 
   /* Create tb waveform */
