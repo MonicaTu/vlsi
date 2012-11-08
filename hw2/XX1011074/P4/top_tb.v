@@ -60,7 +60,7 @@ module top_tb;
     .clk(clk), 
     .read(ROM_read), 
     .enable(ROM_enable), 
-    .address(PC), 
+    .address(ROM_address), 
     .dout(ROM_dout));
 
   MEMORY MEMORY1 (

@@ -1,4 +1,4 @@
-module mem_controller(im_enable, im_en_read, im_en_write, im_addr, mem_enable, mem_en_read, mem_en_write, mem_addr, rom_ir, clock);
+module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr, mem_enable, mem_en_read, mem_en_write, mem_addr, rom_ir, clock);
 
   // TODO: DM
   input clock;
@@ -13,6 +13,8 @@ module mem_controller(im_enable, im_en_read, im_en_write, im_addr, mem_enable, m
   output mem_en_read; 
   output mem_en_write; 
   output [12:0]mem_addr; 
+
+  output load_im_done; 
 
   // internal
   reg im_enable;
@@ -29,8 +31,35 @@ module mem_controller(im_enable, im_en_read, im_en_write, im_addr, mem_enable, m
   wire ir_en     = rom_ir[34];
   wire ir_select = rom_ir[33];
   wire ir_read   = rom_ir[32];
-  wire ir_start_address = rom_ir[31:16];
-  wire ir_size   = rom_ir[15:0];
+  wire [15:0]ir_start_address = rom_ir[31:16];
+  wire [15:0]ir_size = rom_ir[15:0];
+  
+  // internal 
+  reg [2:0]cycle;
+  reg [127:0]clock_cnt;
+  reg load_im_done;
+
+  initial begin
+    cycle <= 'd4; // FIXME
+    im_addr = 0;
+    clock_cnt = 0;
+    load_im_done = 0;
+  end
+
+  always @ (negedge clock) begin
+    clock_cnt <= clock_cnt + 1;
+    if (clock_cnt % cycle == 0)
+      im_addr <= im_addr + 1;
+    else
+      im_addr <= im_addr;
+  end
+  
+  always @ (negedge clock) begin
+    if (im_addr << 5 == ir_size) 
+      load_im_done <= 1;
+    else
+      load_im_done <= 0;
+  end
 
   always @ (negedge clock) begin
     if (ir_rst) begin
