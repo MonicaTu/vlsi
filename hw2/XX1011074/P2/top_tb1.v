@@ -15,19 +15,21 @@ module top_tb1;
   wire IM_enable;
   wire [MemSize-1:0] PC;
   wire [DataSize-1:0] instruction;
+  wire [127:0]cycle_cnt;
 
   wire DM_read;
   wire DM_write;
   wire DM_enable;
   wire [DataSize-1:0] DM_in;
   wire [DataSize-1:0] DM_address;
-  wire [DataSize-1:0] DM_out = DM1.mem_data[DM_address];
+  wire [DataSize-1:0] DM_out;
+//  wire [DataSize-1:0] DM_out = DM1.mem_data[DM_address];
   
   // FIXME: for test
   reg [DataSize-1:0] mem_data_in;
 
   reg [DataSize-1:0]golden_reg[31:0];
-  reg [DataSize-1:0]golden_mem[31:0];
+  reg [MemSize-1:0]golden_mem[10:0];
   
   integer i;
   integer err_num;
@@ -75,6 +77,7 @@ module top_tb1;
     .clk(clk), 
     .reset(reset),
     .instruction(instruction), 
+    .cycle_cnt(cycle_cnt), 
     .DM_out(DM_out),
     .DM_read(DM_read),
     .DM_write(DM_write),
@@ -101,7 +104,9 @@ module top_tb1;
     
   $readmemb("mins1.prog", IM1.mem_data);
 
-  #(`PERIOD*`IR_CYCLE*22) $finish;
+  #(`PERIOD*`IR_CYCLE*22);
+  $display("cycle count: %d\n", cycle_cnt);
+  $finish;
   end
 
 /* Create tb waveform */
@@ -110,7 +115,7 @@ module top_tb1;
     for ( i = 0; i < DataSize; i = i+1) begin
       golden_reg[i] = 32'd0;
     end
-    for ( i = 0; i < DataSize; i = i+1) begin
+    for ( i = 0; i < MemSize; i = i+1) begin
       golden_mem[i] = 32'd0;
     end
 
@@ -234,8 +239,7 @@ module top_tb1;
 
   // for iverilog which does not support 2-dimension array.
   initial begin
-  #(`PERIOD*2);
-
+  #(`PERIOD*2); 
     tb_rw_reg_0 = 32'd0;
     tb_rw_reg_1 = 32'd0;
     tb_rw_reg_2 = 32'd0;
