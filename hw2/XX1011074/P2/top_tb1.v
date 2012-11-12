@@ -1,4 +1,4 @@
-//`timescale 1ns/10ps
+`timescale 1ns/10ps
 `define PERIOD 10
 
 module top_tb1;
@@ -24,9 +24,14 @@ module top_tb1;
   
   // FIXME: for test
   reg [DataSize-1:0] mem_data_in;
-  
-  //test &debug
+
   reg [DataSize-1:0]golden_reg[31:0];
+  reg [DataSize-1:0]golden_mem[31:0];
+  
+  integer i;
+  integer err_num;
+  
+  // for iverilog which does not support 2-dimension array.
   reg [31:0]tb_rw_reg_0;
   reg [31:0]tb_rw_reg_1;
   reg [31:0]tb_rw_reg_2;
@@ -37,8 +42,13 @@ module top_tb1;
   reg [31:0]tb_rw_reg_7;
   reg [31:0]tb_rw_reg_8;
   reg [31:0]tb_rw_reg_9;
-  integer i;
-  integer err_num;
+
+  reg [31:0]tb_mem_data_0;
+  reg [31:0]tb_mem_data_8;
+  //reg [31:0]tb_mem_data_19; not used for this testbench
+  //reg [31:0]tb_mem_data_35;
+
+  integer internel_err_num;
 
   IM IM1 (
     .clk(clk), 
@@ -93,12 +103,137 @@ module top_tb1;
   #(`PERIOD*4*22) $finish;
   end
 
-  /* Create tb waveform */
+/* Create tb waveform */
   initial begin
-  #(`PERIOD*2);
+  #(`PERIOD*2); 
     for ( i = 0; i < DataSize; i = i+1) begin
       golden_reg[i] = 32'd0;
     end
+    for ( i = 0; i < DataSize; i = i+1) begin
+      golden_mem[i] = 32'd0;
+    end
+
+    err_num = 0;
+
+  #(`PERIOD*1.5);
+  #(`PERIOD*4);
+
+  #(`PERIOD*4); // ADDI (R0=R0+5’b01101)
+  golden_reg[0] = 32'b01101;
+
+  #(`PERIOD*4); // ADDI (R1=R1+5’b01100)
+  if (top1.p3.regfile1.rw_reg[0] != golden_reg[0])
+    err_num = err_num + 1;
+  golden_reg[1] = 32'b01100;
+
+  #(`PERIOD*4); // MOVI (R2= 5’b01000)
+  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+    err_num = err_num + 1;
+  golden_reg[2] = 32'b10000;
+
+  #(`PERIOD*4); // SW M0=R2
+  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+    err_num = err_num + 1;
+  golden_mem[0] = 32'b10000;
+
+  #(`PERIOD*4); // ADD (R3=R0+R1)
+  if (DM1.mem_data[0] != golden_mem[0])
+    err_num = err_num + 1;
+  golden_reg[3] = 32'b11001;
+
+  #(`PERIOD*4); // SUB (R4=R0-R1)
+  if (top1.p3.regfile1.rw_reg[3] != golden_reg[3])
+    err_num = err_num + 1;
+  golden_reg[4] = 32'b00001;
+
+  #(`PERIOD*4); // AND (R5=R3&R4)
+  if (top1.p3.regfile1.rw_reg[4] != golden_reg[4])
+    err_num = err_num + 1;
+  golden_reg[5] = 32'b00001;
+
+  #(`PERIOD*4); // OR (R6=R3|R4)
+  if (top1.p3.regfile1.rw_reg[5] != golden_reg[5])
+    err_num = err_num + 1;
+  golden_reg[6] = 32'b11001;
+
+  #(`PERIOD*4); // SW M8=R6
+  if (top1.p3.regfile1.rw_reg[6] != golden_reg[6])
+    err_num = err_num + 1;
+  golden_mem[8] = 32'b11001;
+
+  #(`PERIOD*4); // XOR (R7= R3^R4)
+  if (DM1.mem_data[8] != golden_mem[8])
+    err_num = err_num + 1;
+  golden_reg[7] = 32'b11000;
+
+  #(`PERIOD*4); // SLLI (R8=R0<<5’b00100)
+  if (top1.p3.regfile1.rw_reg[7] != golden_reg[7])
+    err_num = err_num + 1;
+  golden_reg[8] = 32'b11010000;
+
+  #(`PERIOD*4); // ROTRI (R9=R1>>5’b01000)
+  if (top1.p3.regfile1.rw_reg[8] != golden_reg[8])
+    err_num = err_num + 1;
+  golden_reg[9] = 32'h0C000000;
+
+  #(`PERIOD*4); // ORI (R0=R0|5’b11111)
+  if (top1.p3.regfile1.rw_reg[9] != golden_reg[9])
+    err_num = err_num + 1;
+  golden_reg[0] = 32'b11111;
+
+  #(`PERIOD*4); // XORI (R1=R1+5’b10101)
+  if (top1.p3.regfile1.rw_reg[0] != golden_reg[0])
+    err_num = err_num + 1;
+  golden_reg[1] = 32'b11001;
+  
+  #(`PERIOD*4); // ADD (R2=R0+R1)
+  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+    err_num = err_num + 1;
+  golden_reg[2] = 32'h38;
+
+  #(`PERIOD*4); // LW R1=M0
+  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+    err_num = err_num + 1;
+  golden_reg[1] = 32'h10;
+
+  #(`PERIOD*4); // AND (R3=R1&R2)
+  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+    err_num = err_num + 1;
+  golden_reg[3] = 32'h10;
+
+  #(`PERIOD*4); // ADDI (R4=R3+’d100)
+  if (top1.p3.regfile1.rw_reg[3] != golden_reg[3])
+    err_num = err_num + 1;
+  golden_reg[4] = 32'h74;
+
+  #(`PERIOD*4); // MOVI (R5=’d300)
+  if (top1.p3.regfile1.rw_reg[4] != golden_reg[4])
+    err_num = err_num + 1;
+  golden_reg[5] = 32'h12C;
+
+  #(`PERIOD*4); // XOR (R6=R4^R5)
+  if (top1.p3.regfile1.rw_reg[5] != golden_reg[5])
+    err_num = err_num + 1;
+  golden_mem[6] = 32'h158;
+
+  #(`PERIOD*4); // LW R7=M8
+  if (top1.p3.regfile1.rw_reg[6] != golden_reg[6])
+    err_num = err_num + 1;
+  golden_reg[7] = 32'h19;
+
+  #(`PERIOD*4); // R8=R7 ROT 5'b01000
+  if (top1.p3.regfile1.rw_reg[7] != golden_reg[7])
+    err_num = err_num + 1;
+  golden_reg[8] = 32'h19000000;
+
+  #(`PERIOD*4); //IDEL
+  if (top1.p3.regfile1.rw_reg[8] != golden_reg[8])
+    err_num = err_num + 1;
+  end
+
+  // for iverilog which does not support 2-dimension array.
+  initial begin
+  #(`PERIOD*2);
 
     tb_rw_reg_0 = 32'd0;
     tb_rw_reg_1 = 32'd0;
@@ -110,138 +245,130 @@ module top_tb1;
     tb_rw_reg_7 = 32'd0;
     tb_rw_reg_8 = 32'd0;
     tb_rw_reg_9 = 32'd0;
-    err_num = 0;
+
+    tb_mem_data_0 = 32'd0;
+    tb_mem_data_8 = 32'd0;
+    //tb_mem_data_19 = 32'd0; not used for this testbench
+    //tb_mem_data_35 = 32'd0;
+
+    internel_err_num = 0;
 
   #(`PERIOD*1.5);
   #(`PERIOD*4);
 
   #(`PERIOD*4) //ADDI
   tb_rw_reg_0 = 32'b01101;
-  golden_reg[0] = 32'b01101;
 
   #(`PERIOD*4); //ADDI
+  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_1 = 32'b01100;
-  golden_reg[1] = 32'b01100;
-//  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
-//    err_num = err_num + 1;
 
   #(`PERIOD*4); //MOVI
+  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'b10000;
-  golden_reg[2] = 32'b10000;
-//  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
-//    err_num = err_num + 1;
 
   #(`PERIOD*4); //SW MO=R2
+  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+    internel_err_num = internel_err_num + 1;
+  tb_mem_data_0 = 32'b10000;
 
   #(`PERIOD*4); //ADD
+  if (tb_mem_data_0 != DM1.dmem_data_0)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_3 = 32'b11001;
-  golden_reg[3] = 32'b11001;
-//  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
-//    err_num = err_num + 1;
 
   #(`PERIOD*4); //SUB
+  if (tb_rw_reg_3 != top1.p3.regfile1.rw_reg_3)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_4 = 32'b00001;
-  golden_reg[4] = 32'b00001;
-//  if (tb_rw_reg_3 != top1.p3.regfile1.rw_reg_3)
-//    err_num = err_num + 1;
 
   #(`PERIOD*4); //AND
+  if (tb_rw_reg_4 != top1.p3.regfile1.rw_reg_4)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_5 = 32'b00001;
-  golden_reg[5] = 32'b00001;
-//  if (tb_rw_reg_4 != top1.p3.regfile1.rw_reg_4)
-//    err_num = err_num + 1;
 
   #(`PERIOD*4); //OR
+  if (tb_rw_reg_5 != top1.p3.regfile1.rw_reg_5)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_6 = 32'b11001;
-  golden_reg[6] = 32'b11001;
-//  if (tb_rw_reg_5 != top1.p3.regfile1.rw_reg_5)
-//    err_num = err_num + 1;
 
   #(`PERIOD*4); //SW M8=R6
+  if (tb_rw_reg_6 != top1.p3.regfile1.rw_reg_6)
+    internel_err_num = internel_err_num + 1;
+  tb_mem_data_8 = 32'b11001;
 
   #(`PERIOD*4); //XOR
+  if (tb_mem_data_8 != DM1.dmem_data_8)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_7 = 32'b11000;
-  golden_reg[7] = 32'b11000;
-//  if (tb_rw_reg_6 != top1.p3.regfile1.rw_reg_6)
-//    err_num = err_num + 1;
 
   #(`PERIOD*4); //SLLI
+  if (tb_rw_reg_7 != top1.p3.regfile1.rw_reg_7)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_8 = 32'b11010000;
-  golden_reg[8] = 32'b11010000;
-//  if (tb_rw_reg_7 != top1.p3.regfile1.rw_reg_7)
-//    err_num = err_num + 1;
 
   #(`PERIOD*4); //ROTRI
+  if (tb_rw_reg_8 != top1.p3.regfile1.rw_reg_8)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_9 = 32'h0C000000;
-  golden_reg[9] = 32'h0C000000;
-//  if (tb_rw_reg_8 != top1.p3.regfile1.rw_reg_8)
-//    err_num = err_num + 1;
 
   #(`PERIOD*4); //ORI
+  if (tb_rw_reg_9 != top1.p3.regfile1.rw_reg_9)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_0 = 32'b11111;
-  golden_reg[0] = 32'b11111;
-//  if (tb_rw_reg_9 != top1.p3.regfile1.rw_reg_9)
-//    err_num = err_num + 1;
 
   #(`PERIOD*4); //XORI
+  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_1 = 32'b11001;
-  golden_reg[1] = 32'b11001;
-//  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
-//    err_num = err_num + 1;
   
   #(`PERIOD*4); // ADD
+  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h38;
-  golden_reg[2] = 32'h38;
-//  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
-//    err_num = err_num + 1;
   
   #(`PERIOD*4); // LW R1=M0
+  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_1 = 32'h10;
-  golden_reg[1] = 32'h10;
-//  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
-//    err_num = err_num + 1;
 
-  
   #(`PERIOD*4); // AND
+  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_3 = 32'h10;
-  golden_reg[3] = 32'h10;
-//  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
-//    err_num = err_num + 1;
   
   #(`PERIOD*4); // ADDI
+  if (tb_rw_reg_3 != top1.p3.regfile1.rw_reg_3)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_4 = 32'h74;
-  golden_reg[4] = 32'h74;
-//  if (tb_rw_reg_3 != top1.p3.regfile1.rw_reg_3)
-//    err_num = err_num + 1;
   
   #(`PERIOD*4); // MOVI
+  if (tb_rw_reg_4 != top1.p3.regfile1.rw_reg_4)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_5 = 32'h12C;
-  golden_reg[5] = 32'h12C;
-//  if (tb_rw_reg_4 != top1.p3.regfile1.rw_reg_4)
-//    err_num = err_num + 1;
   
   #(`PERIOD*4); // XOR
+  if (tb_rw_reg_5 != top1.p3.regfile1.rw_reg_5)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_6 = 32'h158;
-  golden_reg[6] = 32'h158;
-//  if (tb_rw_reg_5 != top1.p3.regfile1.rw_reg_5)
-//    err_num = err_num + 1;
   
   #(`PERIOD*4); // LW R7=M8
+  if (tb_rw_reg_6 != top1.p3.regfile1.rw_reg_6)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_7 = 32'h19;
-  golden_reg[7] = 32'h19;
-//  if (tb_rw_reg_6 != top1.p3.regfile1.rw_reg_6)
-//    err_num = err_num + 1;
   
   #(`PERIOD*4); // ROTI
+  if (tb_rw_reg_7 != top1.p3.regfile1.rw_reg_7)
+    internel_err_num = internel_err_num + 1;
   tb_rw_reg_8 = 32'h19000000;
-  golden_reg[8] = 32'h19000000;
-//  if (tb_rw_reg_7 != top1.p3.regfile1.rw_reg_7)
-//    err_num = err_num + 1;
   
   #(`PERIOD*4); //IDEL
-//  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
-//    err_num = err_num + 1;
+  if (tb_rw_reg_8 != top1.p3.regfile1.rw_reg_8)
+    internel_err_num = internel_err_num + 1;
   end
+
   /* Dump and finish */
   initial begin
     $dumpfile("top_tb1.vcd");
