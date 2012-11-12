@@ -20,6 +20,7 @@ module top_tb;
   wire DM_enable;
   wire [DataSize-1:0] DM_in;
   wire [DataSize-1:0] DM_address;
+//  wire [DataSize-1:0] DM_out;
   wire [DataSize-1:0] DM_out = DM1.mem_data[DM_address];
   
   // FIXME: for test
@@ -121,17 +122,17 @@ module top_tb;
   golden_reg[1] = 32'h09;
 
   #(`PERIOD*4); // XORI R1=R1^4'b1010  => R1=3
-  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+  if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
   golden_reg[1] = 32'h03;
 
   #(`PERIOD*4); // MOVI R0=20'd3       => R0=3
-  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+  if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
   golden_reg[0] = 32'h03;
 
   #(`PERIOD*4); // SW M0=R0           => M0=3
-  if (top1.p3.regfile1.rw_reg[0] != golden_reg[0])
+  if (top1.regfile1.rw_reg[0] != golden_reg[0])
     err_num = err_num + 1;
   golden_mem[0] = 32'h03;
 
@@ -141,34 +142,34 @@ module top_tb;
   golden_reg[0] = 32'h07;
 
   #(`PERIOD*4); // AND R1=R1&R0        => R1=3
-  if (top1.p3.regfile1.rw_reg[0] != golden_reg[0])
+  if (top1.regfile1.rw_reg[0] != golden_reg[0])
     err_num = err_num + 1;
   golden_reg[1] = 32'h03;
 
   #(`PERIOD*4); // LW R0=M0           => R0=3
-  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+  if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
   golden_reg[0] = 32'h03;
 
   #(`PERIOD*4); // NOP
 
   #(`PERIOD*4); // ADD R1=R0+R1        => R1=6
-  if (top1.p3.regfile1.rw_reg[0] != golden_reg[0])
+  if (top1.regfile1.rw_reg[0] != golden_reg[0])
     err_num = err_num + 1;
   golden_reg[1] = 32'h06;
 
   #(`PERIOD*4); // OR R1=R1|R0         => R1=7
-  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+  if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
   golden_reg[1] = 32'h07;
 
   #(`PERIOD*4); // SUB R1=R1-R0        => R1=4
-  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+  if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
   golden_reg[1] = 32'h04;
 
   #(`PERIOD*4); // SW M19=R1          => M19=4
-  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+  if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
   golden_mem[0] = 32'h04;
 
@@ -178,22 +179,22 @@ module top_tb;
   golden_reg[2] = 32'h01;
   
   #(`PERIOD*4); // SLLI R2=R2 SLL(3)   => R2=8
-  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+  if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
   golden_reg[2] = 32'h08;
 
   #(`PERIOD*4); // LW R1=M23          => R1=0
-  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+  if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
   golden_reg[1] = 32'h00;
 
   #(`PERIOD*4); // AND R1=R1&R3        => R1=0
-  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+  if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
   golden_reg[0] = 32'h00;
 
   #(`PERIOD*4); // SW M35=R2          => M35=8
-  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+  if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
   golden_mem[35] = 32'h08;
 
@@ -228,17 +229,17 @@ module top_tb;
   tb_rw_reg_1 = 32'h09;
 
   #(`PERIOD*4); // XORI R1=R1^4'b1010  => R1=3
-  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_1 = 32'h03;
 
   #(`PERIOD*4); // MOVI R0=20'd3       => R0=3
-  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_0 = 32'h03;
 
   #(`PERIOD*4); // SW M0=R0           => M0=3
-  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
+  if (tb_rw_reg_0 != top1.regfile1.rw_reg_0)
     internel_err_num = internel_err_num + 1;
   tb_mem_data_0 = 32'h03;
 
@@ -248,34 +249,34 @@ module top_tb;
   tb_rw_reg_0 = 32'h07;
 
   #(`PERIOD*4); // AND R1=R1&R0        => R1=3
-  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
+  if (tb_rw_reg_0 != top1.regfile1.rw_reg_0)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_1 = 32'h03;
 
   #(`PERIOD*4); // LW R0=M0           => R0=3
-  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_0 = 32'h03;
 
   #(`PERIOD*4); // NOP
 
   #(`PERIOD*4); // ADD R1=R0+R1        => R1=6
-  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
+  if (tb_rw_reg_0 != top1.regfile1.rw_reg_0)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_1 = 32'h06;
 
   #(`PERIOD*4); // OR R1=R1|R0         => R1=7
-  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_1 = 32'h07;
 
   #(`PERIOD*4); // SUB R1=R1-R0        => R1=4
-  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_1 = 32'h04;
 
   #(`PERIOD*4); // SW M19=R1          => M19=4
-  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
   tb_mem_data_19 = 32'h04;
 
@@ -285,22 +286,22 @@ module top_tb;
   tb_rw_reg_2 = 32'h01;
   
   #(`PERIOD*4); // SLLI R2=R2 SLL(3)   => R2=8
-  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h08;
 
   #(`PERIOD*4); // LW R1=M23          => R1=0
-  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_1 = 32'h00;
 
   #(`PERIOD*4); // AND R1=R1&R3        => R1=0
-  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_0 = 32'h00;
 
   #(`PERIOD*4); // SW M35=R2          => M35=8
-  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
   tb_mem_data_35 = 32'h08;
 
