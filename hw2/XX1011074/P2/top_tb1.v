@@ -105,7 +105,8 @@ module top_tb1;
   $readmemb("mins1.prog", IM1.mem_data);
 
   #(`PERIOD*`IR_CYCLE*22);
-  $display("cycle count: %d\n", cycle_cnt);
+  $display("cycle count: %10d\n", cycle_cnt);
+  $display("instruction count: %d\n", PC);
   $finish;
   end
 
