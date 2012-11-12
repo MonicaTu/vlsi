@@ -7,6 +7,7 @@ module top_tb;
   parameter DataSize = 32;
   parameter MemSize = 10;
   parameter DMAddrSize = 12;
+  parameter IMAddrSize = 10;
 
   parameter RegCnt = 32;
   parameter DataMemCnt = 4096;
@@ -17,6 +18,7 @@ module top_tb;
   wire IM_read;
   wire IM_write;
   wire IM_enable;
+  wire [IMAddrSize-1:0]IM_address;
   wire [MemSize-1:0] PC;
   wire [DataSize-1:0] instruction;
   wire [127:0]cycle_cnt;
@@ -77,19 +79,20 @@ module top_tb;
   
   top top1 (
     .clk(clk), 
-    .reset(reset),
+    .rst(reset),
     .instruction(instruction), 
-    .cycle_cnt(cycle_cnt), 
     .DM_out(DM_out),
+    .IM_read(IM_read), 
+    .IM_write(IM_write), 
+    .IM_enable(IM_enable),
+    .IM_address(IM_address),
     .DM_read(DM_read),
     .DM_write(DM_write),
     .DM_enable(DM_enable),
     .DM_in(DM_in),
     .DM_address(DM_address),
-    .PC(PC),
-    .IM_read(IM_read), 
-    .IM_write(IM_write), 
-    .IM_enable(IM_enable)); 
+    .Ins_cnt(PC), 
+    .Cycle_cnt(cycle_cnt)); 
   
   always begin
   	#(`PERIOD/2) clk = ~clk;
