@@ -6,6 +6,7 @@ module top_tb2;
 
   parameter DataSize = 32;
   parameter MemSize = 10;
+  parameter DMAddrSize = 12;
 
   parameter RegCnt = 32;
   parameter DataMemCnt = 4096;
@@ -24,9 +25,8 @@ module top_tb2;
   wire DM_write;
   wire DM_enable;
   wire [DataSize-1:0] DM_in;
-  wire [DataSize-1:0] DM_address;
   wire [DataSize-1:0] DM_out;
-//  wire [DataSize-1:0] DM_out = DM1.mem_data[DM_address];
+  wire [DMAddrSize-1:0] DM_address;
   
   // FIXME: for test
   reg [DataSize-1:0] mem_data_in;
