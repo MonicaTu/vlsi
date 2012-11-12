@@ -151,8 +151,8 @@ module top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_wri
 
   writeback_select_mux writeback_select_mux1 (
     .write_data(reg_write_data),
-    .DMout(DM1.mem_data[alu12_result]),
-//    .DMout(DM_out),
+//    .DMout(DM1.mem_data[alu12_result]),
+    .DMout(DM_out),
     .alu_result(alu32_result),
     .mux2to1_select(writeback_select));
 endmodule

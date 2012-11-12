@@ -1,4 +1,4 @@
-`define IR_CYCLE 'd4     // 4 clock per ir cycle
+`define IR_CYCLE 'd8     // 4 clock per ir cycle
 `define TICK_SIZE 'd128  // 128 bits
 `define MEM_SIZE 'd10    // 10 bits
 `define IR_SIZE 'd32     // 32 bits
