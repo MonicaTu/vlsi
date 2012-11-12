@@ -135,7 +135,7 @@ module top_tb2;
   golden_reg[0] = 32'h00C8;
 
   #(`PERIOD*4) //SW MO=R0            M0=0xC8
-  if (top1.p3.regfile1.rw_reg[0] != golden_reg[0])
+  if (top1.regfile1.rw_reg[0] != golden_reg[0])
     err_num = err_num + 1;
   golden_mem[0] = 32'h00C8;
 
@@ -145,7 +145,7 @@ module top_tb2;
   golden_reg[1] = 32'h012C;
 
   #(`PERIOD*4) //SW M8=R1            M8=0x12C
-  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+  if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
   golden_mem[8] = 32'h012C;
 
@@ -155,7 +155,7 @@ module top_tb2;
   golden_reg[2] = 32'h01F4;
 
   #(`PERIOD*4) //SW M19=R2           M19=0x1F4
-  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+  if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
   golden_mem[19] = 32'h01F4;
 
@@ -165,12 +165,12 @@ module top_tb2;
   golden_reg[2] = 32'h00C8;
 
   #(`PERIOD*4) //SUB R2=R2-R1
-  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+  if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
   golden_reg[2] = 32'h0064;
 
   #(`PERIOD*4) //SW M23=R2           M23=0x64
-  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+  if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
   golden_mem[23] = 32'h0064;
 
@@ -180,57 +180,57 @@ module top_tb2;
   golden_reg[1] = 32'h01F4;
 
   #(`PERIOD*4) //AND R2=R0&R1
-  if (top1.p3.regfile1.rw_reg[1] != golden_reg[1])
+  if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
   golden_reg[2] = 32'h00C0;
 
   #(`PERIOD*4) //LW R0=M8            R0=0x12C
-  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+  if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
   golden_reg[0] = 32'h012C;
 
   #(`PERIOD*4) //OR R2=R0|R1
-  if (top1.p3.regfile1.rw_reg[0] != golden_reg[0])
+  if (top1.regfile1.rw_reg[0] != golden_reg[0])
     err_num = err_num + 1;
   golden_reg[2] = 32'h01FC;
 
   #(`PERIOD*4) //XOR R2=R0^R1
-  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+  if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
   golden_reg[2] = 32'h00D8;
 
   #(`PERIOD*4) //SRLI R2=R0>>5'b00011
-  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+  if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
   golden_reg[2] = 32'h0025;
 
   #(`PERIOD*4) //SLLI R2=R0<<5'b00011
-  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+  if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
   golden_reg[2] = 32'h0960;
 
   #(`PERIOD*4) //LW R0=M23           R0=0x64
-  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+  if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
   golden_reg[0] = 32'h0064;
 
   #(`PERIOD*4) //ROTRI R2=R0 ROT 5'b00011
-  if (top1.p3.regfile1.rw_reg[0] != golden_reg[0])
+  if (top1.regfile1.rw_reg[0] != golden_reg[0])
     err_num = err_num + 1;
   golden_reg[2] = 32'h8000000C;
 
   #(`PERIOD*4) //LW R3=M23           R3=0x64
-  if (top1.p3.regfile1.rw_reg[2] != golden_reg[2])
+  if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
   golden_reg[3] = 32'h0064;
 
   #(`PERIOD*4) //ORI R4=R3|'d100
-  if (top1.p3.regfile1.rw_reg[3] != golden_reg[3])
+  if (top1.regfile1.rw_reg[3] != golden_reg[3])
     err_num = err_num + 1;
   golden_reg[4] = 32'h0064;
 
   #(`PERIOD*4) //SW M0=R4            M0=0x64
-  if (top1.p3.regfile1.rw_reg[4] != golden_reg[4])
+  if (top1.regfile1.rw_reg[4] != golden_reg[4])
     err_num = err_num + 1;
   golden_mem[0] = 32'h0064;
 
@@ -240,7 +240,7 @@ module top_tb2;
   golden_reg[4] = 32'h0000;
 
   #(`PERIOD*4) //SW M8=R2            M8=0x8000000C
-  if (top1.p3.regfile1.rw_reg[4] != golden_reg[4])
+  if (top1.regfile1.rw_reg[4] != golden_reg[4])
     err_num = err_num + 1;
   golden_mem[8] = 32'h8000000C;
 
@@ -280,7 +280,7 @@ module top_tb2;
   tb_rw_reg_0 = 32'h00C8;
 
   #(`PERIOD*4) //SW MO=R0            M0=0xC8
-  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
+  if (tb_rw_reg_0 != top1.regfile1.rw_reg_0)
     internel_err_num = internel_err_num + 1;
   tb_mem_data_0 = 32'h00C8;
 
@@ -290,7 +290,7 @@ module top_tb2;
   tb_rw_reg_1 = 32'h012C;
 
   #(`PERIOD*4) //SW M8=R1            M8=0x12C
-  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
   tb_mem_data_8 = 32'h012C;
 
@@ -300,7 +300,7 @@ module top_tb2;
   tb_rw_reg_2 = 32'h01F4;
 
   #(`PERIOD*4) //SW M19=R2           M19=0x1F4
-  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
   tb_mem_data_19 = 32'h01F4;
 
@@ -310,12 +310,12 @@ module top_tb2;
   tb_rw_reg_2 = 32'h00C8;
 
   #(`PERIOD*4) //SUB R2=R2-R1
-  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h0064;
 
   #(`PERIOD*4) //SW M23=R2           M23=0x64
-  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
   tb_mem_data_23 = 32'h0064;
 
@@ -325,57 +325,57 @@ module top_tb2;
   tb_rw_reg_1 = 32'h01F4;
 
   #(`PERIOD*4) //AND R2=R0&R1
-  if (tb_rw_reg_1 != top1.p3.regfile1.rw_reg_1)
+  if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h00C0;
 
   #(`PERIOD*4) //LW R0=M8            R0=0x12C
-  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_0 = 32'h012C;
 
   #(`PERIOD*4) //OR R2=R0|R1
-  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
+  if (tb_rw_reg_0 != top1.regfile1.rw_reg_0)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h01FC;
 
   #(`PERIOD*4) //XOR R2=R0^R1
-  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h00D8;
 
   #(`PERIOD*4) //SRLI R2=R0>>5'b00011
-  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h0025;
 
   #(`PERIOD*4) //SLLI R2=R0<<5'b00011
-  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h0960;
 
   #(`PERIOD*4) //LW R0=M23           R0=0x64
-  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_0 = 32'h0064;
 
   #(`PERIOD*4) //ROTRI R2=R0 ROT 5'b00011
-  if (tb_rw_reg_0 != top1.p3.regfile1.rw_reg_0)
+  if (tb_rw_reg_0 != top1.regfile1.rw_reg_0)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h8000000C;
 
   #(`PERIOD*4) //LW R3=M23           R3=0x64
-  if (tb_rw_reg_2 != top1.p3.regfile1.rw_reg_2)
+  if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_3 = 32'h0064;
 
   #(`PERIOD*4) //ORI R4=R3|'d100
-  if (tb_rw_reg_3 != top1.p3.regfile1.rw_reg_3)
+  if (tb_rw_reg_3 != top1.regfile1.rw_reg_3)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_4 = 32'h0064;
 
   #(`PERIOD*4) //SW M0=R4            M0=0x64
-  if (tb_rw_reg_4 != top1.p3.regfile1.rw_reg_4)
+  if (tb_rw_reg_4 != top1.regfile1.rw_reg_4)
     internel_err_num = internel_err_num + 1;
   tb_mem_data_0 = 32'h0064;
 
@@ -385,7 +385,7 @@ module top_tb2;
   tb_rw_reg_4 = 32'h0000;
 
   #(`PERIOD*4) //SW M8=R2            M8=0x8000000C
-  if (tb_rw_reg_4 != top1.p3.regfile1.rw_reg_4)
+  if (tb_rw_reg_4 != top1.regfile1.rw_reg_4)
     internel_err_num = internel_err_num + 1;
   tb_mem_data_8 = 32'h8000000C;
 
