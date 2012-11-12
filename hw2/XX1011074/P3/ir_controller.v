@@ -48,8 +48,8 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
   wire [AddrSize-1:0]read_address2 = present_instruction[14:10];
   wire [AddrSize-1:0]write_address = present_instruction[24:20];
 
-  reg [1:0] current_state;
-  reg [1:0] next_state;
+  reg [2:0] current_state;
+  reg [2:0] next_state;
 
   // op & sub_op
   parameter TYPE_BASIC=6'b100000;
@@ -65,7 +65,7 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
   parameter LW=8'b00000010, SW=8'b00001010;
 
   // state
-  parameter stopState = 2'b00, fetchState = 2'b01, exeState = 2'b10, writeState =  2'b11;
+  parameter stopState = 3'b000, fetchState = 3'b001, exeState = 3'b010, writeState =  3'b011, lwFetchState = 3'b100, lwWriteState = 3'b101, swFetchState = 3'b110, swWriteState = 3'b111;
   // mux4to1_select
   parameter sel_imm5ZE = 2'b00, sel_imm15SE = 2'b01, sel_imm15ZE = 2'b10, sel_imm20SE =  2'b11;
   // writeback_select
@@ -101,27 +101,87 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
       enable_im <= 1;
       enable_im_fetch <= 1;
       enable_im_write <= 0;
-      enable_dm <= 0;
-      enable_dm_fetch <= 0;
+      enable_dm <= 0;       // FIXME
+      enable_dm_fetch <= 0; // FIXME
       enable_dm_write <= 0;
-      enable_reg_read <= 1;
+      enable_reg_read <= 1; // FIXME
       enable_alu_execute <= 0;
       enable_reg_write <= 0;
     end
     exeState : begin
+      next_state <= lwFetchState;
+//      if (opcode == TYPE_LS) begin
+//        enable_im <= 0;
+//        enable_im_fetch <= 0;
+//        enable_im_write <= 0;
+//        enable_alu_execute <= 0;
+//        enable_reg_read <= 0;
+//        enable_reg_write <= 0;
+//        enable_dm <= 0;
+//        enable_dm_fetch <= 0;
+//        enable_dm_write <= 0;
+//      end else begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+        enable_reg_read <= 0;
+        enable_alu_execute <= 1;
+        enable_reg_write <= 0;
+//      end
+    end
+    lwFetchState : begin
+      next_state <= lwWriteState;
+      if (opcode == TYPE_LS && sub_opcode_8bit == LW) begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 1;
+        enable_dm_fetch <= 1;
+        enable_dm_write <= 0;
+      end else begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end
+    end
+    lwWriteState : begin
       next_state <= writeState;
-      enable_im <= 0;
-      enable_im_fetch <= 0;
-      enable_im_write <= 0;
-      enable_dm <= 0;
-      enable_dm_fetch <= 0;
-      enable_dm_write <= 0;
-      enable_reg_read <= 0;
-      enable_alu_execute <= 1;
-      enable_reg_write <= 0;
+      if (opcode == TYPE_LS && sub_opcode_8bit == LW) begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end else begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end
     end
     writeState : begin
-      next_state <= stopState;
+      next_state <= swFetchState;
       enable_im <= 0;
       enable_im_fetch <= 0;
       enable_im_write <= 0;
@@ -132,19 +192,65 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
         enable_dm <= 0;
         enable_dm_fetch <= 0;
         enable_dm_write <= 0;
+      end else if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end else begin
+        enable_reg_read <= 0; //FIXME
+        enable_reg_write <= 1;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
       end
-      else if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+    end
+    swFetchState : begin
+      next_state <= swWriteState;
+      if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
         enable_reg_read <= 1;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end else begin 
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end
+    end
+    swWriteState : begin
+      next_state <= stopState;
+      if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
         enable_reg_write <= 0;
         enable_dm <= 1;
         enable_dm_fetch <= 0;
         enable_dm_write <= 1;
-      end
-      else begin
+      end else begin 
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
         enable_reg_read <= 0;
-        enable_reg_write <= 1;
-        enable_dm <= 1;
-        enable_dm_fetch <= 1;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
         enable_dm_write <= 0;
       end
     end

@@ -25,7 +25,7 @@ module DM(clk, rst, enable_fetch, enable_write, enable_dm, DMin, DMout, DM_addre
 //  wire [DataSize-1:0]mem_data_5 = mem_data[5];
 //  wire [DataSize-1:0]mem_data_6 = mem_data[6];
 //  wire [DataSize-1:0]mem_data_7 = mem_data[7];
-//  wire [DataSize-1:0]mem_data_8 = mem_data[8];
+  wire [DataSize-1:0]mem_data_8 = mem_data[8];
 //  wire [DataSize-1:0]mem_data_9 = mem_data[9];
 //  wire [DataSize-1:0]mem_data_10 = mem_data[10];
 //  wire [DataSize-1:0]mem_data_11 = mem_data[11];

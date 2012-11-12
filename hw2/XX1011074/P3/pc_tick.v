@@ -1,11 +1,10 @@
-`define TICK_SIZE 'd128  // 128 bits
-`define MEM_SIZE 'd10    // 10 bits
-`define IR_SIZE 'd32     // 32 bits
-`define IR_SIZE_BYTE 'd4 // 32 bits = 4 bytes
+`define TICK_SIZE    ('d128) // 128 bits
+`define MEM_SIZE     ('d10)  // 10 bits
+`define IR_SIZE      ('d32)  // 32 bits
+`define IR_SIZE_BYTE ('d4)   // 32 bits = 4 bytes
+`define IR_CYCLE     ('d8)
 
 module pc_tick(pc, cycle_cnt, reset, clock);
-
-  parameter cycle = 4;
 
   // interface
   input clock;
@@ -25,7 +24,7 @@ module pc_tick(pc, cycle_cnt, reset, clock);
     end
     else begin
       cycle_cnt = cycle_cnt + 1;
-      if ((cycle_cnt % cycle) == 0) begin
+      if ((cycle_cnt % `IR_CYCLE) == 0) begin
         pc = pc + 1; 
       end
       else begin
