@@ -15,6 +15,7 @@ module top_tb;
   wire IM_enable;
   wire [MemSize-1:0] PC;
   wire [DataSize-1:0] instruction;
+  wire [127:0]cycle_cnt;
 
   wire DM_read;
   wire DM_write;
@@ -75,6 +76,7 @@ module top_tb;
     .clk(clk), 
     .reset(reset),
     .instruction(instruction), 
+    .cycle_cnt(cycle_cnt), 
     .DM_out(DM_out),
     .DM_read(DM_read),
     .DM_write(DM_write),
@@ -101,7 +103,9 @@ module top_tb;
     
   $readmemb("mins.prog", IM1.mem_data);
 
-  #(`PERIOD*`IR_CYCLE*20) $finish;
+  #(`PERIOD*`IR_CYCLE*20);
+  $display("cycle count: %d\n", cycle_cnt);
+  $finish;
   end
 
   /* Create tb waveform */

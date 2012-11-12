@@ -7,7 +7,7 @@
 `include "imm_reg_select_mux.v"
 `include "writeback_select_mux.v"
 
-module top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, DM_out, instruction, clk, reset);
+module top (cycle_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, DM_out, instruction, clk, reset);
   parameter DataSize = 32;
   parameter MemSize  = 10;
   parameter AddrSize = 5;
@@ -27,6 +27,7 @@ module top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_wri
   output IM_write;
   output IM_enable;
   output [MemSize-1:0] PC;
+  output [127:0] cycle_cnt;
 //  output [9:0]IM_address;
 
   wire DM_read;
@@ -57,7 +58,7 @@ module top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_wri
   wire [1:0] mux4to1_select;
   wire writeback_select;
   wire imm_reg_select;
-  wire [127:0] tick;
+  wire [127:0] cycle_cnt;
   wire alu32_overflow;
   
   // others
@@ -74,7 +75,7 @@ module top (DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_wri
     .clock(clk), 
     .reset(reset), 
     .pc(PC), 
-    .tick(tick));
+    .cycle_cnt(cycle_cnt));
 
   ir_controller ir_conrtoller1 (
     .enable_dm_fetch(DM_read), 
