@@ -275,7 +275,7 @@ module top_tb1;
   tb_mem_data_0 = 32'b10000;
 
   #(`PERIOD*4); //ADD
-  if (tb_mem_data_0 != DM1.dmem_data_0)
+  if (tb_mem_data_0 != DM1.mem_data_0)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_3 = 32'b11001;
 
@@ -300,7 +300,7 @@ module top_tb1;
   tb_mem_data_8 = 32'b11001;
 
   #(`PERIOD*4); //XOR
-  if (tb_mem_data_8 != DM1.dmem_data_8)
+  if (tb_mem_data_8 != DM1.mem_data_8)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_7 = 32'b11000;
 
