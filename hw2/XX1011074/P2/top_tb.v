@@ -7,6 +7,9 @@ module top_tb;
   parameter DataSize = 32;
   parameter MemSize = 10;
 
+  parameter RegCnt = 32;
+  parameter DataMemCnt = 4096;
+
   reg clk;
   reg reset;
 
@@ -28,8 +31,8 @@ module top_tb;
   // FIXME: for test
   reg [DataSize-1:0] mem_data_in;
 
-  reg [DataSize-1:0]golden_reg[31:0];
-  reg [MemSize-1:0]golden_mem[10:0];
+  reg [DataSize-1:0]golden_reg[RegCnt-1:0];
+  reg [DataSize-1:0]golden_mem[DataMemCnt-1:0];
   
   integer i;
   integer err_num;
@@ -112,10 +115,10 @@ module top_tb;
   /* Create tb waveform */
   initial begin
   #(`PERIOD*2); 
-    for ( i = 0; i < DataSize; i = i+1) begin
+    for ( i = 0; i < RegCnt; i = i+1) begin
       golden_reg[i] = 32'd0;
     end
-    for ( i = 0; i < MemSize; i = i+1) begin
+    for ( i = 0; i < DataMemCnt; i = i+1) begin
       golden_mem[i] = 32'd0;
     end
 
