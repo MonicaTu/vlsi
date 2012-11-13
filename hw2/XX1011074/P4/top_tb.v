@@ -160,8 +160,16 @@ module top_tb;
     $readmemb("mins.prog", MEMORY1.mem);
     
     #(`PERIOD*18); // for boot
-    #(`PERIOD*`IR_CYCLE*18); // for instructions
-    $finish;
+    #(`PERIOD*`IR_CYCLE*19); // for instructions
+
+    $display("cycle count: %10d", Cycle_cnt);
+    $display("instruction count: %d", Ins_cnt);
+    $display("errors: %10d", err_num);
+    if (err_num == 0)
+      $display("<PASS>\n");
+    else
+      $display("<FAIL>\n");
+      $finish;
   end
 
   /* Create tb waveform */
@@ -175,7 +183,7 @@ module top_tb;
     end
 
     err_num = 0;
-    #(`PERIOD*18); // for boot
+    #(`PERIOD*16*2); // for boot
 
   #(`PERIOD*1.5);
 //  #(`PERIOD*`IR_CYCLE);
@@ -186,31 +194,37 @@ module top_tb;
   #(`PERIOD*`IR_CYCLE); // XORI R1=R1^4'b1010  => R1=3
   if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[1] = 32'h03;
 
   #(`PERIOD*`IR_CYCLE); // MOVI R0=20'd3       => R0=3
   if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[0] = 32'h03;
 
   #(`PERIOD*`IR_CYCLE); // SW M0=R0           => M0=3
   if (top1.regfile1.rw_reg[0] != golden_reg[0])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_mem[0] = 32'h03;
 
   #(`PERIOD*`IR_CYCLE); // ORI R0=R0|4'b0100   => R0=7
   if (DM1.mem_data[0] != golden_mem[0])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[0] = 32'h07;
 
   #(`PERIOD*`IR_CYCLE); // AND R1=R1&R0        => R1=3
   if (top1.regfile1.rw_reg[0] != golden_reg[0])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[1] = 32'h03;
 
   #(`PERIOD*`IR_CYCLE); // LW R0=M0           => R0=3
   if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[0] = 32'h03;
 
   #(`PERIOD*`IR_CYCLE); // NOP
@@ -218,59 +232,61 @@ module top_tb;
   #(`PERIOD*`IR_CYCLE); // ADD R1=R0+R1        => R1=6
   if (top1.regfile1.rw_reg[0] != golden_reg[0])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[1] = 32'h06;
 
   #(`PERIOD*`IR_CYCLE); // OR R1=R1|R0         => R1=7
   if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[1] = 32'h07;
 
   #(`PERIOD*`IR_CYCLE); // SUB R1=R1-R0        => R1=4
   if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[1] = 32'h04;
 
   #(`PERIOD*`IR_CYCLE); // SW M19=R1          => M19=4
   if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
-  golden_mem[0] = 32'h04;
+    if (err_num != 0)$display("xxx");
+  golden_mem[19] = 32'h04;
 
   #(`PERIOD*`IR_CYCLE); // SRLI R2=R0 SRL(1)   => R2=1
   if (DM1.mem_data[19] != golden_mem[19])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[2] = 32'h01;
   
   #(`PERIOD*`IR_CYCLE); // SLLI R2=R2 SLL(3)   => R2=8
   if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[2] = 32'h08;
 
   #(`PERIOD*`IR_CYCLE); // LW R1=M23          => R1=0
   if (top1.regfile1.rw_reg[2] != golden_reg[2])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[1] = 32'h00;
 
   #(`PERIOD*`IR_CYCLE); // AND R1=R1&R3        => R1=0
   if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_reg[0] = 32'h00;
 
   #(`PERIOD*`IR_CYCLE); // SW M35=R2          => M35=8
   if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
+    if (err_num != 0)$display("xxx");
   golden_mem[35] = 32'h08;
 
   #(`PERIOD*`IR_CYCLE); //IDEL
   if (DM1.mem_data[35] != golden_mem[35])
     err_num = err_num + 1;
-
-  $display("cycle count: %10d", Cycle_cnt);
-  $display("instruction count: %d", Ins_cnt);
-  $display("errors: %10d", err_num);
-  if (err_num == 0)
-    $display("<PASS>\n");
-  else
-    $display("<FAIL>\n");
+    if (err_num != 0)$display("xxx");
   end
 
   // for iverilog which does not support 2-dimension array.
@@ -294,6 +310,8 @@ module top_tb;
 
   #(`PERIOD*5.5);
   //#(`PERIOD*`IR_CYCLE);
+    
+    #(`PERIOD*16*2); // for boot
 
   #(`PERIOD*`IR_CYCLE); // ADDI R1=R1+4'b1001  => R1=9
   tb_rw_reg_1 = 32'h09;

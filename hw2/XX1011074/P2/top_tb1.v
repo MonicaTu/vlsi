@@ -157,7 +157,7 @@ module top_tb1;
   #(`PERIOD*`IR_CYCLE); // SUB (R4=R0-R1)
   if (top1.regfile1.rw_reg[3] != golden_reg[3])
     err_num = err_num + 1;
-  golden_reg[`IR_CYCLE] = 32'b00001;
+  golden_reg[4] = 32'b00001;
 
   #(`PERIOD*`IR_CYCLE); // AND (R5=R3&R4)
   if (top1.regfile1.rw_reg[4] != golden_reg[4])
@@ -227,7 +227,7 @@ module top_tb1;
   #(`PERIOD*`IR_CYCLE); // XOR (R6=R4^R5)
   if (top1.regfile1.rw_reg[5] != golden_reg[5])
     err_num = err_num + 1;
-  golden_mem[6] = 32'h158;
+  golden_reg[6] = 32'h158;
 
   #(`PERIOD*`IR_CYCLE); // LW R7=M8
   if (top1.regfile1.rw_reg[6] != golden_reg[6])

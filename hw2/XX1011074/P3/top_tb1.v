@@ -8,8 +8,10 @@
 module top_tb1;
 
   parameter DataSize = 32;
-  parameter MemSize = 10;
+  parameter IMSize = 10;
   parameter DMAddrSize = 12;
+  parameter IMAddrSize = 10;
+  parameter InsSize = 64;
 
   parameter RegCnt = 32;
   parameter DataMemCnt = 4096;
@@ -20,9 +22,11 @@ module top_tb1;
   wire IM_read;
   wire IM_write;
   wire IM_enable;
-  wire [MemSize-1:0] PC;
+  wire [IMAddrSize-1:0]IM_address;
+  wire [IMSize-1:0] PC;
   wire [DataSize-1:0] instruction;
-  wire [127:0]cycle_cnt;
+  wire [127:0]Cycle_cnt;
+  wire [InsSize-1:0] Ins_cnt;
 
   wire DM_read;
   wire DM_write;
@@ -62,11 +66,11 @@ module top_tb1;
   IM IM1 (
     .clk(clk), 
     .rst(reset), 
-    .IM_address(PC), 
+    .IM_address(IM_address), 
     .enable_fetch(IM_read), 
     .enable_write(IM_write), 
     .enable_im(IM_enable), 
-    .IMin(mem_data_in), 
+    .IMin(MEM_data), 
     .IMout(instruction));
   
   DM DM1 (
@@ -80,20 +84,21 @@ module top_tb1;
     .DM_address(DM_address));
   
   top top1 (
-    .clk(clk), 
-    .reset(reset),
-    .instruction(instruction), 
-    .cycle_cnt(cycle_cnt), 
-    .DM_out(DM_out),
+    .Ins_cnt(Ins_cnt), 
+    .Cycle_cnt(Cycle_cnt),
     .DM_read(DM_read),
     .DM_write(DM_write),
     .DM_enable(DM_enable),
     .DM_in(DM_in),
     .DM_address(DM_address),
-    .PC(PC),
     .IM_read(IM_read), 
     .IM_write(IM_write), 
-    .IM_enable(IM_enable)); 
+    .IM_enable(IM_enable), 
+    .IM_address(IM_address), 
+    .DM_out(DM_out),
+    .instruction(instruction),
+    .rst(reset),
+    .clk(clk));
   
   always begin
   	#(`PERIOD/2) clk = ~clk;
@@ -109,11 +114,16 @@ module top_tb1;
   reset = 1'b0;
     
   $readmemb("mins1.prog", IM1.mem_data);
-
   #(`PERIOD*`IR_CYCLE*22);
-  $display("cycle count: %10d\n", cycle_cnt);
-  $display("instruction count: %d\n", PC);
-  $finish;
+
+    $display("cycle count: %10d", Cycle_cnt);
+    $display("instruction count: %d", Ins_cnt);
+    $display("errors: %10d", err_num);
+    if (err_num == 0)
+      $display("<PASS>\n");
+    else
+      $display("<FAIL>\n");
+      $finish;
   end
 
   /* Create tb waveform */
@@ -157,7 +167,7 @@ module top_tb1;
   #(`PERIOD*`IR_CYCLE); // SUB (R4=R0-R1)
   if (top1.regfile1.rw_reg[3] != golden_reg[3])
     err_num = err_num + 1;
-  golden_reg[`IR_CYCLE] = 32'b00001;
+  golden_reg[4] = 32'b00001;
 
   #(`PERIOD*`IR_CYCLE); // AND (R5=R3&R4)
   if (top1.regfile1.rw_reg[4] != golden_reg[4])
@@ -227,7 +237,7 @@ module top_tb1;
   #(`PERIOD*`IR_CYCLE); // XOR (R6=R4^R5)
   if (top1.regfile1.rw_reg[5] != golden_reg[5])
     err_num = err_num + 1;
-  golden_mem[6] = 32'h158;
+  golden_reg[6] = 32'h158;
 
   #(`PERIOD*`IR_CYCLE); // LW R7=M8
   if (top1.regfile1.rw_reg[6] != golden_reg[6])

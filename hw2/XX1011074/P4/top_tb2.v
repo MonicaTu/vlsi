@@ -161,8 +161,16 @@ module top_tb2;
     $readmemb("mins2.prog", MEMORY1.mem);
     
     #(`PERIOD*25); // for boot
-    #(`PERIOD*`IR_CYCLE*25); // for instructions
-    $finish;
+    #(`PERIOD*`IR_CYCLE*26); // for instructions
+
+    $display("cycle count: %10d", Cycle_cnt);
+    $display("instruction count: %d", Ins_cnt);
+    $display("errors: %10d", err_num);
+    if (err_num == 0)
+      $display("<PASS>\n");
+    else
+      $display("<FAIL>\n");
+      $finish;
   end
 
   /* Create tb waveform */
@@ -176,7 +184,7 @@ module top_tb2;
     end
 
     err_num = 0;
-    #(`PERIOD*25); // for boot
+    #(`PERIOD*(23+9)); // for boot
 
   #(`PERIOD*1.5);
 //  #(`PERIOD*`IR_CYCLE);
@@ -332,6 +340,8 @@ module top_tb2;
 
   #(`PERIOD*5.5);
   //#(`PERIOD*`IR_CYCLE);
+    
+  #(`PERIOD*(23+9)); // for boot
 
   #(`PERIOD*`IR_CYCLE) //NOP
 

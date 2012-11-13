@@ -183,7 +183,7 @@ module top_tb;
   #(`PERIOD*`IR_CYCLE); // SW M19=R1          => M19=4
   if (top1.regfile1.rw_reg[1] != golden_reg[1])
     err_num = err_num + 1;
-  golden_mem[0] = 32'h04;
+  golden_mem[19] = 32'h04;
 
   #(`PERIOD*`IR_CYCLE); // SRLI R2=R0 SRL(1)   => R2=1
   if (DM1.mem_data[19] != golden_mem[19])
