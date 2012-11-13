@@ -1,7 +1,12 @@
-module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2, write_address, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
+/* TODO: 
+          output reg
+*/
+module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im_write, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2, write_address, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
   parameter MemSize = 10;
   parameter DataSize = 32;
   parameter AddrSize = 5;
+  parameter InsSize = 64;
+  parameter IMAddrSize = 10;
 
   /* top */
   input clock;
@@ -9,7 +14,11 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
   input [MemSize-1:0] PC;
   input [DataSize-1:0] ir;
 
+  output reg [InsSize-1:0] Ins_cnt;
+  output reg [IMAddrSize-1:0] IM_address;
+
   output reg enable_im_fetch;
+  output reg enable_im_write;
   output reg enable_im;
   output reg enable_dm_fetch;
   output reg enable_dm_write;
@@ -35,6 +44,7 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
   output [AddrSize-1:0]write_address;
   
   /* internal */
+  reg [DataSize-1:0] present_instruction;
   wire [5:0] opcode = present_instruction[30:25];
   wire [4:0] sub_opcode_5bit = present_instruction[4:0];
   wire [7:0] sub_opcode_8bit = present_instruction[7:0];
@@ -46,9 +56,8 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
   wire [AddrSize-1:0]read_address2 = present_instruction[14:10];
   wire [AddrSize-1:0]write_address = present_instruction[24:20];
 
-  reg [1:0] current_state;
-  reg [1:0] next_state;
-  reg [DataSize-1:0] present_instruction;
+  reg [2:0] current_state;
+  reg [2:0] next_state;
 
   // op & sub_op
   parameter TYPE_BASIC=6'b100000;
@@ -64,13 +73,17 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
   parameter LW=8'b00000010, SW=8'b00001010;
 
   // state
-  parameter stopState = 2'b00, fetchState = 2'b01, exeState = 2'b10, writeState =  2'b11;
+  parameter stopState = 3'b000, fetchState = 3'b001, exeState = 3'b010, writeState =  3'b011, lwFetchState = 3'b100, lwWriteState = 3'b101, swFetchState = 3'b110, swWriteState = 3'b111;
   // mux4to1_select
   parameter sel_imm5ZE = 2'b00, sel_imm15SE = 2'b01, sel_imm15ZE = 2'b10, sel_imm20SE =  2'b11;
   // writeback_select
   parameter sel_aluResult = 1'b0, sel_DMout = 1'b1; 
   // imm_reg_select
   parameter sel_regOut = 1'b0, sel_immOut = 1'b1;
+     
+  initial begin
+    Ins_cnt = 0;
+  end
 
   always @(negedge clock)
   begin
@@ -87,6 +100,7 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
       next_state <= fetchState;
       enable_im <= 1;
       enable_im_fetch <= 1;
+      enable_im_write <= 0;
       enable_dm <= 0;
       enable_dm_fetch <= 0;
       enable_dm_write <= 0;
@@ -96,30 +110,93 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
     end
     fetchState : begin
       next_state <= exeState;
-      enable_im <= 1;
-      enable_im_fetch <= 1;
-      enable_dm <= 0;
-      enable_dm_fetch <= 0;
+      enable_im <= 0;
+      enable_im_fetch <= 0;
+      enable_im_write <= 0;
+      enable_dm <= 0;       // FIXME
+      enable_dm_fetch <= 0; // FIXME
       enable_dm_write <= 0;
-      enable_reg_read <= 1;
+      enable_reg_read <= 1; // FIXME
       enable_alu_execute <= 0;
       enable_reg_write <= 0;
     end
     exeState : begin
+      next_state <= lwFetchState;
+//      if (opcode == TYPE_LS) begin
+//        enable_im <= 0;
+//        enable_im_fetch <= 0;
+//        enable_im_write <= 0;
+//        enable_alu_execute <= 0;
+//        enable_reg_read <= 0;
+//        enable_reg_write <= 0;
+//        enable_dm <= 0;
+//        enable_dm_fetch <= 0;
+//        enable_dm_write <= 0;
+//      end else begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+        enable_reg_read <= 0;
+        enable_alu_execute <= 1;
+        enable_reg_write <= 0;
+//      end
+    end
+    lwFetchState : begin
+      next_state <= lwWriteState;
+      if (opcode == TYPE_LS && sub_opcode_8bit == LW) begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 1;
+        enable_dm_fetch <= 1;
+        enable_dm_write <= 0;
+      end else begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end
+    end
+    lwWriteState : begin
       next_state <= writeState;
-      enable_im <= 0;
-      enable_im_fetch <= 0;
-      enable_dm <= 0;
-      enable_dm_fetch <= 0;
-      enable_dm_write <= 0;
-      enable_reg_read <= 0;
-      enable_alu_execute <= 1;
-      enable_reg_write <= 0;
+      if (opcode == TYPE_LS && sub_opcode_8bit == LW) begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end else begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end
     end
     writeState : begin
-      next_state <= stopState;
+      next_state <= swFetchState;
       enable_im <= 0;
       enable_im_fetch <= 0;
+      enable_im_write <= 0;
       enable_alu_execute <= 0;
       if (opcode == TYPE_BASIC && sub_opcode_5bit == SRLI && imm5 == 5'b0) begin// NOP
         enable_reg_read <= 0;
@@ -127,19 +204,65 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
         enable_dm <= 0;
         enable_dm_fetch <= 0;
         enable_dm_write <= 0;
+      end else if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end else begin
+        enable_reg_read <= 0; //FIXME
+        enable_reg_write <= 1;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
       end
-      else if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+    end
+    swFetchState : begin
+      next_state <= swWriteState;
+      if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
         enable_reg_read <= 1;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end else begin 
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
+        enable_dm_write <= 0;
+      end
+    end
+    swWriteState : begin
+      next_state <= stopState;
+      if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
+        enable_reg_read <= 0;
         enable_reg_write <= 0;
         enable_dm <= 1;
         enable_dm_fetch <= 0;
         enable_dm_write <= 1;
-      end
-      else begin
+      end else begin 
+        enable_im <= 0;
+        enable_im_fetch <= 0;
+        enable_im_write <= 0;
+        enable_alu_execute <= 0;
         enable_reg_read <= 0;
-        enable_reg_write <= 1;
-        enable_dm <= 1;
-        enable_dm_fetch <= 1;
+        enable_reg_write <= 0;
+        enable_dm <= 0;
+        enable_dm_fetch <= 0;
         enable_dm_write <= 0;
       end
     end
@@ -199,19 +322,25 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
     endcase
   end
 
-  // FIXME
-//  always @(negedge enable_reg_read)
-  always @(negedge clock)
+  always @(negedge enable_im_fetch)
   begin
-  // FIXME
-//    if(PC == 0)
-//      present_instruction <= 0;
-//    else
+    if(PC == 0) begin
+      present_instruction <= 0;
+    end else begin
       present_instruction <= ir;
-      
-//    if (ir)
-//      $display("(%d) %h:%h", PC, ir, present_instruction);
+    end
   end
+
+  always @ (PC) begin
+      IM_address <= PC;
+  end
+
+  always @ (present_instruction) begin
+    if (present_instruction)
+        Ins_cnt <= Ins_cnt + 1;
+//    $display("PC:%d cnt:%d ir:%b", IM_address, Ins_cnt, present_instruction);
+  end
+
 
 endmodule
 
