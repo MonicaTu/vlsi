@@ -6,6 +6,7 @@ module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enab
   parameter AddrSize = 5;
   parameter InsSize = 64;
   parameter IMAddrSize = 10;
+  parameter im_start = 'h80; // FIXME
 
   /* top */
   input clock;
@@ -349,7 +350,7 @@ module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enab
   end
 
   always @ (PC) begin
-      IM_address <= PC;
+      IM_address <= (PC + im_start);
   end
 
   always @ (present_instruction) begin

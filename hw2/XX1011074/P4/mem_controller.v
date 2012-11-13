@@ -1,6 +1,7 @@
 module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr, mem_enable, mem_en_read, mem_en_write, mem_addr, rom_ir, rom_initial, reset, clock);
 
-  parameter cycle = 8; // FIXME
+  parameter cycle = 1; // FIXME
+  parameter im_start = 'h80; // FIXME
 
   // TODO: DM
   input clock;
@@ -51,7 +52,7 @@ module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr,
 
   always @ (negedge clock) begin
     if (reset) begin
-      im_addr <= 0;
+      im_addr <= im_start;
       mem_addr <= 0; 
       load_im_done <= 0;
     end else begin
@@ -66,7 +67,7 @@ module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr,
   end
   
   always @ (negedge clock) begin
-    if (im_addr << 5 == ir_size) 
+    if (((im_addr - im_start) << 5) == ir_size) 
       load_im_done <= 1;
     else
       load_im_done <= 0;
