@@ -7,22 +7,36 @@
 `include "imm_reg_select_mux.v"
 `include "writeback_select_mux.v"
 
-module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address, IM_address, IM_read, IM_write, IM_enable, DM_out, instruction, rst, clk);
+module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_address, Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address, IM_address, IM_read, IM_write, IM_enable, MEM_data, rom_out, DM_out, instruction, system_enable, rst, clk);
   parameter DataSize = 32;
-  parameter MemSize = 10;
+  parameter IMSize = 10;
   parameter DMAddrSize = 12;
   parameter IMAddrSize = 10;
   parameter RegAddrSize = 5;
   parameter CycleSize = 128;
   parameter InsSize = 64;
   parameter AluResultSize = 12;
+  parameter ROMAddrSize = 36;
+  parameter MEMSize = 14;
 
   // top
   input clk;
   input rst;
+  input system_enable;
   input [DataSize-1:0] instruction; 
   input [DataSize-1:0] DM_out;
+  input [ROMAddrSize-1:0] rom_out;
+  input [DataSize-1:0] MEM_data;
  
+  output rom_enable;
+  output rom_read;
+  output rom_address;
+
+  output MEM_en;
+  output MEM_read;
+  output MEM_write;
+  output [DataSize-1:0] MEM_addr;
+
   output DM_read;
   output DM_write;
   output DM_enable;
@@ -40,15 +54,15 @@ module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address,
   wire DM_write;
   wire DM_enable;
   wire [RegAddrSize-1:0]write_address;
-  wire [DataSize-1:0]DM_in = regfile1.rw_reg[write_address];
-  wire [DMAddrSize-1:0]DM_address = alu12_result;
+  wire [DataSize-1:0]DM_in;
+  wire [DMAddrSize-1:0]DM_address;
   wire IM_read;
   wire IM_write;
   wire IM_enable;
   wire [IMAddrSize-1:0]IM_address;
 
   // internal
-  wire [MemSize-1:0]PC;
+  wire [IMSize-1:0]PC;
   wire enable_alu_execute;
   wire enable_reg_read;
   wire enable_reg_write;
@@ -77,6 +91,9 @@ module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address,
   wire [DataSize-1:0]reg_write_data;
   wire [DataSize-1:0]mux4to1_out;
   wire [DataSize-1:0]imm_reg_out;
+  
+  assign DM_in = regfile1.rw_reg[write_address];
+  assign DM_address = alu12_result;
 
   pc_tick pc_tick1 (
     .clock(clk), 
