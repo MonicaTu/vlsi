@@ -8,6 +8,7 @@ module top_tb1;
   parameter MemSize = 10;
   parameter DMAddrSize = 12;
   parameter IMAddrSize = 10;
+  parameter InsSize = 64;
 
   parameter RegCnt = 32;
   parameter DataMemCnt = 4096;
@@ -21,7 +22,8 @@ module top_tb1;
   wire [IMAddrSize-1:0]IM_address;
   wire [MemSize-1:0] PC;
   wire [DataSize-1:0] instruction;
-  wire [127:0]cycle_cnt;
+  wire [127:0]Cycle_cnt;
+  wire [InsSize-1:0] Ins_cnt;
 
   wire DM_read;
   wire DM_write;
@@ -61,7 +63,7 @@ module top_tb1;
   IM IM1 (
     .clk(clk), 
     .rst(reset), 
-    .IM_address(PC), 
+    .IM_address(IM_address), 
     .enable_fetch(IM_read), 
     .enable_write(IM_write), 
     .enable_im(IM_enable), 
@@ -92,8 +94,8 @@ module top_tb1;
     .DM_enable(DM_enable),
     .DM_in(DM_in),
     .DM_address(DM_address),
-    .Ins_cnt(PC), 
-    .Cycle_cnt(cycle_cnt)); 
+    .Ins_cnt(Ins_cnt), 
+    .Cycle_cnt(Cycle_cnt)); 
   
   always begin
   	#(`PERIOD/2) clk = ~clk;
@@ -109,11 +111,6 @@ module top_tb1;
   reset = 1'b0;
     
   $readmemb("mins1.prog", IM1.mem_data);
-
-  #(`PERIOD*`IR_CYCLE*22);
-  $display("cycle count: %10d\n", cycle_cnt);
-  $display("instruction count: %d\n", PC);
-  $finish;
   end
 
   /* Create tb waveform */
@@ -242,6 +239,10 @@ module top_tb1;
   #(`PERIOD*`IR_CYCLE); //IDEL
   if (top1.regfile1.rw_reg[8] != golden_reg[8])
     err_num = err_num + 1;
+
+  $display("cycle count: %10d\n", Cycle_cnt);
+  $display("instruction count: %d\n", Ins_cnt);
+  $finish;
   end
 
   // for iverilog which does not support 2-dimension array.
