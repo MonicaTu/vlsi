@@ -1,7 +1,7 @@
 module rom_controller(rom_pc, rom_initial, ROM_enable, ROM_read, load_im_done, system_enable, clock);
 
   parameter rom_ir_cnt = 3;
-  parameter cycle = 4; // FIXME
+  parameter cycle = 1; // FIXME
 
   input clock;
   input system_enable;
