@@ -43,13 +43,18 @@ module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr,
   reg load_im_done;
 
   always @ (negedge clock) begin
+    if (reset)
+      clock_cnt <= 1;
+    else
+      clock_cnt <= clock_cnt + 1; 
+  end
+
+  always @ (negedge clock) begin
     if (reset) begin
-      clock_cnt = 0;
-      im_addr = 0;
-      mem_addr = 0; 
-      load_im_done = 0;
+      im_addr <= 0;
+      mem_addr <= 0; 
+      load_im_done <= 0;
     end else begin
-      clock_cnt <= clock_cnt + 1;
       if (clock_cnt % cycle == 0) begin
         im_addr <= im_addr + 1;
         mem_addr <= mem_addr + 1;
