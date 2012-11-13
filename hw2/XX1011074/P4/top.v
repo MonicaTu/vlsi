@@ -18,6 +18,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   parameter AluResultSize = 12;
   parameter ROMAddrSize = 36;
   parameter MEMSize = 14;
+  parameter ROMSize = 8;
 
   // top
   input clk;
@@ -30,12 +31,12 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
  
   output rom_enable;
   output rom_read;
-  output rom_address;
+  output [ROMSize-1:0]rom_address; // TODO: assign OR wire
 
   output MEM_en;
   output MEM_read;
   output MEM_write;
-  output [DataSize-1:0] MEM_addr;
+  output [MEMSize-1:0] MEM_addr;
 
   output DM_read;
   output DM_write;
