@@ -292,8 +292,8 @@ module top_tb;
     tb_mem_data_35 = 32'd0;
     internel_err_num = 0;
 
-  #(`PERIOD*1.5);
-  #(`PERIOD*`IR_CYCLE);
+  #(`PERIOD*5.5);
+  //#(`PERIOD*`IR_CYCLE);
 
   #(`PERIOD*`IR_CYCLE); // ADDI R1=R1+4'b1001  => R1=9
   tb_rw_reg_1 = 32'h09;
@@ -311,9 +311,10 @@ module top_tb;
   #(`PERIOD*`IR_CYCLE); // SW M0=R0           => M0=3
   if (tb_rw_reg_0 != top1.regfile1.rw_reg_0)
     internel_err_num = internel_err_num + 1;
+  #(`PERIOD*2); 
   tb_mem_data_0 = 32'h03;
 
-  #(`PERIOD*`IR_CYCLE); // ORI R0=R0|4'b0100   => R0=7
+  #(`PERIOD*(`IR_CYCLE-2)); // ORI R0=R0|4'b0100   => R0=7
   if (tb_mem_data_0 != DM1.mem_data_0)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_0 = 32'h07;
@@ -348,9 +349,10 @@ module top_tb;
   #(`PERIOD*`IR_CYCLE); // SW M19=R1          => M19=4
   if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
+  #(`PERIOD*2);
   tb_mem_data_19 = 32'h04;
 
-  #(`PERIOD*`IR_CYCLE); // SRLI R2=R0 SRL(1)   => R2=1
+  #(`PERIOD*(`IR_CYCLE-2)); // SRLI R2=R0 SRL(1)   => R2=1
   if (tb_mem_data_19 != DM1.mem_data_19)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h01;
@@ -368,14 +370,15 @@ module top_tb;
   #(`PERIOD*`IR_CYCLE); // AND R1=R1&R3        => R1=0
   if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
-  tb_rw_reg_0 = 32'h00;
+  tb_rw_reg_1 = 32'h00;
 
   #(`PERIOD*`IR_CYCLE); // SW M35=R2          => M35=8
   if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
+  #(`PERIOD*2)
   tb_mem_data_35 = 32'h08;
 
-  #(`PERIOD*`IR_CYCLE); //IDEL
+  #(`PERIOD*(`IR_CYCLE-2)); //IDEL
   if (tb_mem_data_35 != DM1.mem_data_35)
     internel_err_num = internel_err_num + 1;
   end

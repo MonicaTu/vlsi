@@ -265,8 +265,8 @@ module top_tb1;
 
     internel_err_num = 0;
 
-  #(`PERIOD*1.5);
-  #(`PERIOD*`IR_CYCLE);
+  #(`PERIOD*5.5);
+  //#(`PERIOD*`IR_CYCLE);
 
   #(`PERIOD*`IR_CYCLE) //ADDI
   tb_rw_reg_0 = 32'b01101;
@@ -281,12 +281,13 @@ module top_tb1;
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'b10000;
 
-  #(`PERIOD*`IR_CYCLE); //SW MO=R2
+  #(`PERIOD*`IR_CYCLE); //SW M0=R2
   if (tb_rw_reg_2 != top1.regfile1.rw_reg_2)
     internel_err_num = internel_err_num + 1;
+  #(`PERIOD*2);
   tb_mem_data_0 = 32'b10000;
 
-  #(`PERIOD*`IR_CYCLE); //ADD
+  #(`PERIOD*(`IR_CYCLE-2)); //ADD
   if (tb_mem_data_0 != DM1.mem_data_0)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_3 = 32'b11001;
@@ -309,9 +310,10 @@ module top_tb1;
   #(`PERIOD*`IR_CYCLE); //SW M8=R6
   if (tb_rw_reg_6 != top1.regfile1.rw_reg_6)
     internel_err_num = internel_err_num + 1;
+  #(`PERIOD*2);
   tb_mem_data_8 = 32'b11001;
 
-  #(`PERIOD*`IR_CYCLE); //XOR
+  #(`PERIOD*(`IR_CYCLE-2)); //XOR
   if (tb_mem_data_8 != DM1.mem_data_8)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_7 = 32'b11000;

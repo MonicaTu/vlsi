@@ -10,8 +10,6 @@ module top_tb;
   parameter DataSize = 32;
   parameter MemSize = 10;
   parameter DMAddrSize = 12;
-  parameter IMAddrSize = 10;
-  parameter InsSize = 64;
 
   parameter RegCnt = 32;
   parameter DataMemCnt = 4096;
@@ -22,11 +20,9 @@ module top_tb;
   wire IM_read;
   wire IM_write;
   wire IM_enable;
-  wire [IMAddrSize-1:0]IM_address;
   wire [MemSize-1:0] PC;
   wire [DataSize-1:0] instruction;
-  wire [127:0]Cycle_cnt;
-  wire [InsSize-1:0] Ins_cnt;
+  wire [127:0]cycle_cnt;
 
   wire DM_read;
   wire DM_write;
@@ -65,7 +61,7 @@ module top_tb;
   IM IM1 (
     .clk(clk), 
     .rst(reset), 
-    .IM_address(IM_address), 
+    .IM_address(PC), 
     .enable_fetch(IM_read), 
     .enable_write(IM_write), 
     .enable_im(IM_enable), 
@@ -84,20 +80,19 @@ module top_tb;
   
   top top1 (
     .clk(clk), 
-    .rst(reset),
+    .reset(reset),
     .instruction(instruction), 
+    .cycle_cnt(cycle_cnt), 
     .DM_out(DM_out),
-    .IM_read(IM_read), 
-    .IM_write(IM_write), 
-    .IM_enable(IM_enable),
-    .IM_address(IM_address),
     .DM_read(DM_read),
     .DM_write(DM_write),
     .DM_enable(DM_enable),
     .DM_in(DM_in),
     .DM_address(DM_address),
-    .Ins_cnt(Ins_cnt), 
-    .Cycle_cnt(Cycle_cnt)); 
+    .PC(PC),
+    .IM_read(IM_read), 
+    .IM_write(IM_write), 
+    .IM_enable(IM_enable)); 
   
   always begin
   	#(`PERIOD/2) clk = ~clk;
@@ -113,6 +108,11 @@ module top_tb;
   reset = 1'b0;
     
   $readmemb("mins.prog", IM1.mem_data);
+
+  #(`PERIOD*`IR_CYCLE*20);
+  $display("cycle count: %10d\n", cycle_cnt);
+  $display("instruction count: %d\n", PC);
+  $finish;
   end
 
   /* Create tb waveform */
@@ -213,16 +213,6 @@ module top_tb;
   #(`PERIOD*`IR_CYCLE); //IDEL
   if (DM1.mem_data[35] != golden_mem[35])
     err_num = err_num + 1;
-
-  $display("cycle count: %10d", Cycle_cnt);
-  $display("instruction count: %d", Ins_cnt);
-  $display("errors: %10d", err_num);
-  if (err_num == 0)
-    $display("<PASS>\n");
-  else
-    $display("<FAIL>\n");
-    
-  $finish;
   end
 
   // for iverilog which does not support 2-dimension array.
@@ -244,8 +234,8 @@ module top_tb;
     tb_mem_data_35 = 32'd0;
     internel_err_num = 0;
 
-  #(`PERIOD*1.5);
-  #(`PERIOD*`IR_CYCLE);
+  #(`PERIOD*5.5);
+  //#(`PERIOD*`IR_CYCLE);
 
   #(`PERIOD*`IR_CYCLE); // ADDI R1=R1+4'b1001  => R1=9
   tb_rw_reg_1 = 32'h09;
@@ -263,9 +253,10 @@ module top_tb;
   #(`PERIOD*`IR_CYCLE); // SW M0=R0           => M0=3
   if (tb_rw_reg_0 != top1.regfile1.rw_reg_0)
     internel_err_num = internel_err_num + 1;
+  #(`PERIOD*2); 
   tb_mem_data_0 = 32'h03;
 
-  #(`PERIOD*`IR_CYCLE); // ORI R0=R0|4'b0100   => R0=7
+  #(`PERIOD*(`IR_CYCLE-2)); // ORI R0=R0|4'b0100   => R0=7
   if (tb_mem_data_0 != DM1.mem_data_0)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_0 = 32'h07;
@@ -300,9 +291,10 @@ module top_tb;
   #(`PERIOD*`IR_CYCLE); // SW M19=R1          => M19=4
   if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
+  #(`PERIOD*2);
   tb_mem_data_19 = 32'h04;
 
-  #(`PERIOD*`IR_CYCLE); // SRLI R2=R0 SRL(1)   => R2=1
+  #(`PERIOD*(`IR_CYCLE-2)); // SRLI R2=R0 SRL(1)   => R2=1
   if (tb_mem_data_19 != DM1.mem_data_19)
     internel_err_num = internel_err_num + 1;
   tb_rw_reg_2 = 32'h01;
@@ -320,14 +312,15 @@ module top_tb;
   #(`PERIOD*`IR_CYCLE); // AND R1=R1&R3        => R1=0
   if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
-  tb_rw_reg_0 = 32'h00;
+  tb_rw_reg_1 = 32'h00;
 
   #(`PERIOD*`IR_CYCLE); // SW M35=R2          => M35=8
   if (tb_rw_reg_1 != top1.regfile1.rw_reg_1)
     internel_err_num = internel_err_num + 1;
+  #(`PERIOD*2)
   tb_mem_data_35 = 32'h08;
 
-  #(`PERIOD*`IR_CYCLE); //IDEL
+  #(`PERIOD*(`IR_CYCLE-2)); //IDEL
   if (tb_mem_data_35 != DM1.mem_data_35)
     internel_err_num = internel_err_num + 1;
   end
