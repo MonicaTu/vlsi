@@ -10,7 +10,6 @@ module pc_tick(input clock, reset, output reg [`MEM_SIZE-1:0] pc, output reg [`T
 
   always @(negedge clock) begin
     if (reset) begin
-      $display("reset");
       internal_pc = 0;
       pc = 0;
       tick = 0;
@@ -23,9 +22,7 @@ module pc_tick(input clock, reset, output reg [`MEM_SIZE-1:0] pc, output reg [`T
       else begin
         internal_pc = internal_pc;
       end
-      $display("pc: %d; internal_pc: %d", pc, internal_pc);
       pc = internal_pc >> 5; // internal_pc / 32 
-//      $display("pc: %d; internal_pc: %d", pc, internal_pc);
     end
   end
 

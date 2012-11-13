@@ -168,8 +168,8 @@ module ir_controller(enable_im_fetch, enable_im_write, enable_im, enable_alu_exe
 //    else
       present_instruction <= ir;
       
-    if (ir)
-      $display("(%d) %h:%h", PC, ir, present_instruction);
+//    if (ir)
+//      $display("(%d) %h:%h", PC, ir, present_instruction);
   end
 
 endmodule
