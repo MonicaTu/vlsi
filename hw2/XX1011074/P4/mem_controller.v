@@ -1,18 +1,22 @@
-module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr, mem_enable, mem_en_read, mem_en_write, mem_addr, rom_ir, clock);
+module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr, mem_enable, mem_en_read, mem_en_write, mem_addr, rom_ir, rom_initial, reset, clock);
+
+  parameter cycle = 8; // FIXME
 
   // TODO: DM
   input clock;
+  input reset;
+  input rom_initial; // FIXME
   input [35:0]rom_ir;
   
   output im_enable;
   output im_en_read;
   output im_en_write;
-  output [12:0]im_addr;
+  output [9:0]im_addr;
 
   output mem_enable;
   output mem_en_read; 
   output mem_en_write; 
-  output [12:0]mem_addr; 
+  output [13:0]mem_addr; // TODO
 
   output load_im_done; 
 
@@ -20,12 +24,12 @@ module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr,
   reg im_enable;
   reg im_en_read;
   reg im_en_write;
-  reg [12:0]im_addr;
+  reg [9:0]im_addr;
 
   reg mem_enable;
   reg mem_en_read; 
   reg mem_en_write; 
-  reg [12:0]mem_addr; 
+  reg [13:0]mem_addr; 
 
   wire ir_rst    = rom_ir[35];
   wire ir_en     = rom_ir[34];
@@ -35,23 +39,25 @@ module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr,
   wire [15:0]ir_size = rom_ir[15:0];
   
   // internal 
-  reg [2:0]cycle;
   reg [127:0]clock_cnt;
   reg load_im_done;
 
-  initial begin
-    cycle <= 'd4; // FIXME
-    im_addr = 0;
-    clock_cnt = 0;
-    load_im_done = 0;
-  end
-
   always @ (negedge clock) begin
-    clock_cnt <= clock_cnt + 1;
-    if (clock_cnt % cycle == 0)
-      im_addr <= im_addr + 1;
-    else
-      im_addr <= im_addr;
+    if (reset) begin
+      clock_cnt = 0;
+      im_addr = 0;
+      mem_addr = 0; 
+      load_im_done = 0;
+    end else begin
+      clock_cnt <= clock_cnt + 1;
+      if (clock_cnt % cycle == 0) begin
+        im_addr <= im_addr + 1;
+        mem_addr <= mem_addr + 1;
+      end else begin
+        im_addr <= im_addr;
+        mem_addr <= mem_addr;
+      end
+    end
   end
   
   always @ (negedge clock) begin

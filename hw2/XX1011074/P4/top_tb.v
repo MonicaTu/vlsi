@@ -23,6 +23,7 @@ module top_tb;
 
   reg clk;
   reg reset;
+  reg system_enable;
 
   wire [ROMAddrSize-1:0]rom_out;
   wire [DataSize-1:0] MEM_data;
@@ -147,14 +148,16 @@ module top_tb;
 
   /* Set signal */
   initial begin
-  clk = 1'b0;
-  #(`PERIOD) reset = 1'b0;
-  #(`PERIOD) reset = 1'b1;  
-  #(`PERIOD*0.5);
-  #(`PERIOD*`IR_CYCLE);
-  reset = 1'b0;
-    
-  $readmemb("mins.prog", IM1.mem_data);
+    system_enable = 1;
+    clk = 1'b0;
+    #(`PERIOD) reset = 1'b0;
+    #(`PERIOD) reset = 1'b1;  
+    #(`PERIOD*0.5);
+    #(`PERIOD*`IR_CYCLE);
+    reset = 1'b0;
+      
+    $readmemb("rom.prog", ROM1.mem_data);
+    $readmemb("mins.prog", MEMORY1.mem);
   end
 
   /* Create tb waveform */
@@ -264,6 +267,8 @@ module top_tb;
   else
     $display("<FAIL>\n");
     
+    // FIXME
+    #(`PERIOD*`IR_CYCLE*20*4);
   $finish;
   end
 

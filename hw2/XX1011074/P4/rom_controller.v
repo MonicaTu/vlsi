@@ -1,6 +1,7 @@
-module rom_controller(rom_pc, rom_initial, cycle, ROM_enable, ROM_read, load_im_done, system_enable, clock);
+module rom_controller(rom_pc, rom_initial, ROM_enable, ROM_read, load_im_done, system_enable, clock);
 
   parameter rom_ir_cnt = 3;
+  parameter cycle = 4; // FIXME
 
   input clock;
   input system_enable;
@@ -8,7 +9,6 @@ module rom_controller(rom_pc, rom_initial, cycle, ROM_enable, ROM_read, load_im_
 
   output ROM_enable;
   output ROM_read;
-  output [2:0]cycle;
   output rom_initial;
 
   output [7:0]rom_pc;
@@ -16,7 +16,6 @@ module rom_controller(rom_pc, rom_initial, cycle, ROM_enable, ROM_read, load_im_
   // internel
   reg ROM_enable;
   reg ROM_read;
-  reg cycle;
   reg rom_initial;
 
   reg [7:0]rom_pc;
@@ -27,7 +26,6 @@ module rom_controller(rom_pc, rom_initial, cycle, ROM_enable, ROM_read, load_im_
   parameter rom_size = 1;
 
   initial begin
-    cycle <= 'd4; // FIXME
     rom_pc <= 0;
     clock_cnt <= 0;
   end

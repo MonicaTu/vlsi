@@ -1,4 +1,6 @@
 `include "pc_tick.v"
+`include "rom_controller.v"
+`include "mem_controller.v"
 `include "ir_controller.v"
 `include "regfile.v"
 `include "alu32.v"
@@ -93,24 +95,63 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire [DataSize-1:0]mux4to1_out;
   wire [DataSize-1:0]imm_reg_out;
   
+  wire mem_IM_read;
+  wire mem_IM_write;
+  wire mem_IM_enable;
+  wire [IMAddrSize-1:0]mem_IM_address;
+  wire ir_IM_read;
+  wire ir_IM_write;
+  wire ir_IM_enable;
+  wire [IMAddrSize-1:0]ir_IM_address;
+  
   assign DM_in = regfile1.rw_reg[write_address];
   assign DM_address = alu12_result;
 
+  // FIXME
+  assign IM_read    = (rom_initial) ? mem_IM_read   : ir_IM_read;
+  assign IM_write   = (rom_initial) ? mem_IM_write  : ir_IM_write;
+  assign IM_enable  = (rom_initial) ? mem_IM_enable : ir_IM_enable;
+  assign IM_address = (rom_initial) ? mem_IM_address : ir_IM_address;
+
   pc_tick pc_tick1 (
     .clock(clk), 
-    .reset(rst), 
+    .reset(rom_initial), 
     .pc(PC), 
     .cycle_cnt(Cycle_cnt));
+  
+  rom_controller rom_controller1 (
+    .rom_pc(rom_address),
+    .rom_initial(rom_initial),
+    .ROM_enable(rom_enable),
+    .ROM_read(rom_read),
+    .load_im_done(load_im_done), 
+    .system_enable(system_enable),
+    .clock(clk));
+
+  mem_controller mem_controller1 (
+    .load_im_done(load_im_done), 
+    .im_enable(mem_IM_enable), 
+    .im_en_read(mem_IM_read), 
+    .im_en_write(mem_IM_write), 
+    .im_addr(mem_IM_address), 
+    .mem_enable(MEM_en), 
+    .mem_en_read(MEM_read), 
+    .mem_en_write(MEM_write), 
+    .mem_addr(MEM_addr), 
+    .rom_ir(rom_out), 
+    .rom_initial(rom_initial), 
+    .reset(rst),
+    .clock(clk));
 
   ir_controller ir_conrtoller1 (
     .Ins_cnt(Ins_cnt),
-    .IM_address(IM_address),
+    .IM_address(ir_IM_address),
     .enable_dm_fetch(DM_read), 
     .enable_dm_write(DM_write), 
     .enable_dm(DM_enable), 
-    .enable_im_fetch(IM_read), 
-    .enable_im_write(IM_write), 
-    .enable_im(IM_enable), 
+    .enable_im_fetch(ir_IM_read), 
+    .enable_im_write(ir_IM_write), 
+    .enable_im(ir_IM_enable), 
     .enable_alu_execute(enable_alu_execute),
     .enable_reg_read(enable_reg_read),
     .enable_reg_write(enable_reg_write),
