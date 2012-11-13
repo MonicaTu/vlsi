@@ -116,7 +116,6 @@ module top_tb;
   end
 
   /* Create tb waveform */
-
   initial begin
   #(`PERIOD*2); 
     for ( i = 0; i < RegCnt; i = i+1) begin
@@ -214,7 +213,6 @@ module top_tb;
   #(`PERIOD*`IR_CYCLE); //IDEL
   if (DM1.mem_data[35] != golden_mem[35])
     err_num = err_num + 1;
-
   end
 
   // for iverilog which does not support 2-dimension array.
@@ -325,7 +323,6 @@ module top_tb;
   #(`PERIOD*(`IR_CYCLE-2)); //IDEL
   if (tb_mem_data_35 != DM1.mem_data_35)
     internel_err_num = internel_err_num + 1;
-
   end
 
   /* Dump and finish */
