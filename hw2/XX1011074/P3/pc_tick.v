@@ -12,19 +12,29 @@ module pc_tick(pc, cycle_cnt, reset, clock);
   output [`MEM_SIZE-1:0] pc;
   output [`TICK_SIZE-1:0] cycle_cnt;
 
-  // internal
   reg [`MEM_SIZE-1:0] pc;
   reg [`TICK_SIZE-1:0] cycle_cnt;
+  
+  // internal
+  reg [`TICK_SIZE-1:0] internal_cycle_cnt;
+
+  initial begin
+    cycle_cnt = 0;
+    internal_cycle_cnt = 0;
+  end
+
+  always @(negedge clock) begin
+      cycle_cnt <= cycle_cnt + 1;
+      internal_cycle_cnt <= internal_cycle_cnt + 1;
+  end
 
   always @(negedge clock) begin
     if (reset) begin
-//      $display("reset");
       pc = 0;
-      cycle_cnt = 0;
+      internal_cycle_cnt = (`IR_CYCLE-1);
     end
     else begin
-      cycle_cnt = cycle_cnt + 1;
-      if ((cycle_cnt % `IR_CYCLE) == 0) begin
+      if ((internal_cycle_cnt % `IR_CYCLE) == 0) begin
         pc = pc + 1; 
       end
       else begin

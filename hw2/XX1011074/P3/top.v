@@ -9,6 +9,7 @@
 
 module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address, IM_address, IM_read, IM_write, IM_enable, DM_out, instruction, rst, clk);
   parameter DataSize = 32;
+  parameter MemSize = 10;
   parameter DMAddrSize = 12;
   parameter IMAddrSize = 10;
   parameter RegAddrSize = 5;
@@ -35,6 +36,8 @@ module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address,
   output [CycleSize-1:0] Cycle_cnt;
   output [InsSize-1:0] Ins_cnt;
 
+  output [MemSize-1:0] PC;
+
   wire DM_read;
   wire DM_write;
   wire DM_enable;
@@ -44,8 +47,8 @@ module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address,
   wire IM_read;
   wire IM_write;
   wire IM_enable;
-  wire [IMAddrSize-1:0]IM_address = PC; // FIXME
-  wire [IMAddrSize-1:0]PC;
+  wire [IMAddrSize-1:0]IM_address;
+  wire [MemSize-1:0]PC;
 
   // internal
   wire enable_alu_execute;
@@ -64,7 +67,7 @@ module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address,
   wire writeback_select;
   wire imm_reg_select;
   wire [CycleSize-1:0] Cycle_cnt;
-  wire [InsSize-1:0] Ins_cnt = PC; // FIXME
+  wire [InsSize-1:0] Ins_cnt;
   wire alu32_overflow;
   
   // others
@@ -84,6 +87,8 @@ module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address,
     .cycle_cnt(Cycle_cnt));
 
   ir_controller ir_conrtoller1 (
+    .Ins_cnt(Ins_cnt),
+    .IM_address(IM_address),
     .enable_dm_fetch(DM_read), 
     .enable_dm_write(DM_write), 
     .enable_dm(DM_enable), 

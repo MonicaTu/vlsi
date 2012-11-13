@@ -1,13 +1,21 @@
-module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im_write, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2, write_address, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
+/* TODO: 
+          output reg
+*/
+module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im_write, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2, write_address, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
   parameter MemSize = 10;
   parameter DataSize = 32;
   parameter AddrSize = 5;
+  parameter InsSize = 64;
+  parameter IMAddrSize = 10;
 
   /* top */
   input clock;
   input reset;
   input [MemSize-1:0] PC;
   input [DataSize-1:0] ir;
+
+  output reg [InsSize-1:0] Ins_cnt;
+  output reg [IMAddrSize-1:0] IM_address;
 
   output reg enable_im_fetch;
   output reg enable_im_write;
@@ -72,6 +80,10 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
   parameter sel_aluResult = 1'b0, sel_DMout = 1'b1; 
   // imm_reg_select
   parameter sel_regOut = 1'b0, sel_immOut = 1'b1;
+     
+  initial begin
+    Ins_cnt = 0;
+  end
 
   always @(negedge clock)
   begin
@@ -98,8 +110,8 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
     end
     fetchState : begin
       next_state <= exeState;
-      enable_im <= 1;
-      enable_im_fetch <= 1;
+      enable_im <= 0;
+      enable_im_fetch <= 0;
       enable_im_write <= 0;
       enable_dm <= 0;       // FIXME
       enable_dm_fetch <= 0; // FIXME
@@ -310,19 +322,25 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
     endcase
   end
 
-  // FIXME
-//  always @(negedge enable_reg_read)
-  always @(negedge clock)
+  always @(negedge enable_im_fetch)
   begin
-  // FIXME
-//    if(PC == 0)
-//      present_instruction <= 0;
-//    else
+    if(PC == 0) begin
+      present_instruction <= 0;
+    end else begin
       present_instruction <= ir;
-      
-//    if (ir)
-//      $display("(%d) %h:%h", PC, ir, present_instruction);
+    end
   end
+
+  always @ (PC) begin
+      IM_address <= PC;
+  end
+
+  always @ (present_instruction) begin
+    if (present_instruction)
+        Ins_cnt <= Ins_cnt + 1;
+//    $display("PC:%d cnt:%d ir:%b", IM_address, Ins_cnt, present_instruction);
+  end
+
 
 endmodule
 
