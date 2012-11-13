@@ -10,10 +10,13 @@
 module top_tb2;
 
   parameter DataSize = 32;
-  parameter MemSize = 10;
+  parameter IMSize = 10;
   parameter DMAddrSize = 12;
   parameter IMAddrSize = 10;
   parameter InsSize = 64;
+  parameter ROMAddrSize = 36;
+  parameter ROMSize = 8;
+  parameter MEMSize = 14;
 
   parameter RegCnt = 32;
   parameter DataMemCnt = 4096;
@@ -21,11 +24,21 @@ module top_tb2;
   reg clk;
   reg reset;
 
+  wire [ROMAddrSize-1:0]rom_out;
+  wire [DataSize-1:0] MEM_data;
+
+  wire rom_enable;
+  wire rom_read;
+  wire [ROMSize-1:0]rom_address;
+
+  wire [DataSize-1:0] MEM_Din;
+  wire [MEMSize-1:0] MEM_addr;
+
   wire IM_read;
   wire IM_write;
   wire IM_enable;
   wire [IMAddrSize-1:0]IM_address;
-  wire [MemSize-1:0] PC;
+  wire [IMSize-1:0] PC;
   wire [DataSize-1:0] instruction;
   wire [127:0]Cycle_cnt;
   wire [InsSize-1:0] Ins_cnt;
@@ -65,6 +78,23 @@ module top_tb2;
 
   integer internel_err_num;
 
+  ROM ROM1 (
+    .clk(clk), 
+    .read(rom_read), 
+    .enable(rom_enable), 
+    .address(rom_address), 
+    .dout(rom_out));
+
+  MEMORY MEMORY1 (
+    .clk(clk),
+    .rst(rst),
+    .enable(MEM_enable),
+    .read(MEM_en_read),
+    .write(MEM_en_write),
+    .address(MEM_addr),  // FIXME
+    .Din(MEM_Din),
+    .Dout(MEM_data));
+
   IM IM1 (
     .clk(clk), 
     .rst(reset), 
@@ -72,7 +102,7 @@ module top_tb2;
     .enable_fetch(IM_read), 
     .enable_write(IM_write), 
     .enable_im(IM_enable), 
-    .IMin(mem_data_in), 
+    .IMin(MEM_data), 
     .IMout(instruction));
   
   DM DM1 (
@@ -86,21 +116,31 @@ module top_tb2;
     .DM_address(DM_address));
   
   top top1 (
-    .clk(clk), 
-    .rst(reset),
-    .instruction(instruction), 
-    .DM_out(DM_out),
-    .IM_read(IM_read), 
-    .IM_write(IM_write), 
-    .IM_enable(IM_enable),
-    .IM_address(IM_address),
+    .Ins_cnt(Ins_cnt), 
+    .Cycle_cnt(Cycle_cnt),
+    .MEM_en(MEM_enable),
+    .MEM_read(MEM_en_read),
+    .MEM_write(MEM_en_write),
+    .MEM_addr(MEM_addr),
+    .rom_enable(rom_enable),
+    .rom_read(rom_read),
+    .rom_address(rom_address),
     .DM_read(DM_read),
     .DM_write(DM_write),
     .DM_enable(DM_enable),
     .DM_in(DM_in),
     .DM_address(DM_address),
-    .Ins_cnt(Ins_cnt), 
-    .Cycle_cnt(Cycle_cnt)); 
+    .IM_read(IM_read), 
+    .IM_write(IM_write), 
+    .IM_enable(IM_enable), 
+    .IM_address(IM_address), 
+    .MEM_data(MEM_data),
+    .rom_out(rom_out),
+    .DM_out(DM_out),
+    .instruction(instruction), 
+    .system_enable(system_enable),
+    .rst(reset),
+    .clk(clk));
   
   always begin
   	#(`PERIOD/2) clk = ~clk;
