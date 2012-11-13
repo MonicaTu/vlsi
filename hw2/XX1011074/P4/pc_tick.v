@@ -21,7 +21,7 @@ module pc_tick(pc, cycle_cnt, reset, clock);
   always @(negedge clock) begin
     if (reset) begin
       cycle_cnt = 0;
-      internal_cycle_cnt = (`IR_CYCLE-1);
+      internal_cycle_cnt = 1;
     end else begin
       cycle_cnt <= cycle_cnt + 1;
       internal_cycle_cnt <= internal_cycle_cnt + 1;
