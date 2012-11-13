@@ -1,7 +1,9 @@
-/* TODO: 
-
-*/
 //`timescale 1ns/10ps
+`include "IM.v"
+`include "DM.v"
+`include "ROM.v"
+`include "MEMORY.v"
+
 `define PERIOD 10
 `define IR_CYCLE 8
 
