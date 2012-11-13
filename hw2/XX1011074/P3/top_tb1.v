@@ -2,6 +2,9 @@
 `define PERIOD 10
 `define IR_CYCLE 8
 
+`include "IM.v"
+`include "DM.v"
+
 module top_tb1;
 
   parameter DataSize = 32;

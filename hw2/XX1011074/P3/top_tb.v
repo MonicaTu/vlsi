@@ -1,9 +1,9 @@
-/* TODO: 
-
-*/
 //`timescale 1ns/10ps
 `define PERIOD 10
 `define IR_CYCLE 8
+
+`include "IM.v"
+`include "DM.v"
 
 module top_tb;
 
