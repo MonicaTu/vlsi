@@ -9,7 +9,7 @@
 
 module top (cycle_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_read, IM_write, IM_enable, DM_out, instruction, clk, reset);
   parameter DataSize = 32;
-  parameter MemSize  = 10;
+  parameter IMSize  = 10;
   parameter AddrSize = 5;
 
   // top
@@ -26,7 +26,7 @@ module top (cycle_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_r
   output IM_read;
   output IM_write;
   output IM_enable;
-  output [MemSize-1:0] PC;
+  output [IMSize-1:0] PC;
   output [127:0] cycle_cnt;
 //  output [9:0]IM_address;
 
@@ -34,12 +34,12 @@ module top (cycle_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_r
   wire DM_write;
   wire DM_enable;
   wire [AddrSize-1:0]write_address;
-  wire [DataSize-1:0]DM_in = regfile1.rw_reg[write_address];
-  wire [11:0]DM_address = alu12_result;
+  wire [DataSize-1:0]DM_in;
+  wire [11:0]DM_address;
   wire IM_read;
   wire IM_write;
   wire IM_enable;
-  wire [MemSize-1:0] PC;
+  wire [IMSize-1:0] PC;
 //  wire [9:0]IM_address;
 
   // internal
@@ -70,6 +70,9 @@ module top (cycle_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address, PC, IM_r
   wire [DataSize-1:0]reg_write_data;
   wire [DataSize-1:0]mux4to1_out;
   wire [DataSize-1:0]imm_reg_out;
+  
+  assign DM_in = regfile1.rw_reg[write_address];
+  assign DM_address = alu12_result;
 
   pc_tick pc_tick1 (
     .clock(clk), 

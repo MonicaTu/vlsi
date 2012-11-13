@@ -9,7 +9,7 @@
 
 module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address, IM_address, IM_read, IM_write, IM_enable, DM_out, instruction, rst, clk);
   parameter DataSize = 32;
-  parameter MemSize = 10;
+  parameter IMSize = 10;
   parameter DMAddrSize = 12;
   parameter IMAddrSize = 10;
   parameter RegAddrSize = 5;
@@ -40,15 +40,15 @@ module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address,
   wire DM_write;
   wire DM_enable;
   wire [RegAddrSize-1:0]write_address;
-  wire [DataSize-1:0]DM_in = regfile1.rw_reg[write_address];
-  wire [DMAddrSize-1:0]DM_address = alu12_result;
+  wire [DataSize-1:0]DM_in;
+  wire [DMAddrSize-1:0]DM_address;
   wire IM_read;
   wire IM_write;
   wire IM_enable;
   wire [IMAddrSize-1:0]IM_address;
 
   // internal
-  wire [MemSize-1:0]PC;
+  wire [IMSize-1:0]PC;
   wire enable_alu_execute;
   wire enable_reg_read;
   wire enable_reg_write;
@@ -77,6 +77,9 @@ module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address,
   wire [DataSize-1:0]reg_write_data;
   wire [DataSize-1:0]mux4to1_out;
   wire [DataSize-1:0]imm_reg_out;
+  
+  assign DM_in = regfile1.rw_reg[write_address];
+  assign DM_address = alu12_result;
 
   pc_tick pc_tick1 (
     .clock(clk), 
