@@ -214,8 +214,14 @@ module top_tb;
   if (DM1.mem_data[35] != golden_mem[35])
     err_num = err_num + 1;
 
-  $display("cycle count: %10d\n", Cycle_cnt);
-  $display("instruction count: %d\n", Ins_cnt);
+  $display("cycle count: %10d", Cycle_cnt);
+  $display("instruction count: %d", Ins_cnt);
+  $display("errors: %10d", err_num);
+  if (err_num == 0)
+    $display("<PASS>\n");
+  else
+    $display("<FAIL>\n");
+    
   $finish;
   end
 
