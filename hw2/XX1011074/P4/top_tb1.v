@@ -23,6 +23,7 @@ module top_tb1;
 
   reg clk;
   reg reset;
+  reg system_enable;
 
   wire [ROMAddrSize-1:0]rom_out;
   wire [DataSize-1:0] MEM_data;
@@ -148,14 +149,20 @@ module top_tb1;
 
   /* Set signal */
   initial begin
-  clk = 1'b0;
-  #(`PERIOD) reset = 1'b0;
-  #(`PERIOD) reset = 1'b1;  
-  #(`PERIOD*0.5);
-  #(`PERIOD*`IR_CYCLE);
-  reset = 1'b0;
+    system_enable = 1;
+    clk = 1'b0;
+    #(`PERIOD) reset = 1'b0;
+    #(`PERIOD) reset = 1'b1;  
+    #(`PERIOD*0.5);
+    #(`PERIOD*`IR_CYCLE);
+    reset = 1'b0;
+      
+    $readmemb("rom1.prog", ROM1.mem_data);
+    $readmemb("mins1.prog", MEMORY1.mem);
     
-  $readmemb("mins1.prog", IM1.mem_data);
+    #(`PERIOD*18); // for boot
+    #(`PERIOD*`IR_CYCLE*18); // for instructions
+    $finish;
   end
 
   /* Create tb waveform */
@@ -169,6 +176,7 @@ module top_tb1;
     end
 
     err_num = 0;
+    #(`PERIOD*18); // for boot
 
   #(`PERIOD*1.5);
 //  #(`PERIOD*`IR_CYCLE);
@@ -292,8 +300,6 @@ module top_tb1;
     $display("<PASS>\n");
   else
     $display("<FAIL>\n");
-    
-  $finish;
   end
 
   // for iverilog which does not support 2-dimension array.
