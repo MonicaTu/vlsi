@@ -1,6 +1,8 @@
 //`timescale 1ns/10ps
 `define PERIOD 10
 
+`include "IM.v"
+
 module top_tb;
 
   parameter DataSize = 32;
