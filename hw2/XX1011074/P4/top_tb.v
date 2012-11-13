@@ -158,6 +158,10 @@ module top_tb;
       
     $readmemb("rom.prog", ROM1.mem_data);
     $readmemb("mins.prog", MEMORY1.mem);
+    
+    #(`PERIOD*18); // for boot
+    #(`PERIOD*`IR_CYCLE*18); // for instructions
+    $finish;
   end
 
   /* Create tb waveform */
@@ -171,6 +175,7 @@ module top_tb;
     end
 
     err_num = 0;
+    #(`PERIOD*18); // for boot
 
   #(`PERIOD*1.5);
 //  #(`PERIOD*`IR_CYCLE);
@@ -266,10 +271,6 @@ module top_tb;
     $display("<PASS>\n");
   else
     $display("<FAIL>\n");
-    
-    // FIXME
-    #(`PERIOD*`IR_CYCLE*20*4);
-  $finish;
   end
 
   // for iverilog which does not support 2-dimension array.
