@@ -36,8 +36,6 @@ module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address,
   output [CycleSize-1:0] Cycle_cnt;
   output [InsSize-1:0] Ins_cnt;
 
-  output [MemSize-1:0] PC;
-
   wire DM_read;
   wire DM_write;
   wire DM_enable;
@@ -48,9 +46,9 @@ module top (Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address,
   wire IM_write;
   wire IM_enable;
   wire [IMAddrSize-1:0]IM_address;
-  wire [MemSize-1:0]PC;
 
   // internal
+  wire [MemSize-1:0]PC;
   wire enable_alu_execute;
   wire enable_reg_read;
   wire enable_reg_write;
