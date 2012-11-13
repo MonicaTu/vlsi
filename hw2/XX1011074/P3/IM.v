@@ -36,6 +36,11 @@ module IM(clk, rst, IM_address, enable_fetch, enable_write, enable_im, IMin, IMo
   wire [DataSize-1:0]mem_data_17 = mem_data[17];
   wire [DataSize-1:0]mem_data_18 = mem_data[18];
   wire [DataSize-1:0]mem_data_19 = mem_data[19];
+  wire [DataSize-1:0]mem_data_20 = mem_data[20];
+  wire [DataSize-1:0]mem_data_21 = mem_data[21];
+  wire [DataSize-1:0]mem_data_22 = mem_data[22];
+  wire [DataSize-1:0]mem_data_23 = mem_data[23];
+  wire [DataSize-1:0]mem_data_24 = mem_data[24];
 
   always@(posedge clk)
   begin
