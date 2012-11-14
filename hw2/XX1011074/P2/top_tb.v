@@ -331,6 +331,7 @@ module top_tb;
     $dumpvars;
 //  $fsdbDumpfile("top_tb.fsdb");
 //  $fsdbDumpvars;
+//  $fsdbDumpvars(0, top_tb, "+mda");
   end
 
 endmodule
