@@ -20,24 +20,28 @@ module pc_tick(pc, cycle_cnt, reset, clock);
 
   always @(negedge clock) begin
     if (reset) begin
-      cycle_cnt = 0;
-      internal_cycle_cnt = 1;
+      cycle_cnt <= 0;
     end else begin
       cycle_cnt <= cycle_cnt + 1;
+    end
+  end
+
+  always @(negedge clock) begin
+    if (reset) begin
+      internal_cycle_cnt <= 1;
+    end else begin
       internal_cycle_cnt <= internal_cycle_cnt + 1;
     end
   end
 
   always @(negedge clock) begin
     if (reset) begin
-      pc = 0;
-    end
-    else begin
+      pc <= 0;
+    end else begin
       if ((internal_cycle_cnt % `IR_CYCLE) == 0) begin
-        pc = pc + 1; 
-      end
-      else begin
-        pc = pc;
+        pc <= pc + 1; 
+      end else begin
+        pc <= pc;
       end
     end
   end

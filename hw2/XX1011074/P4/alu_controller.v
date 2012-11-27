@@ -15,14 +15,21 @@ module alu_controller(enable_execute, enable_fetch, enable_writeback, opcode, su
   input [DataSize-1:0] PC;
   input [DataSize-1:0] ir;
 
-  output reg enable_execute;
-  output reg enable_fetch;
-  output reg enable_writeback;
+  output enable_execute;
+  output enable_fetch;
+  output enable_writeback;
   output [5:0] opcode;
   output [4:0] sub_opcode;
-  output reg [1:0] mux4to1_select;
-  output reg writeback_select;
-  output reg imm_reg_select;
+  output [1:0] mux4to1_select;
+  output writeback_select;
+  output imm_reg_select;
+  
+  reg enable_execute;
+  reg enable_fetch;
+  reg enable_writeback;
+  reg [1:0] mux4to1_select;
+  reg writeback_select;
+  reg imm_reg_select;
   
   /* module */
   //ALU
@@ -63,64 +70,64 @@ module alu_controller(enable_execute, enable_fetch, enable_writeback, opcode, su
   begin
     case(current_state)
     stopState : begin
-      next_state <= fetchState;
-      enable_fetch <= 0;
-      enable_execute <= 0;
-      enable_writeback <= 0;
+      next_state = fetchState;
+      enable_fetch = 0;
+      enable_execute = 0;
+      enable_writeback = 0;
     end
     fetchState : begin
-      next_state <= exeState;
-      enable_fetch <= 1;
-      enable_execute <= 0;
-      enable_writeback <= 0;
+      next_state = exeState;
+      enable_fetch = 1;
+      enable_execute = 0;
+      enable_writeback = 0;
     end
     exeState : begin
-      next_state <= writeState;
-      enable_fetch <= 0;
-      enable_execute <= 1;
-      enable_writeback <= 0;
+      next_state = writeState;
+      enable_fetch = 0;
+      enable_execute = 1;
+      enable_writeback = 0;
     end
     writeState : begin
-      next_state <= stopState;
-      enable_fetch <= 0;
-      enable_execute <= 0;
-      enable_writeback <= 1;
+      next_state = stopState;
+      enable_fetch = 0;
+      enable_execute = 0;
+      enable_writeback = 1;
     end
     endcase
 
-    writeback_select <= (opcode == 6'b100010) ? scr2Out : aluResult;
+    writeback_select = (opcode == 6'b100010) ? scr2Out : aluResult;
 
     case(opcode)
       6'b100000 : begin
             if (sub_opcode == SRLI | sub_opcode == SLLI | sub_opcode == ROTRI) begin
-    		mux4to1_select <= imm5bitZE; 
-    		imm_reg_select <= immOut;
-	    end
-	    else begin
-    		mux4to1_select <= imm5bitZE; 
-    		imm_reg_select <= regOut;
+            mux4to1_select = imm5bitZE; 
+            imm_reg_select = immOut;
+        end
+        else begin
+            mux4to1_select = imm5bitZE; 
+            imm_reg_select = regOut;
             end
-	    end
+        end
       6'b101000 : begin
-              mux4to1_select <= imm15bitSE;
-      	      imm_reg_select <= immOut;
-      	    end
+              mux4to1_select = imm15bitSE;
+              imm_reg_select = immOut;
+            end
       6'b101100 : begin
-      	      mux4to1_select <= imm15bitZE;
-      	      imm_reg_select <= immOut;
-      	    end
+              mux4to1_select = imm15bitZE;
+              imm_reg_select = immOut;
+            end
       6'b101011 : begin
-      	      mux4to1_select <= imm15bitZE;
-      	      imm_reg_select <= immOut;
-      	    end
+              mux4to1_select = imm15bitZE;
+              imm_reg_select = immOut;
+            end
       6'b100010 : begin
-      	      mux4to1_select <= imm20bitSE;
-      	      imm_reg_select <= immOut;
-      	    end
+              mux4to1_select = imm20bitSE;
+              imm_reg_select = immOut;
+            end
       default   : begin 
-    	      mux4to1_select <= imm5bitZE; 
-    	      imm_reg_select <= regOut;
-    	    end
+              mux4to1_select = imm5bitZE; 
+              imm_reg_select = regOut;
+            end
     endcase
   end
 

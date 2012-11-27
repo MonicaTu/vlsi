@@ -143,7 +143,7 @@ module top_tb;
     .clk(clk));
   
   always begin
-  	#(`PERIOD/2) clk = ~clk;
+    #(`PERIOD/2) clk = ~clk;
   end
 
   /* Set signal */

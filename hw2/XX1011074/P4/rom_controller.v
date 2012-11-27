@@ -1,6 +1,5 @@
 module rom_controller(rom_pc, rom_initial, ROM_enable, ROM_read, load_im_done, system_enable, clock);
 
-  parameter rom_ir_cnt = 3;
   parameter cycle = 1; // FIXME
 
   input clock;
@@ -21,8 +20,6 @@ module rom_controller(rom_pc, rom_initial, ROM_enable, ROM_read, load_im_done, s
   reg [7:0]rom_pc;
   reg [127:0]clock_cnt;
 
-  reg ir_cnt = 0;
-
   parameter rom_size = 1;
 
   initial begin
@@ -32,6 +29,9 @@ module rom_controller(rom_pc, rom_initial, ROM_enable, ROM_read, load_im_done, s
   
   always @ (negedge clock) begin
     clock_cnt = clock_cnt + 1;
+  end
+
+  always @ (negedge clock) begin
     if (clock_cnt % cycle == 0 && load_im_done == 1)
       rom_pc = rom_pc + 1;
     else

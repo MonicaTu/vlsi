@@ -54,7 +54,6 @@ module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr,
     if (reset) begin
       im_addr <= im_start;
       mem_addr <= 0; 
-      load_im_done <= 0;
     end else begin
       if (clock_cnt % cycle == 0) begin
         im_addr <= im_addr + 1;
