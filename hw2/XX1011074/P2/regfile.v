@@ -1,11 +1,11 @@
 module regfile(read_data1, read_data2, read_address1, read_address2,
-		write_address, write_data, clk, reset, read, write);
+        write_address, write_data, clk, reset, read, write);
 
   parameter DataSize = 32;
   parameter AddrSize = 5;
 
-  output reg [DataSize-1:0]read_data1;
-  output reg [DataSize-1:0]read_data2;
+  output [DataSize-1:0]read_data1;
+  output [DataSize-1:0]read_data2;
 
   input [AddrSize-1:0]read_address1;
   input [AddrSize-1:0]read_address2;
@@ -13,6 +13,8 @@ module regfile(read_data1, read_data2, read_address1, read_address2,
   input [DataSize-1:0]write_data;
   input clk, reset, read, write;
 
+  reg [DataSize-1:0]read_data1;
+  reg [DataSize-1:0]read_data2;
   reg [DataSize-1:0]rw_reg[31:0];
   integer i;
 
@@ -28,7 +30,7 @@ module regfile(read_data1, read_data2, read_address1, read_address2,
   wire [DataSize-1:0]rw_reg_8 = rw_reg[8];
   wire [DataSize-1:0]rw_reg_9 = rw_reg[9];
 
-  always@(posedge clk, posedge reset)begin
+  always@(posedge clk or posedge reset)begin
     if(reset)begin
       for(i=0;i<32;i=i+1)
         rw_reg[i]<=32'b0;
