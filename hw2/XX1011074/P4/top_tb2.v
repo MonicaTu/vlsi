@@ -184,7 +184,7 @@ module top_tb2;
     end
 
     err_num = 0;
-    #(`PERIOD*(23+9)); // for boot
+    #(`PERIOD*(23+9+8)); // for boot
 
   #(`PERIOD*1.5);
 //  #(`PERIOD*`IR_CYCLE);
@@ -307,14 +307,6 @@ module top_tb2;
   #(`PERIOD*`IR_CYCLE); //IDEL
   if (DM1.mem_data[8] != golden_mem[8])
     err_num = err_num + 1;
-
-  $display("cycle count: %10d", Cycle_cnt);
-  $display("instruction count: %d", Ins_cnt);
-  $display("errors: %10d", err_num);
-  if (err_num == 0)
-    $display("<PASS>\n");
-  else
-    $display("<FAIL>\n");
   end
 
   // for iverilog which does not support 2-dimension array.
@@ -341,7 +333,7 @@ module top_tb2;
   #(`PERIOD*5.5);
   //#(`PERIOD*`IR_CYCLE);
     
-  #(`PERIOD*(23+9)); // for boot
+  #(`PERIOD*(23+9+8)); // for boot
 
   #(`PERIOD*`IR_CYCLE) //NOP
 
@@ -473,9 +465,9 @@ module top_tb2;
   initial begin
     $dumpfile("top_tb2.vcd");
     $dumpvars;
-//  $fsdbDumpfile("top_tb2.fsdb");
-//  $fsdbDumpvars;
-//  $fsdbDumpvars(0, top_tb2, "+mda");
+    $fsdbDumpfile("top_tb2.fsdb");
+    $fsdbDumpvars;
+    $fsdbDumpvars(0, top_tb2, "+mda");
   end
 
 endmodule

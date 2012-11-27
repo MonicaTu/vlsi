@@ -184,7 +184,7 @@ module top_tb1;
     end
 
     err_num = 0;
-    #(`PERIOD*(21+11)); // for boot
+    #(`PERIOD*(21+11+8)); // for boot
 
   #(`PERIOD*1.5);
 //  #(`PERIOD*`IR_CYCLE);
@@ -322,15 +322,6 @@ module top_tb1;
   if (top1.regfile1.rw_reg[8] != golden_reg[8])
     err_num = err_num + 1;
     if (err_num != 0)$display("xxx");
-
-  $display("cycle count: %10d", Cycle_cnt);
-  $display("instruction count: %d", Ins_cnt);
-  $display("errors: %10d", err_num);
-    if (err_num != 0)$display("xxx");
-  if (err_num == 0)
-    $display("<PASS>\n");
-  else
-    $display("<FAIL>\n");
   end
 
   // for iverilog which does not support 2-dimension array.
@@ -357,7 +348,7 @@ module top_tb1;
   #(`PERIOD*5.5);
   //#(`PERIOD*`IR_CYCLE);
     
-    #(`PERIOD*(21+11)); // for boot
+    #(`PERIOD*(21+11+8)); // for boot
 
   #(`PERIOD*`IR_CYCLE) //ADDI
   tb_rw_reg_0 = 32'b01101;
@@ -478,9 +469,9 @@ module top_tb1;
   initial begin
     $dumpfile("top_tb1.vcd");
     $dumpvars;
-//  $fsdbDumpfile("top_tb1.fsdb");
-//  $fsdbDumpvars;
-//  $fsdbDumpvars(0, top_tb1, "+mda");
+    $fsdbDumpfile("top_tb1.fsdb");
+    $fsdbDumpvars;
+    $fsdbDumpvars(0, top_tb1, "+mda");
   end
 
 endmodule
