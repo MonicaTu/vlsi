@@ -103,6 +103,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire ir_IM_write;
   wire ir_IM_enable;
   wire [IMAddrSize-1:0]ir_IM_address;
+  wire rom_initial;
   
   assign DM_in = regfile1.rw_reg[write_address];
   assign DM_address = alu12_result;
