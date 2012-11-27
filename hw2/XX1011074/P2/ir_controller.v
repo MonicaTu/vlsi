@@ -100,31 +100,31 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
   begin
     case(current_state)
     stopState : begin
-      next_state <= fetchState;
-      enable_im <= 1;
-      enable_im_fetch <= 1;
-      enable_im_write <= 0;
-      enable_dm <= 0;
-      enable_dm_fetch <= 0;
-      enable_dm_write <= 0;
-      enable_reg_read <= 0;
-      enable_alu_execute <= 0;
-      enable_reg_write <= 0;
+      next_state = fetchState;
+      enable_im = 1;
+      enable_im_fetch = 1;
+      enable_im_write = 0;
+      enable_dm = 0;
+      enable_dm_fetch = 0;
+      enable_dm_write = 0;
+      enable_reg_read = 0;
+      enable_alu_execute = 0;
+      enable_reg_write = 0;
     end
     fetchState : begin
-      next_state <= exeState;
-      enable_im <= 1;
-      enable_im_fetch <= 1;
-      enable_im_write <= 0;
-      enable_dm <= 0;       // FIXME
-      enable_dm_fetch <= 0; // FIXME
-      enable_dm_write <= 0;
-      enable_reg_read <= 1; // FIXME
-      enable_alu_execute <= 0;
-      enable_reg_write <= 0;
+      next_state = exeState;
+      enable_im = 0;
+      enable_im_fetch = 0;
+      enable_im_write = 0;
+      enable_dm = 0;       // FIXME
+      enable_dm_fetch = 0; // FIXME
+      enable_dm_write = 0;
+      enable_reg_read = 1; // FIXME
+      enable_alu_execute = 0;
+      enable_reg_write = 0;
     end
     exeState : begin
-      next_state <= lwFetchState;
+      next_state = lwFetchState;
 //      if (opcode == TYPE_LS) begin
 //        enable_im <= 0;
 //        enable_im_fetch <= 0;
@@ -136,192 +136,192 @@ module ir_controller(enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetc
 //        enable_dm_fetch <= 0;
 //        enable_dm_write <= 0;
 //      end else begin
-        enable_im <= 0;
-        enable_im_fetch <= 0;
-        enable_im_write <= 0;
-        enable_dm <= 0;
-        enable_dm_fetch <= 0;
-        enable_dm_write <= 0;
-        enable_reg_read <= 0;
-        enable_alu_execute <= 1;
-        enable_reg_write <= 0;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
+        enable_reg_read = 0;
+        enable_alu_execute = 1;
+        enable_reg_write = 0;
 //      end
     end
     lwFetchState : begin
-      next_state <= lwWriteState;
+      next_state = lwWriteState;
       if (opcode == TYPE_LS && sub_opcode_8bit == LW) begin
-        enable_im <= 0;
-        enable_im_fetch <= 0;
-        enable_im_write <= 0;
-        enable_alu_execute <= 0;
-        enable_reg_read <= 0;
-        enable_reg_write <= 0;
-        enable_dm <= 1;
-        enable_dm_fetch <= 1;
-        enable_dm_write <= 0;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_alu_execute = 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 1;
+        enable_dm_fetch = 1;
+        enable_dm_write = 0;
       end else begin
-        enable_im <= 0;
-        enable_im_fetch <= 0;
-        enable_im_write <= 0;
-        enable_alu_execute <= 0;
-        enable_reg_read <= 0;
-        enable_reg_write <= 0;
-        enable_dm <= 0;
-        enable_dm_fetch <= 0;
-        enable_dm_write <= 0;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_alu_execute = 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
       end
     end
     lwWriteState : begin
-      next_state <= writeState;
+      next_state = writeState;
       if (opcode == TYPE_LS && sub_opcode_8bit == LW) begin
-        enable_im <= 0;
-        enable_im_fetch <= 0;
-        enable_im_write <= 0;
-        enable_alu_execute <= 0;
-        enable_reg_read <= 0;
-        enable_reg_write <= 0;
-        enable_dm <= 0;
-        enable_dm_fetch <= 0;
-        enable_dm_write <= 0;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_alu_execute = 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
       end else begin
-        enable_im <= 0;
-        enable_im_fetch <= 0;
-        enable_im_write <= 0;
-        enable_alu_execute <= 0;
-        enable_reg_read <= 0;
-        enable_reg_write <= 0;
-        enable_dm <= 0;
-        enable_dm_fetch <= 0;
-        enable_dm_write <= 0;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_alu_execute = 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
       end
     end
     writeState : begin
-      next_state <= swFetchState;
-      enable_im <= 0;
-      enable_im_fetch <= 0;
-      enable_im_write <= 0;
-      enable_alu_execute <= 0;
+      next_state = swFetchState;
+      enable_im = 0;
+      enable_im_fetch = 0;
+      enable_im_write = 0;
+      enable_alu_execute = 0;
       if (opcode == TYPE_BASIC && sub_opcode_5bit == SRLI && imm5 == 5'b0) begin// NOP
-        enable_reg_read <= 0;
-        enable_reg_write <= 0;
-        enable_dm <= 0;
-        enable_dm_fetch <= 0;
-        enable_dm_write <= 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
       end else if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
-        enable_reg_read <= 0;
-        enable_reg_write <= 0;
-        enable_dm <= 0;
-        enable_dm_fetch <= 0;
-        enable_dm_write <= 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
       end else begin
-        enable_reg_read <= 0; //FIXME
-        enable_reg_write <= 1;
-        enable_dm <= 0;
-        enable_dm_fetch <= 0;
-        enable_dm_write <= 0;
+        enable_reg_read = 0; //FIXME
+        enable_reg_write = 1;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
       end
     end
     swFetchState : begin
-      next_state <= swWriteState;
+      next_state = swWriteState;
       if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
-        enable_im <= 0;
-        enable_im_fetch <= 0;
-        enable_im_write <= 0;
-        enable_alu_execute <= 0;
-        enable_reg_read <= 1;
-        enable_reg_write <= 0;
-        enable_dm <= 0;
-        enable_dm_fetch <= 0;
-        enable_dm_write <= 0;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_alu_execute = 0;
+        enable_reg_read = 1;
+        enable_reg_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
       end else begin 
-        enable_im <= 0;
-        enable_im_fetch <= 0;
-        enable_im_write <= 0;
-        enable_alu_execute <= 0;
-        enable_reg_read <= 0;
-        enable_reg_write <= 0;
-        enable_dm <= 0;
-        enable_dm_fetch <= 0;
-        enable_dm_write <= 0;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_alu_execute = 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
       end
     end
     swWriteState : begin
-      next_state <= stopState;
+      next_state = stopState;
       if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
-        enable_im <= 0;
-        enable_im_fetch <= 0;
-        enable_im_write <= 0;
-        enable_alu_execute <= 0;
-        enable_reg_read <= 0;
-        enable_reg_write <= 0;
-        enable_dm <= 1;
-        enable_dm_fetch <= 0;
-        enable_dm_write <= 1;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_alu_execute = 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 1;
+        enable_dm_fetch = 0;
+        enable_dm_write = 1;
       end else begin 
-        enable_im <= 0;
-        enable_im_fetch <= 0;
-        enable_im_write <= 0;
-        enable_alu_execute <= 0;
-        enable_reg_read <= 0;
-        enable_reg_write <= 0;
-        enable_dm <= 0;
-        enable_dm_fetch <= 0;
-        enable_dm_write <= 0;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_alu_execute = 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
       end
     end
     endcase
 
-    writeback_select <= (opcode == LWI | (opcode == TYPE_LS && sub_opcode_8bit == LW) ) ? sel_DMout : sel_aluResult;
+    writeback_select = (opcode == LWI | (opcode == TYPE_LS && sub_opcode_8bit == LW) ) ? sel_DMout : sel_aluResult;
 
     case(opcode)
       TYPE_BASIC : begin
                if (sub_opcode_5bit == SRLI | sub_opcode_5bit == SLLI | sub_opcode_5bit == ROTRI) begin
-    	         	mux4to1_select <= sel_imm5ZE; 
-    	         	imm_reg_select <= sel_immOut;
-	             end
-	             else begin
-    	         	mux4to1_select <= sel_imm5ZE; 
-    	         	imm_reg_select <= sel_regOut;
+                    mux4to1_select = sel_imm5ZE; 
+                    imm_reg_select = sel_immOut;
+                 end
+                 else begin
+                    mux4to1_select = sel_imm5ZE; 
+                    imm_reg_select = sel_regOut;
                end
-	           end
+               end
       ADDI : begin
-               mux4to1_select <= sel_imm15SE;
-      	       imm_reg_select <= sel_immOut;
-      	     end
+               mux4to1_select = sel_imm15SE;
+               imm_reg_select = sel_immOut;
+             end
       ORI  : begin
-      	       mux4to1_select <= sel_imm15ZE;
-      	       imm_reg_select <= sel_immOut;
-      	     end
+               mux4to1_select = sel_imm15ZE;
+               imm_reg_select = sel_immOut;
+             end
       XORI : begin
-      	       mux4to1_select <= sel_imm15ZE;
-      	       imm_reg_select <= sel_immOut;
-      	     end
+               mux4to1_select = sel_imm15ZE;
+               imm_reg_select = sel_immOut;
+             end
       LWI  : begin
-               mux4to1_select <= sel_imm15ZE;
-               imm_reg_select <= sel_immOut; // FIXME
-      	     end
+               mux4to1_select = sel_imm15ZE;
+               imm_reg_select = sel_immOut; // FIXME
+             end
       SWI  : begin
-               mux4to1_select <= sel_imm15ZE;
-               imm_reg_select <= sel_immOut;
-      	     end
+               mux4to1_select = sel_imm15ZE;
+               imm_reg_select = sel_immOut;
+             end
       MOVI : begin
-      	      mux4to1_select <= sel_imm20SE;
-      	      imm_reg_select <= sel_immOut;
-      	     end
+              mux4to1_select = sel_imm20SE;
+              imm_reg_select = sel_immOut;
+             end
       TYPE_LS : case (sub_opcode_8bit)
                   LW : begin
-                          mux4to1_select <= sel_imm5ZE;
-                          imm_reg_select <= sel_regOut; // FIXME
+                          mux4to1_select = sel_imm5ZE;
+                          imm_reg_select = sel_regOut; // FIXME
                        end
                   SW : begin
-    	                    mux4to1_select <= sel_imm5ZE; 
-                          imm_reg_select <= sel_regOut;
+                            mux4to1_select = sel_imm5ZE; 
+                          imm_reg_select = sel_regOut;
                        end
                 endcase
       default : begin 
-    	        mux4to1_select <= sel_imm5ZE; 
-    	        imm_reg_select <= sel_regOut;
-    	       end
+                mux4to1_select = sel_imm5ZE; 
+                imm_reg_select = sel_regOut;
+               end
     endcase
   end
 
