@@ -88,7 +88,7 @@ module top_tb2;
 
   MEMORY MEMORY1 (
     .clk(clk),
-    .rst(rst),
+    .rst(reset),
     .enable(MEM_enable),
     .read(MEM_en_read),
     .write(MEM_en_write),
