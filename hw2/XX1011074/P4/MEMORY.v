@@ -36,6 +36,7 @@ always@(posedge clk)begin
   else if(enable)begin
     if(read)begin
       Dout<=mem[address];
+      #1; // FIXME: workaround for time delay
     end
     else if(write)begin
       mem[address]<=Din;

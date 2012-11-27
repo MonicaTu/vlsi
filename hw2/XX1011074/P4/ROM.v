@@ -23,6 +23,7 @@ always@(posedge clk)begin
   if(enable)begin
     if(read)begin
       dout<=mem_data[address];
+      #1; // FIXME: workaround for time delay
     end
   end
 end
