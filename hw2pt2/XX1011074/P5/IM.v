@@ -1,10 +1,10 @@
-module IM(clk, rst, IM_address, enable_fetch, enable_write, enable_im, IMin, IMout);
+module IM(clk, rst, IM_address, enable_fetch, enable_write, enable_mem, IMin, IMout);
 
   parameter DataSize=32;
   parameter MemSize=1024;
   parameter im_start='h80;
   
-  input clk, rst, enable_fetch, enable_write, enable_im;
+  input clk, rst, enable_fetch, enable_write, enable_mem;
   input [9:0]IM_address;
   input [DataSize-1:0]IMin;
   
@@ -50,7 +50,7 @@ module IM(clk, rst, IM_address, enable_fetch, enable_write, enable_im, IMin, IMo
       mem_data[i]<=0;
       IMout<=0;
     end
-    else if(enable_im)begin
+    else if(enable_mem)begin
       if(enable_fetch)begin
         IMout<=mem_data[IM_address];
       end

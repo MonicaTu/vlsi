@@ -8,7 +8,7 @@
 `include "alu_scr_mux.v"
 `include "writeback_select_mux.v"
 
-module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_address, Cycle_cnt, Ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address, IM_address, IM_read, IM_write, IM_enable, MEM_data, rom_out, DM_out, instruction, system_enable, rst, clk);
+module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_address, cycle_cnt, ins_cnt, DM_read, DM_write, DM_enable, DM_in, DM_address, IM_in, IM_address, IM_read, IM_write, IM_enable, MEM_data, rom_out, DM_out, instruction, system_enable, rst, clk);
   parameter DataSize = 32;
   parameter IMSize = 10;
   parameter DMAddrSize = 12;
@@ -17,8 +17,8 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   parameter CycleSize = 128;
   parameter InsSize = 64;
   parameter AluResultSize = 12;
-  parameter ROMAddrSize = 36;
-  parameter MEMSize = 14;
+  parameter ROMAddrSize = 37;
+  parameter MEMSize = 16;
   parameter ROMSize = 8;
 
   // top
@@ -49,8 +49,9 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   output IM_write;
   output IM_enable;
   output [IMAddrSize-1:0]IM_address;
-  output [CycleSize-1:0] Cycle_cnt;
-  output [InsSize-1:0] Ins_cnt;
+  output [DataSize-1:0]IM_in;
+  output [CycleSize-1:0] cycle_cnt;
+  output [InsSize-1:0] ins_cnt;
 
   wire DM_read;
   wire DM_write;
@@ -62,6 +63,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire IM_write;
   wire IM_enable;
   wire [IMAddrSize-1:0]IM_address;
+  wire [DataSize-1:0]IM_in;
 
   // internal
   wire [IMSize-1:0]PC;
@@ -81,8 +83,8 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire writeback_select;
   wire [1:0]alu_scr_select1;
   wire [1:0]alu_scr_select2;
-  wire [CycleSize-1:0] Cycle_cnt;
-  wire [InsSize-1:0] Ins_cnt;
+  wire [CycleSize-1:0] cycle_cnt;
+  wire [InsSize-1:0] ins_cnt;
   wire alu32_overflow;
   
   // others
@@ -106,6 +108,9 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire ir_IM_enable;
   wire [IMAddrSize-1:0]ir_IM_address;
   wire rom_initial;
+
+  // FIXME
+  wire rom_done = rom_initial;
   
   assign alu12_result = alu32_result[AluResultSize-1:0];
   assign DM_in = regfile1.rw_reg[write_address];
@@ -121,7 +126,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .clock(clk), 
     .reset(rom_initial), 
     .pc(PC), 
-    .cycle_cnt(Cycle_cnt));
+    .cycle_cnt(cycle_cnt));
   
   rom_controller rom_controller1 (
     .rom_pc(rom_address),
@@ -148,7 +153,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .clock(clk));
 
   ir_controller ir_conrtoller1 (
-    .Ins_cnt(Ins_cnt),
+    .Ins_cnt(ins_cnt),
     .IM_address(ir_IM_address),
     .enable_dm_fetch(DM_read), 
     .enable_dm_write(DM_write), 

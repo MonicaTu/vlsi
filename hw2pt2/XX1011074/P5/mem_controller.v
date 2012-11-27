@@ -7,7 +7,7 @@ module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr,
   input clock;
   input reset;
   input rom_initial; // FIXME
-  input [35:0]rom_ir;
+  input [36:0]rom_ir;
   
   output im_enable;
   output im_en_read;
@@ -17,7 +17,7 @@ module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr,
   output mem_enable;
   output mem_en_read; 
   output mem_en_write; 
-  output [13:0]mem_addr; // TODO
+  output [15:0]mem_addr; // TODO
 
   output load_im_done; 
 
@@ -30,7 +30,7 @@ module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr,
   reg mem_enable;
   reg mem_en_read; 
   reg mem_en_write; 
-  reg [13:0]mem_addr; 
+  reg [15:0]mem_addr; 
 
   wire ir_rst    = rom_ir[35];
   wire ir_en     = rom_ir[34];

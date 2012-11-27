@@ -1,6 +1,6 @@
-module ROM(clk, read, enable, address, dout);
+module rom(clk, read, enable, address, dout);
 
-parameter data_size=36;
+parameter data_size=37;
 parameter mem_size=256;
 
 input clk, read, enable;

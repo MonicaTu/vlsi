@@ -1,4 +1,4 @@
-module DM(clk, rst, enable_fetch, enable_write, enable_dm, DMin, DMout, DM_address);
+module DM(clk, rst, enable_fetch, enable_writeback, enable_mem, DMin, DMout, DM_address);
 
   parameter DataSize=32;
   parameter mem_size=4096;
@@ -6,8 +6,8 @@ module DM(clk, rst, enable_fetch, enable_write, enable_dm, DMin, DMout, DM_addre
   input clk;
   input rst;
   input enable_fetch;
-  input enable_write;
-  input enable_dm;
+  input enable_writeback;
+  input enable_mem;
   input [DataSize-1:0]DMin;
   input [11:0]DM_address;
   output [DataSize-1:0]DMout;
@@ -65,10 +65,10 @@ module DM(clk, rst, enable_fetch, enable_write, enable_dm, DMin, DMout, DM_addre
         mem_data[i]<=0;
         DMout<=0;
     end
-    else if(enable_dm==1)begin
+    else if(enable_mem==1)begin
       if(enable_fetch==1)
         DMout<=mem_data[DM_address];
-      else if(enable_write==1)
+      else if(enable_writeback==1)
         mem_data[DM_address]<=DMin;
     end
   end
