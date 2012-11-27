@@ -1,6 +1,6 @@
 /* TODO: 
 */
-module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im_write, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2, write_address, mux4to1_select, writeback_select, imm_reg_select, clock, reset, PC, ir);
+module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im_write, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2, write_address, mux4to1_select, writeback_select, alu_scr_select1, alu_scr_select2, clock, reset, PC, ir);
   parameter MemSize = 10;
   parameter DataSize = 32;
   parameter AddrSize = 5;
@@ -30,7 +30,8 @@ module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enab
 
   output [1:0] mux4to1_select;
   output writeback_select;
-  output imm_reg_select;
+  output [1:0]alu_scr_select1;
+  output [1:0]alu_scr_select2;
 
   output [5:0] opcode;
   output [4:0] sub_opcode_5bit;
@@ -59,7 +60,8 @@ module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enab
 
   reg [1:0] mux4to1_select;
   reg writeback_select;
-  reg imm_reg_select;
+  reg [1:0]alu_scr_select1;
+  reg [1:0]alu_scr_select2;
   
   /* internal */
   reg [DataSize-1:0] present_instruction;
@@ -96,8 +98,8 @@ module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enab
   parameter sel_imm5ZE = 2'b00, sel_imm15SE = 2'b01, sel_imm15ZE = 2'b10, sel_imm20SE =  2'b11;
   // writeback_select
   parameter sel_aluResult = 1'b0, sel_DMout = 1'b1; 
-  // imm_reg_select
-  parameter sel_regOut = 1'b0, sel_immOut = 1'b1;
+  // alu_scr_select1, alu_scr_select2
+  parameter sel_regOut = 2'b00, sel_immOut = 2'b01, sel_addr = 2'b10;
      
   initial begin
     Ins_cnt = 0;
@@ -292,50 +294,61 @@ module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enab
       TYPE_BASIC : begin
                if (sub_opcode_5bit == SRLI | sub_opcode_5bit == SLLI | sub_opcode_5bit == ROTRI) begin
                     mux4to1_select = sel_imm5ZE; 
-                    imm_reg_select = sel_immOut;
+                    alu_scr_select1 = sel_regOut;
+                    alu_scr_select2 = sel_immOut;
                  end
                  else begin
                     mux4to1_select = sel_imm5ZE; 
-                    imm_reg_select = sel_regOut;
+                    alu_scr_select1 = sel_regOut;
+                    alu_scr_select2 = sel_regOut;
                end
                end
       ADDI : begin
                mux4to1_select = sel_imm15SE;
-               imm_reg_select = sel_immOut;
+               alu_scr_select1 = sel_regOut;
+               alu_scr_select2 = sel_immOut;
              end
       ORI  : begin
                mux4to1_select = sel_imm15ZE;
-               imm_reg_select = sel_immOut;
+               alu_scr_select1 = sel_regOut;
+               alu_scr_select2 = sel_immOut;
              end
       XORI : begin
                mux4to1_select = sel_imm15ZE;
-               imm_reg_select = sel_immOut;
+               alu_scr_select1 = sel_regOut;
+               alu_scr_select2 = sel_immOut;
              end
       LWI  : begin
                mux4to1_select = sel_imm15ZE;
-               imm_reg_select = sel_immOut; // FIXME
+               alu_scr_select1 = sel_addr;
+               alu_scr_select2 = sel_addr;
              end
       SWI  : begin
                mux4to1_select = sel_imm15ZE;
-               imm_reg_select = sel_immOut;
+               alu_scr_select1 = sel_addr;
+               alu_scr_select2 = sel_addr;
              end
       MOVI : begin
-              mux4to1_select = sel_imm20SE;
-              imm_reg_select = sel_immOut;
+               mux4to1_select = sel_imm20SE;
+               alu_scr_select1 = sel_regOut;
+               alu_scr_select2 = sel_immOut;
              end
       TYPE_LS : case (sub_opcode_8bit)
                   LW : begin
                           mux4to1_select = sel_imm5ZE;
-                          imm_reg_select = sel_regOut; // FIXME
+                          alu_scr_select1 = sel_addr;
+                          alu_scr_select2 = sel_addr;
                        end
                   SW : begin
-                            mux4to1_select = sel_imm5ZE; 
-                          imm_reg_select = sel_regOut;
+                          mux4to1_select = sel_imm5ZE; 
+                          alu_scr_select1 = sel_addr;
+                          alu_scr_select2 = sel_addr;
                        end
                 endcase
       default : begin 
                 mux4to1_select = sel_imm5ZE; 
-                imm_reg_select = sel_regOut;
+                alu_scr_select1 = sel_regOut;
+                alu_scr_select2 = sel_regOut;
                end
     endcase
   end
