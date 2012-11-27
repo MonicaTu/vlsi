@@ -176,9 +176,9 @@ module top_tb;
   initial begin
     $dumpfile("top_tb.vcd");
     $dumpvars;
-//  $fsdbDumpfile("top_tb.fsdb");
-//  $fsdbDumpvars;
-//  $fsdbDumpvars(0, top_tb, "+mda");
+    $fsdbDumpfile("top_tb.fsdb");
+    $fsdbDumpvars;
+    $fsdbDumpvars(0, top_tb, "+mda");
   end
 
 endmodule
