@@ -1,0 +1,2 @@
+ncverilog top_tb1.v top.v  +access+r
+
