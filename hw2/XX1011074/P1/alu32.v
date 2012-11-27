@@ -14,7 +14,7 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode,enable_execute,
   reg [63:0]rotate;
   reg a,b;
   
-  always @ ( * )begin
+  always @ ( reset or enable_execute or opcode or sub_opcode or scr1 or scr2 )begin
     if(reset)begin
       alu_result=32'b0;
       alu_overflow=1'b0;

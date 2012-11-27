@@ -9,17 +9,17 @@ module ir_controller(enable_im_fetch, enable_im_write, enable_im, enable_alu_exe
   input [MemSize-1:0] PC;
   input [DataSize-1:0] ir;
 
-  output reg enable_im_fetch;
-  output reg enable_im_write;
-  output reg enable_im;
+  output enable_im_fetch;
+  output enable_im_write;
+  output enable_im;
   
-  output reg enable_alu_execute;
-  output reg enable_reg_read;
-  output reg enable_reg_write;
+  output enable_alu_execute;
+  output enable_reg_read;
+  output enable_reg_write;
 
-  output reg [1:0] mux4to1_select;
-  output reg writeback_select;
-  output reg imm_reg_select;
+  output [1:0] mux4to1_select;
+  output writeback_select;
+  output imm_reg_select;
 
   output [5:0] opcode;
   output [4:0] sub_opcode;
@@ -29,6 +29,18 @@ module ir_controller(enable_im_fetch, enable_im_write, enable_im, enable_alu_exe
   output [AddrSize-1:0]read_address1;
   output [AddrSize-1:0]read_address2;
   output [AddrSize-1:0]write_address;
+  
+  reg enable_im_fetch;
+  reg enable_im_write;
+  reg enable_im;
+  
+  reg enable_alu_execute;
+  reg enable_reg_read;
+  reg enable_reg_write;
+
+  reg [1:0] mux4to1_select;
+  reg writeback_select;
+  reg imm_reg_select;
   
   /* internal */
   reg [DataSize-1:0] present_instruction;
