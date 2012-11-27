@@ -1,7 +1,7 @@
 module mem_controller(load_im_done, im_enable, im_en_read, im_en_write, im_addr, mem_enable, mem_en_read, mem_en_write, mem_addr, rom_ir, rom_initial, reset, clock);
 
   parameter cycle = 1; // FIXME
-  parameter im_start = 'h80; // FIXME
+  parameter im_start = 'h79; // FIXME
 
   // TODO: DM
   input clock;
