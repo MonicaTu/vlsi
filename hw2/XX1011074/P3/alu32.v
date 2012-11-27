@@ -11,8 +11,8 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit, enable_ex
   parameter TYPE_LS=6'b011100;
   parameter LW=8'b00000010, SW=8'b00001010;
 
-  output reg [31:0]alu_result;
-  output reg alu_overflow;
+  output [31:0]alu_result;
+  output alu_overflow;
   
   input [31:0]scr1,scr2;
   input [5:0]opcode;
@@ -20,10 +20,12 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit, enable_ex
   input reset;
   input enable_execute;
   
+  reg [31:0]alu_result;
+  reg alu_overflow;
   reg [63:0]rotate;
   reg a,b;
   
-  always @ ( * )begin
+  always @ ( reset or enable_execute or opcode or sub_opcode_5bit or scr1 or scr2 )begin
     if(reset)begin
       alu_result=32'b0;
       alu_overflow=1'b0;
@@ -56,9 +58,9 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit, enable_ex
                                 if(scr2!=0)begin 
                                   alu_overflow=1'b0;
                                   alu_result=scr1>>scr2;
-				                      end
+                                      end
                     //NOP   :
-				                      else begin
+                                      else begin
                                   alu_result=32'b0;
                                   alu_overflow=1'b0;
                                 end

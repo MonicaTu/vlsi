@@ -4,7 +4,7 @@ module alu12(alu_result, scr1, scr2, sv, opcode, sub_opcode_8bit, enable_execute
   parameter TYPE_LS=6'b011100;
   parameter LW=8'b00000010, SW=8'b00001010;
 
-  output reg [11:0]alu_result;
+  output [11:0]alu_result;
   
   input [4:0]scr1,scr2;
   input [5:0]opcode;
@@ -13,9 +13,11 @@ module alu12(alu_result, scr1, scr2, sv, opcode, sub_opcode_8bit, enable_execute
   input reset;
   input enable_execute;
   
+  reg [11:0]alu_result;
+  
   reg a,b;
   
-  always @ ( * )begin
+  always @ ( reset or enable_execute or opcode or sub_opcode_8bit or sv or scr1 or scr2)begin
     if(reset)begin
       alu_result=12'b0;
     end
