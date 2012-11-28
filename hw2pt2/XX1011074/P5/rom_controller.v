@@ -1,6 +1,5 @@
 module rom_controller(rom_done, rom_pc, ROM_enable, ROM_read, Ins_cnt, eop, exe_ir_done, load_im_done, system_enable, reset, clock);
 
-  parameter cycle = 1; // FIXME
   parameter InsSize = 64;
   
   // state
@@ -63,17 +62,6 @@ module rom_controller(rom_done, rom_pc, ROM_enable, ROM_read, Ins_cnt, eop, exe_
       end
     endcase
   end
-
-//  always @ (posedge clock) begin
-//    clock_cnt = clock_cnt + 1;
-//  end
-  
-//  always @ (posedge clock) begin
-//    if (clock_cnt % cycle == 0 && load_im_done == 1)
-//      rom_pc = rom_pc + 1;
-//    else
-//      rom_pc = rom_pc;
-//  end
 
   always @ (reset, load_im_done) begin
     if (reset) begin

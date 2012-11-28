@@ -1,7 +1,6 @@
 module mem_controller(total_ir, eop, ir_enable, load_im_done, im_enable, im_en_read, im_en_write, im_addr, mem_enable, mem_en_read, mem_en_write, mem_addr, rom_ir, reset, clock);
 
-  parameter cycle = 1; // FIXME
-  parameter im_start = 'h7F; // FIXME
+  parameter im_start = 'h7F;
   
   // state
   parameter stopState = 2'b00, resetState = 2'b01, loadState = 2'b10;
@@ -19,7 +18,7 @@ module mem_controller(total_ir, eop, ir_enable, load_im_done, im_enable, im_en_r
   output mem_enable;
   output mem_en_read; 
   output mem_en_write; 
-  output [15:0]mem_addr; // TODO
+  output [15:0]mem_addr;
 
   output eop; 
   output load_im_done; 
@@ -128,20 +127,12 @@ module mem_controller(total_ir, eop, ir_enable, load_im_done, im_enable, im_en_r
     endcase
   end
   
-//  always @ (posedge clock) begin
-//    if (reset)
-//      clock_cnt <= 1;
-//    else
-//      clock_cnt <= clock_cnt + 1; 
-//  end
-  
   always @ (reset or im_en_write) begin
     if (reset) begin
       im_addr <= im_start;
       mem_addr <= 0; 
     end else begin
       if (im_en_write) begin
-//      if (clock_cnt % cycle == 0) begin
         im_addr <= im_addr + 1;
         mem_addr <= mem_addr + 1;
       end else begin
@@ -155,8 +146,7 @@ module mem_controller(total_ir, eop, ir_enable, load_im_done, im_enable, im_en_r
     if (reset) begin
       load_im_done = 0;
     end else begin
-//      $display("im_addr:%b, im_start:%b, diffB:%b, diffD:%d, ir_size:%d", im_addr, im_start, (im_addr-im_start)<<5,(im_addr-im_start)<<5, ir_size);
-      if (((im_addr - im_start) << 5) > ir_size) // FIXME 
+      if (((im_addr - im_start) << 5) > ir_size)
         load_im_done = 1;
       else
         load_im_done = load_im_done;

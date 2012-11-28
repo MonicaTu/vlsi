@@ -107,12 +107,11 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
      
   assign IM_address = (PC == 0) ? 0: (PC + im_start);
 
-  always @(posedge clock)
-  begin
-    if(reset)
-      current_state <= stopState;
+  always @(posedge clock) begin
+    if(reset || (present_instruction == 0))
+      current_state = stopState;
     else
-      current_state <= next_state;
+      current_state = next_state;
   end
 
   always @(current_state)
@@ -364,11 +363,11 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     $display("PC:%d, present_instruction:%b", PC, present_instruction);
   end
 
-  always @ (reset or IM_address) begin
+  always @ (reset or present_instruction) begin
     if (reset) begin
       Ins_cnt = 0;
     end else begin
-      if (IM_address)
+      if (present_instruction)
           Ins_cnt = Ins_cnt + 1;
       else
           Ins_cnt = Ins_cnt;
@@ -376,11 +375,11 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     $display("PC:%d cnt:%d", IM_address, Ins_cnt);
   end
 
-  always @ (reset, Ins_cnt) begin
+  always @ (reset, PC, current_state) begin
     if (reset) begin
         exe_ir_done = 0;
     end else begin
-      if (Ins_cnt > total_ir-1)
+      if ((PC >= total_ir) && (current_state == swWriteState))
         exe_ir_done = 1;
       else
         exe_ir_done = exe_ir_done;
