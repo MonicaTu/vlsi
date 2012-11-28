@@ -86,6 +86,8 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire [CycleSize-1:0] cycle_cnt;
   wire [InsSize-1:0] ins_cnt;
   wire alu32_overflow;
+  wire exe_ir_done;
+  wire load_im_done;
   
   // others
   wire [DataSize-1:0]read_data1;
@@ -107,37 +109,52 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire ir_IM_write;
   wire ir_IM_enable;
   wire [IMAddrSize-1:0]ir_IM_address;
-  wire rom_initial;
+  wire ir_enable;
+  wire rom_done;
+  wire eop;
+  wire [15:0]total_ir;
 
-  // FIXME
-  wire rom_done = rom_initial;
-  
   assign alu12_result = alu32_result[AluResultSize-1:0];
   assign DM_in = regfile1.rw_reg[write_address];
   assign DM_address = alu12_result;
 
   // FIXME
-  assign IM_read    = (rom_initial) ? mem_IM_read   : ir_IM_read;
-  assign IM_write   = (rom_initial) ? mem_IM_write  : ir_IM_write;
-  assign IM_enable  = (rom_initial) ? mem_IM_enable : ir_IM_enable;
-  assign IM_address = (rom_initial) ? mem_IM_address : ir_IM_address;
+//  assign IM_read    = (rom_initial) ? mem_IM_read   : ir_IM_read;
+//  assign IM_write   = (rom_initial) ? mem_IM_write  : ir_IM_write;
+//  assign IM_enable  = (rom_initial) ? mem_IM_enable : ir_IM_enable;
+//  assign IM_address = (rom_initial) ? mem_IM_address : ir_IM_address;
+  
+  assign IM_read    = (ir_enable) ? ir_IM_read    : mem_IM_read;
+  assign IM_write   = (ir_enable) ? ir_IM_write   : mem_IM_write;
+  assign IM_enable  = (ir_enable) ? ir_IM_enable  : mem_IM_enable;
+  assign IM_address = (ir_enable) ? ir_IM_address : mem_IM_address;
 
   pc_tick pc_tick1 (
     .clock(clk), 
-    .reset(rom_initial), 
+    .ir_enable(ir_enable), 
+    .reset(rst), 
     .pc(PC), 
     .cycle_cnt(cycle_cnt));
   
   rom_controller rom_controller1 (
+    .rom_done(rom_done),
     .rom_pc(rom_address),
-    .rom_initial(rom_initial),
+//    .rom_initial(rom_initial),
     .ROM_enable(rom_enable),
     .ROM_read(rom_read),
+    .Ins_cnt(ins_cnt),
+    .eop(eop), 
+    .exe_ir_done(exe_ir_done), 
+//    .ir_enable(ir_enable), 
     .load_im_done(load_im_done), 
     .system_enable(system_enable),
+    .reset(rst),
     .clock(clk));
 
   mem_controller mem_controller1 (
+    .total_ir(total_ir), 
+    .eop(eop), 
+    .ir_enable(ir_enable), 
     .load_im_done(load_im_done), 
     .im_enable(mem_IM_enable), 
     .im_en_read(mem_IM_read), 
@@ -148,11 +165,11 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .mem_en_write(MEM_write), 
     .mem_addr(MEM_addr), 
     .rom_ir(rom_out), 
-    .rom_initial(rom_initial), 
     .reset(rst),
     .clock(clk));
 
   ir_controller ir_conrtoller1 (
+    .exe_ir_done(exe_ir_done), 
     .Ins_cnt(ins_cnt),
     .IM_address(ir_IM_address),
     .enable_dm_fetch(DM_read), 
@@ -178,6 +195,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .writeback_select(writeback_select),
     .alu_scr_select1(alu_scr_select1),
     .alu_scr_select2(alu_scr_select2),
+    .total_ir(total_ir), 
     .clock(clk),
     .reset(rst),
     .PC(PC),

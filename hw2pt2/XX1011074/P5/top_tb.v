@@ -97,7 +97,7 @@ module top_tb;
   		 , .enable_fetch(IM_read)
   		 , .enable_write(IM_write)
   		 , .enable_mem(IM_enable)
-  		 , .IMin(IM_in)
+  		 , .IMin(MEM_data)
   		 , .IMout(instruction)
   		 ); 
   
@@ -134,8 +134,18 @@ module top_tb;
   system_enable = 1'b0;
 
   #5 rst=1'b1; 
+//    #(`PERIOD*0.5);
+//    #(`PERIOD*`IR_CYCLE);
+//    rst=1'b0;
   #5 rst=1'b0;
-    	
+    
+//    clk = 1'b0;
+//    #(`PERIOD) rst = 1'b0;
+//    #(`PERIOD) rst = 1'b1;  
+//    #(`PERIOD*0.5);
+//    #(`PERIOD*`IR_CYCLE);
+//    rst = 1'b0;
+    
   //load verification program here
   `ifdef prog 
   		  //verification program 1
@@ -156,10 +166,12 @@ module top_tb;
   `endif
 
   #5 system_enable = 1'b1;
-      
-  #(`PERIOD*(18)); // for boot
-  #(`PERIOD*`IR_CYCLE*(19)); // for instructions
-			
+
+  end
+
+  always@(negedge clk)begin
+    $display("instruction: %b, rom_done: %b, IM_address: %b\n", instruction, TOP.rom_done, IM_address);
+    if( (instruction == 32'd0) && (TOP.rom_done == 1'b1) && (IM_address != 30'h80))begin 
       $display("**************************END OF SIMULATION****************************");
     
       for( i=128;i<180;i=i+1 ) $display( "IM[%h]=%h",i,IM1.mem_data[i] );  
@@ -167,19 +179,8 @@ module top_tb;
       
       $display("Cycle Count=%d\nInstruction Count=%d",cycle_cnt,ins_cnt);
       $finish;
+    end
   end
-
-//  always@(negedge clk)begin
-//    if( (instruction == 32'd0) && (TOP.rom_done == 1'b1) && (IM_address != 30'h80))begin 
-//      $display("**************************END OF SIMULATION****************************");
-//    
-//      for( i=128;i<180;i=i+1 ) $display( "IM[%h]=%h",i,IM1.mem_data[i] );  
-//      for( i=0;i<40;i=i+1 ) $display( "DM[%d]=%d",i,DM1.mem_data[i] );
-//      
-//      $display("Cycle Count=%d\nInstruction Count=%d",cycle_cnt,ins_cnt);
-//      $finish;
-//    end
-//  end
   
   initial begin
     $dumpfile("top_tb.vcd");

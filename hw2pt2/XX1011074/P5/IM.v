@@ -49,12 +49,15 @@ module IM(clk, rst, IM_address, enable_fetch, enable_write, enable_mem, IMin, IM
       for(i=0;i<MemSize;i=i+1)
       mem_data[i]<=0;
       IMout<=0;
+      $display("rst");
     end
     else if(enable_mem)begin
       if(enable_fetch)begin
         IMout<=mem_data[IM_address];
+        $display("IMout: %b", IMout);
       end
       else if(enable_write)begin
+        $display("IMin: %b", IMin);
         mem_data[IM_address] <= IMin;
       end
     end

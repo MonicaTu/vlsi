@@ -4,11 +4,12 @@
 `define IR_SIZE_BYTE ('d4)   // 32 bits = 4 bytes
 `define IR_CYCLE     ('d8)
 
-module pc_tick(pc, cycle_cnt, reset, clock);
+module pc_tick(pc, cycle_cnt, ir_enable, reset, clock);
 
   // interface
   input clock;
   input reset;
+  input ir_enable;
   output [`MEM_SIZE-1:0] pc;
   output [`TICK_SIZE-1:0] cycle_cnt;
 
@@ -17,8 +18,11 @@ module pc_tick(pc, cycle_cnt, reset, clock);
   
   // internal
   reg [`TICK_SIZE-1:0] internal_cycle_cnt;
+  wire local_clock;
 
-  always @(negedge clock) begin
+  assign local_clock = (ir_enable & clock);
+
+  always @(posedge local_clock or reset) begin
     if (reset) begin
       cycle_cnt <= 0;
     end else begin
@@ -26,7 +30,7 @@ module pc_tick(pc, cycle_cnt, reset, clock);
     end
   end
 
-  always @(negedge clock) begin
+  always @(posedge local_clock or reset) begin
     if (reset) begin
       internal_cycle_cnt <= 1;
     end else begin
@@ -34,7 +38,7 @@ module pc_tick(pc, cycle_cnt, reset, clock);
     end
   end
 
-  always @(negedge clock) begin
+  always @(posedge local_clock or reset) begin
     if (reset) begin
       pc <= 0;
     end else begin

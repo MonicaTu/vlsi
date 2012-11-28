@@ -1,6 +1,6 @@
 /* TODO: 
 */
-module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im_write, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2, write_address, mux4to1_select, writeback_select, alu_scr_select1, alu_scr_select2, clock, reset, PC, ir);
+module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im_write, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2, write_address, mux4to1_select, writeback_select, alu_scr_select1, alu_scr_select2, total_ir, clock, reset, PC, ir);
   parameter MemSize = 10;
   parameter DataSize = 32;
   parameter AddrSize = 5;
@@ -13,7 +13,9 @@ module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enab
   input reset;
   input [MemSize-1:0] PC;
   input [DataSize-1:0] ir;
+  input [15:0] total_ir;
 
+  output exe_ir_done;
   output [InsSize-1:0] Ins_cnt;
   output [IMAddrSize-1:0] IM_address;
 
@@ -44,8 +46,10 @@ module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enab
   output [AddrSize-1:0]read_address2;
   output [AddrSize-1:0]write_address;
   
+  reg exe_ir_done;
+
   reg [InsSize-1:0] Ins_cnt;
-  reg [IMAddrSize-1:0] IM_address;
+  wire [IMAddrSize-1:0] IM_address;
 
   reg enable_im_fetch;
   reg enable_im_write;
@@ -101,11 +105,9 @@ module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enab
   // alu_scr_select1, alu_scr_select2
   parameter sel_regOut = 2'b00, sel_immOut = 2'b01, sel_addr = 2'b10;
      
-  initial begin
-    Ins_cnt = 0;
-  end
+  assign IM_address = (PC == 0) ? 0: (PC + im_start);
 
-  always @(negedge clock)
+  always @(posedge clock)
   begin
     if(reset)
       current_state <= stopState;
@@ -353,25 +355,37 @@ module ir_controller(Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enab
     endcase
   end
 
-  always @(negedge enable_im_fetch)
-  begin
+  always @ (PC) begin
     if(PC == 0) begin
       present_instruction <= 0;
     end else begin
       present_instruction <= ir;
     end
+    $display("PC:%d, present_instruction:%b", PC, present_instruction);
   end
 
-  always @ (PC) begin
-      IM_address = (PC + im_start);
+  always @ (reset or IM_address) begin
+    if (reset) begin
+      Ins_cnt = 0;
+    end else begin
+      if (IM_address)
+          Ins_cnt = Ins_cnt + 1;
+      else
+          Ins_cnt = Ins_cnt;
+    end
+    $display("PC:%d cnt:%d", IM_address, Ins_cnt);
   end
 
-  always @ (present_instruction) begin
-    if (present_instruction)
-        Ins_cnt = Ins_cnt + 1;
-    else
-        Ins_cnt = Ins_cnt;
-//    $display("PC:%d cnt:%d ir:%b", IM_address, Ins_cnt, present_instruction);
+  always @ (reset, Ins_cnt) begin
+    if (reset) begin
+        exe_ir_done = 0;
+    end else begin
+      if (Ins_cnt > total_ir-1)
+        exe_ir_done = 1;
+      else
+        exe_ir_done = exe_ir_done;
+    end
+    $display("total_ir:%d, Ins_cnt:%d", total_ir, Ins_cnt);
   end
 
 
