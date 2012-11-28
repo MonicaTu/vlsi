@@ -95,7 +95,6 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire [DataSize-1:0]scr1;
   wire [DataSize-1:0]scr2;
   wire [DataSize-1:0]alu32_result;
-  wire [AluResultSize-1:0]alu12_result;
   wire [DataSize-1:0]reg_write_data;
   wire [DataSize-1:0]mux4to1_out;
   wire [DataSize-1:0]scr_out1;
@@ -114,9 +113,8 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire eop;
   wire [15:0]total_ir;
 
-  assign alu12_result = alu32_result[AluResultSize-1:0];
   assign DM_in = regfile1.rw_reg[write_address];
-  assign DM_address = alu12_result;
+  assign DM_address = alu32_result[AluResultSize-1:0];
   
   assign IM_read    = (ir_enable) ? ir_IM_read    : mem_IM_read;
   assign IM_write   = (ir_enable) ? ir_IM_write   : mem_IM_write;

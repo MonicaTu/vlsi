@@ -167,7 +167,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     end
     lwFetchState : begin
       next_state = lwWriteState;
-      if (opcode == TYPE_LS && sub_opcode_8bit == LW) begin
+      if ((opcode == TYPE_LS && sub_opcode_8bit == LW) || (opcode == LWI)) begin
         enable_im = 0;
         enable_im_fetch = 0;
         enable_im_write = 0;
@@ -191,7 +191,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     end
     lwWriteState : begin
       next_state = writeState;
-      if (opcode == TYPE_LS && sub_opcode_8bit == LW) begin
+      if ((opcode == TYPE_LS && sub_opcode_8bit == LW) || (opcode == LWI)) begin
         enable_im = 0;
         enable_im_fetch = 0;
         enable_im_write = 0;
@@ -225,7 +225,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
         enable_dm = 0;
         enable_dm_fetch = 0;
         enable_dm_write = 0;
-      end else if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+      end else if ((opcode == TYPE_LS && sub_opcode_8bit == SW) || (opcode == SWI))begin
         enable_reg_read = 0;
         enable_reg_write = 0;
         enable_dm = 0;
@@ -241,7 +241,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     end
     swFetchState : begin
       next_state = swWriteState;
-      if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+      if ((opcode == TYPE_LS && sub_opcode_8bit == SW) || (opcode == SWI))begin
         enable_im = 0;
         enable_im_fetch = 0;
         enable_im_write = 0;
@@ -265,7 +265,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     end
     swWriteState : begin
       next_state = stopState;
-      if (opcode == TYPE_LS && sub_opcode_8bit == SW) begin
+      if ((opcode == TYPE_LS && sub_opcode_8bit == SW) || (opcode == SWI)) begin
         enable_im = 0;
         enable_im_fetch = 0;
         enable_im_write = 0;
@@ -288,6 +288,9 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
       end
     end
     endcase
+  end
+
+  always @ (opcode) begin
 
     writeback_select = (opcode == LWI | (opcode == TYPE_LS && sub_opcode_8bit == LW) ) ? sel_DMout : sel_aluResult;
 
@@ -321,29 +324,29 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
              end
       LWI  : begin
                mux4to1_select = sel_imm15ZE;
-               alu_scr_select1 = sel_addr;
-               alu_scr_select2 = sel_addr;
+               alu_scr_select1 = sel_regOut;
+               alu_scr_select2 = sel_immOut;
              end
       SWI  : begin
                mux4to1_select = sel_imm15ZE;
-               alu_scr_select1 = sel_addr;
-               alu_scr_select2 = sel_addr;
+               alu_scr_select1 = sel_regOut;
+               alu_scr_select2 = sel_immOut;
              end
       MOVI : begin
                mux4to1_select = sel_imm20SE;
-               alu_scr_select1 = sel_regOut;
+               alu_scr_select1 = sel_immOut;
                alu_scr_select2 = sel_immOut;
              end
       TYPE_LS : case (sub_opcode_8bit)
                   LW : begin
                           mux4to1_select = sel_imm5ZE;
-                          alu_scr_select1 = sel_addr;
-                          alu_scr_select2 = sel_addr;
+                          alu_scr_select1 = sel_regOut;
+                          alu_scr_select2 = sel_immOut;
                        end
                   SW : begin
                           mux4to1_select = sel_imm5ZE; 
-                          alu_scr_select1 = sel_addr;
-                          alu_scr_select2 = sel_addr;
+                          alu_scr_select1 = sel_regOut;
+                          alu_scr_select2 = sel_immOut;
                        end
                 endcase
       default : begin 
@@ -360,7 +363,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     end else begin
       present_instruction <= ir;
     end
-    $display("PC:%d, present_instruction:%b", PC, present_instruction);
+//    $display("PC:%d, present_instruction:%b", PC, present_instruction);
   end
 
   always @ (reset or present_instruction) begin
@@ -372,7 +375,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
       else
           Ins_cnt = Ins_cnt;
     end
-    $display("PC:%d cnt:%d", IM_address, Ins_cnt);
+//    $display("PC:%d cnt:%d", IM_address, Ins_cnt);
   end
 
   always @ (reset, PC, current_state) begin
@@ -384,7 +387,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
       else
         exe_ir_done = exe_ir_done;
     end
-    $display("total_ir:%d, Ins_cnt:%d", total_ir, Ins_cnt);
+//    $display("total_ir:%d, Ins_cnt:%d", total_ir, Ins_cnt);
   end
 
 

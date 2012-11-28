@@ -1,17 +1,23 @@
 tb:
+	rm a.out
+	rm top_tb.vcd
 	iverilog top_tb.v top.v -Dprog=1
 	./a.out
 	gtkwave top_tb.vcd
 
 tb1:
-	iverilog top_tb1.v top.v -Dprog1=1
+	rm a.out
+	rm top_tb.vcd
+	iverilog top_tb.v top.v -Dprog1=1
 	./a.out
-	gtkwave top_tb1.vcd
+	gtkwave top_tb.vcd
 
 tb2:
-	iverilog top_tb2.v top.v -Dprog2=1
+	rm a.out
+	rm top_tb.vcd
+	iverilog top_tb.v top.v -Dprog2=1
 	./a.out
-	gtkwave top_tb2.vcd
+	gtkwave top_tb.vcd
 
 pc_tick:
 	iverilog pc_tick_tb.v pc_tick.v 
@@ -25,6 +31,4 @@ IM:
 clean:
 	rm a.out
 	rm top_tb.vcd
-	rm top_tb1.vcd
-	rm top_tb2.vcd
 	rm pc_tick_tb.vcd

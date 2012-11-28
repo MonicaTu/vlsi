@@ -100,24 +100,20 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit,sub_opcode
                      end
         LWI        : begin
                        alu_result=scr1+(scr2<<2);
-//                       $display("scr1: %h, scr2: %h", scr1, scr2);
-//                       $display("(LWI)alu_result: %b", alu_result);
+//                       $display("(LWI) scr1: %d, scr2: %d, 2, alu_result: %d", scr1, scr2, alu_result);
                      end
         SWI        : begin
-                       alu_result=scr1+(scr2>>2);
-//                       $display("scr1: %h, scr2: %h", scr1, scr2);
-//                       $display("(SWI)alu_result: %b", alu_result);
+                       alu_result=scr1+(scr2<<2);
+//                       $display("(SWI) scr1: %d, scr2: %d, 2, alu_result: %d", scr1, scr2, alu_result);
                      end
         TYPE_LS    : case (sub_opcode_8bit)
                        LW : begin
                              alu_result=scr1+(scr2<<sv);
-//                             $display("scr1: %h, scr2: %h, sv: %h", scr1, scr2, sv);
-//                             $display("(LW)alu_result: %b", alu_result);
+//                             $display("(LW) scr1: %d, scr2: %d, sv: %d, alu_result: %d", scr1, scr2, sv, alu_result);
                             end
                        SW : begin
-                             alu_result=scr1+(scr2>>sv);
-//                             $display("scr1: %h, scr2: %h, sv: %h", scr1, scr2, sv);
-//                             $display("(SW)alu_result: %b", alu_result);
+                             alu_result=scr1+(scr2<<sv);
+//                             $display("(SW) scr1: %d, scr2: %d, sv: %d, alu_result: %d", scr1, scr2, sv, alu_result);
                             end
                      endcase
         default    : begin
