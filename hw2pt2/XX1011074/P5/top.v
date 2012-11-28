@@ -117,17 +117,12 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   assign alu12_result = alu32_result[AluResultSize-1:0];
   assign DM_in = regfile1.rw_reg[write_address];
   assign DM_address = alu12_result;
-
-  // FIXME
-//  assign IM_read    = (rom_initial) ? mem_IM_read   : ir_IM_read;
-//  assign IM_write   = (rom_initial) ? mem_IM_write  : ir_IM_write;
-//  assign IM_enable  = (rom_initial) ? mem_IM_enable : ir_IM_enable;
-//  assign IM_address = (rom_initial) ? mem_IM_address : ir_IM_address;
   
   assign IM_read    = (ir_enable) ? ir_IM_read    : mem_IM_read;
   assign IM_write   = (ir_enable) ? ir_IM_write   : mem_IM_write;
   assign IM_enable  = (ir_enable) ? ir_IM_enable  : mem_IM_enable;
   assign IM_address = (ir_enable) ? ir_IM_address : mem_IM_address;
+  assign IM_in = MEM_data; 
 
   pc_tick pc_tick1 (
     .clock(clk), 

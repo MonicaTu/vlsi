@@ -3,9 +3,6 @@
 `include "rom.v"
 `include "memory.v"
 
-`define PERIOD 10
-`define IR_CYCLE 8
-
 module top_tb;
 
   parameter DataSize = 32;
@@ -52,7 +49,9 @@ module top_tb;
   //performance counter
   wire [127:0] cycle_cnt;
   wire [63:0] ins_cnt;
- 
+  
+
+  
   top TOP(.clk(clk)
   			, .rst(rst)
   			, .instruction(instruction)
@@ -97,7 +96,7 @@ module top_tb;
   		 , .enable_fetch(IM_read)
   		 , .enable_write(IM_write)
   		 , .enable_mem(IM_enable)
-  		 , .IMin(MEM_data)
+  		 , .IMin(IM_in)
   		 , .IMout(instruction)
   		 ); 
   
@@ -134,19 +133,10 @@ module top_tb;
   system_enable = 1'b0;
 
   #5 rst=1'b1; 
-//    #(`PERIOD*0.5);
-//    #(`PERIOD*`IR_CYCLE);
-//    rst=1'b0;
   #5 rst=1'b0;
-    
-//    clk = 1'b0;
-//    #(`PERIOD) rst = 1'b0;
-//    #(`PERIOD) rst = 1'b1;  
-//    #(`PERIOD*0.5);
-//    #(`PERIOD*`IR_CYCLE);
-//    rst = 1'b0;
-    
+    	
   //load verification program here
+
   `ifdef prog 
   		  //verification program 1
         $readmemb("rom.prog", ROM1.mem_data);
@@ -166,14 +156,14 @@ module top_tb;
   `endif
 
   #5 system_enable = 1'b1;
-
+  
   end
 
+
   always@(negedge clk)begin
-    $display("instruction: %b, rom_done: %b, IM_address: %b\n", instruction, TOP.rom_done, IM_address);
-    if( (instruction == 32'd0) && (TOP.rom_done == 1'b1) && (IM_address != 30'h80))begin 
-      $display("**************************END OF SIMULATION****************************");
-    
+  	if( (instruction == 32'd0) && (TOP.rom_done == 1'b1) && (IM_address != 30'h80))begin 
+			$display("**************************END OF SIMULATION****************************");
+
       for( i=128;i<180;i=i+1 ) $display( "IM[%h]=%h",i,IM1.mem_data[i] );  
       for( i=0;i<40;i=i+1 ) $display( "DM[%d]=%d",i,DM1.mem_data[i] );
       
