@@ -26,7 +26,7 @@ module alu_scr_mux(scr_out, imm, data, addr, alu_scr_select);
                     scr_out = addr;
                    end
         default  : begin 
-                    scr_out = data;
+                    scr_out = 32'b0;
                    end
       endcase
     end
