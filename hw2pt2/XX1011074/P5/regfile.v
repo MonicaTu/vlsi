@@ -29,8 +29,10 @@ module regfile(read_data1, read_data2, read_dataT, read_address1, read_address2,
 //  wire [DataSize-1:0]rw_reg_5 = rw_reg[5];
 //  wire [DataSize-1:0]rw_reg_6 = rw_reg[6];
 //  wire [DataSize-1:0]rw_reg_7 = rw_reg[7];
-//  wire [DataSize-1:0]rw_reg_8 = rw_reg[8];
-//  wire [DataSize-1:0]rw_reg_9 = rw_reg[9];
+  wire [DataSize-1:0]rw_reg_28 = rw_reg[28];
+  wire [DataSize-1:0]rw_reg_29 = rw_reg[29];
+  wire [DataSize-1:0]rw_reg_30 = rw_reg[30];
+  wire [DataSize-1:0]rw_reg_31 = rw_reg[31];
 
   always@(posedge clk or posedge reset)begin
     if(reset)begin
