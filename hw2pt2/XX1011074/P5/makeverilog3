@@ -1,0 +1,2 @@
+ncverilog top_tb.v top.v  +define+prog3 +access+r
+
