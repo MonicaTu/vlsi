@@ -137,22 +137,40 @@ module top_tb;
     	
   //load verification program here
 
-  `ifdef prog 
-  		  //verification program 1
+  `ifdef prog
+  		  //verification program (a) 
         $readmemb("rom.prog", ROM1.mem_data);
         $readmemb("mins.prog", MEM1.mem);
   `endif
   
   `ifdef prog1
-  		  //verification program 1
+  		  //verification program (b)-i 
         $readmemb("rom1.prog", ROM1.mem_data);
         $readmemb("mins1.prog", MEM1.mem);
   `endif
   
   `ifdef prog2
-  		  //verification program 2
+  		  //verification program (b)-ii 
         $readmemb("rom2.prog", ROM1.mem_data);
         $readmemb("mins2.prog", MEM1.mem);
+  `endif
+
+  `ifdef prog3
+  		  //verification program (b)-iii 
+        $readmemb("rom3.prog", ROM1.mem_data);
+        $readmemb("mins3.prog", MEM1.mem);
+  `endif
+  
+  `ifdef prog4
+  		  //verification program (b)-iv 
+        $readmemb("rom4.prog", ROM1.mem_data);
+        $readmemb("mins4.prog", MEM1.mem);
+  `endif
+  
+  `ifdef prog5
+  		  //verification program (b)-v 
+        $readmemb("rom5.prog", ROM1.mem_data);
+        $readmemb("mins5.prog", MEM1.mem);
   `endif
 
   #5 system_enable = 1'b1;

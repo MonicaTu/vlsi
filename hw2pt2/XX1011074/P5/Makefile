@@ -19,6 +19,27 @@ tb2:
 	./a.out
 	gtkwave top_tb.vcd
 
+tb3:
+	rm a.out
+	rm top_tb.vcd
+	iverilog top_tb.v top.v -Dprog3=1
+	./a.out
+	gtkwave top_tb.vcd
+
+tb4:
+	rm a.out
+	rm top_tb.vcd
+	iverilog top_tb.v top.v -Dprog4=1
+	./a.out
+	gtkwave top_tb.vcd
+
+tb5:
+	rm a.out
+	rm top_tb.vcd
+	iverilog top_tb.v top.v -Dprog5=1
+	./a.out
+	gtkwave top_tb.vcd
+
 pc_tick:
 	iverilog pc_tick_tb.v pc_tick.v 
 	./a.out
