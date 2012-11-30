@@ -56,7 +56,6 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire DM_read;
   wire DM_write;
   wire DM_enable;
-  wire [RegAddrSize-1:0]write_address;
   wire [DataSize-1:0]DM_in;
   wire [DMAddrSize-1:0]DM_address;
   wire IM_read;
@@ -79,8 +78,9 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire [19:0]imm20;
   wire [RegAddrSize-1:0]read_address1;
   wire [RegAddrSize-1:0]read_address2;
+  wire [RegAddrSize-1:0]addressT;
   wire [1:0] mux4to1_select;
-  wire writeback_select;
+  wire [1:0] writeback_select;
   wire [1:0]alu_scr_select1;
   wire [1:0]alu_scr_select2;
   wire [CycleSize-1:0] cycle_cnt;
@@ -92,10 +92,11 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   // others
   wire [DataSize-1:0]read_data1;
   wire [DataSize-1:0]read_data2;
+  wire [DataSize-1:0]read_dataT;
   wire [DataSize-1:0]scr1;
   wire [DataSize-1:0]scr2;
   wire [DataSize-1:0]alu32_result;
-  wire [DataSize-1:0]reg_write_data;
+  wire [DataSize-1:0]write_data;
   wire [DataSize-1:0]mux4to1_out;
   wire [DataSize-1:0]scr_out1;
   wire [DataSize-1:0]scr_out2;
@@ -113,7 +114,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire eop;
   wire [15:0]total_ir;
 
-  assign DM_in = regfile1.rw_reg[write_address];
+  assign DM_in = write_data; //regfile1.rw_reg[write_address];
   assign DM_address = alu32_result[AluResultSize-1:0];
   
   assign IM_read    = (ir_enable) ? ir_IM_read    : mem_IM_read;
@@ -183,7 +184,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .imm20(imm20),
     .read_address1(read_address1),
     .read_address2(read_address2),
-    .write_address(write_address),
+    .addressT(addressT),
     .mux4to1_select(mux4to1_select),
     .writeback_select(writeback_select),
     .alu_scr_select1(alu_scr_select1),
@@ -197,10 +198,11 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   regfile regfile1 (
     .read_data1(read_data1), 
     .read_data2(read_data2),
+    .read_dataT(read_dataT),
     .read_address1(read_address1),
     .read_address2(read_address2),
-    .write_address(write_address),
-    .write_data(reg_write_data),
+    .addressT(addressT),
+    .write_data(write_data),
     .clk(clk),
     .reset(rst),
     .read(enable_reg_read),
@@ -240,8 +242,9 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .alu_scr_select(alu_scr_select2));
 
   writeback_select_mux writeback_select_mux1 (
-    .write_data(reg_write_data),
+    .write_data(write_data),
     .DMout(DM_out),
     .alu_result(alu32_result),
-    .mux2to1_select(writeback_select));
+    .regData(read_dataT),
+    .writeback_select(writeback_select));
 endmodule
