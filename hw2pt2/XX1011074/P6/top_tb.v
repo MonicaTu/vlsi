@@ -142,12 +142,6 @@ module top_tb;
     	
   //load verification program here
 
-  `ifdef prog 
-  		  //verification program 1
-        $readmemb("rom.prog", ROM1.mem_data);
-        $readmemb("mins.prog", MEM1.mem);
-  `endif
-  
   `ifdef prog1
   		  //verification program 1
         $readmemb("rom1.prog", ROM1.mem_data);
