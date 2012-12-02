@@ -1,6 +1,6 @@
 /* TODO: 
 */
-module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im_write, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2,addressT, mux4to1_select, writeback_select, alu_scr_select1, alu_scr_select2, total_ir, clock, reset, PC, ir);
+module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_pc_set, enable_dm_fetch, enable_dm_write, enable_dm, enable_im_fetch, enable_im_write, enable_im, enable_alu_execute, enable_reg_read, enable_reg_write, opcode, sub_opcode_5bit, sub_opcode_8bit, sv, imm5, imm15, imm20, read_address1, read_address2,addressT, mux4to1_select, writeback_select, alu_scr_select1, alu_scr_select2, total_ir, clock, reset, PC, ir);
   parameter MemSize = 10;
   parameter DataSize = 32;
   parameter AddrSize = 5;
@@ -18,6 +18,8 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
   output exe_ir_done;
   output [InsSize-1:0] Ins_cnt;
   output [IMAddrSize-1:0] IM_address;
+
+  output enable_pc_set;
 
   output enable_im_fetch;
   output enable_im_write;
@@ -51,6 +53,8 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
   reg [InsSize-1:0] Ins_cnt;
   wire [IMAddrSize-1:0] IM_address;
 
+  reg enable_pc_set;
+
   reg enable_im_fetch;
   reg enable_im_write;
   reg enable_im;
@@ -80,8 +84,8 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
   wire [AddrSize-1:0]read_address2 = present_instruction[14:10];
   wire [AddrSize-1:0]addressT = present_instruction[24:20];
 
-  reg [2:0] current_state;
-  reg [2:0] next_state;
+  reg [3:0] current_state;
+  reg [3:0] next_state;
 
   // op & sub_op
   parameter TYPE_BASIC=6'b100000;
@@ -92,12 +96,13 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
   parameter ADDI=6'b101000, ORI=6'b101100, XORI=6'b101011, LWI=6'b000010, SWI=6'b001010;
 
   parameter MOVI=6'b100010;
+  parameter BEQ=6'b100110, J=6'b100100;
 
   parameter TYPE_LS=6'b011100;
   parameter LW=8'b00000010, SW=8'b00001010;
 
   // state
-  parameter stopState = 3'b000, fetchState = 3'b001, exeState = 3'b010, writeState =  3'b011, lwFetchState = 3'b100, lwWriteState = 3'b101, swFetchState = 3'b110, swWriteState = 3'b111;
+  parameter stopState = 4'b0000, fetchState = 4'b0001, exeState = 4'b0010, writeState =  4'b0011, lwFetchState = 4'b0100, lwWriteState = 4'b0101, swFetchState = 4'b0110, swWriteState = 4'b0111, updatePCState = 4'b1000;
   // mux4to1_select
   parameter sel_imm5ZE = 2'b00, sel_imm15SE = 2'b01, sel_imm15ZE = 2'b10, sel_imm20SE =  2'b11;
   // writeback_select
@@ -105,7 +110,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
   // alu_scr_select1, alu_scr_select2
   parameter sel_regOut = 2'b00, sel_immOut = 2'b01, sel_addr = 2'b10;
      
-  assign IM_address = (PC == 0) ? 0: (PC + im_start);
+  assign IM_address = PC;
 
   always @(posedge clock) begin
     if(reset || (present_instruction == 0))
@@ -119,6 +124,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     case(current_state)
     stopState : begin
       next_state = fetchState;
+      enable_pc_set = 0;
       enable_im = 1;
       enable_im_fetch = 1;
       enable_im_write = 0;
@@ -131,6 +137,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     end
     fetchState : begin
       next_state = exeState;
+      enable_pc_set = 0;
       enable_im = 0;
       enable_im_fetch = 0;
       enable_im_write = 0;
@@ -143,6 +150,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     end
     exeState : begin
       next_state = lwFetchState;
+      enable_pc_set = 0;
 //      if (opcode == TYPE_LS) begin
 //        enable_im <= 0;
 //        enable_im_fetch <= 0;
@@ -167,6 +175,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     end
     lwFetchState : begin
       next_state = lwWriteState;
+      enable_pc_set = 0;
       if ((opcode == TYPE_LS && sub_opcode_8bit == LW) || (opcode == LWI)) begin
         enable_im = 0;
         enable_im_fetch = 0;
@@ -191,6 +200,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     end
     lwWriteState : begin
       next_state = writeState;
+      enable_pc_set = 0;
       if ((opcode == TYPE_LS && sub_opcode_8bit == LW) || (opcode == LWI)) begin
         enable_im = 0;
         enable_im_fetch = 0;
@@ -215,6 +225,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     end
     writeState : begin
       next_state = swFetchState;
+      enable_pc_set = 0;
       enable_im = 0;
       enable_im_fetch = 0;
       enable_im_write = 0;
@@ -241,6 +252,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
     end
     swFetchState : begin
       next_state = swWriteState;
+      enable_pc_set = 0;
       if ((opcode == TYPE_LS && sub_opcode_8bit == SW) || (opcode == SWI))begin
         enable_im = 0;
         enable_im_fetch = 0;
@@ -264,7 +276,8 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
       end
     end
     swWriteState : begin
-      next_state = stopState;
+      next_state = updatePCState;
+      enable_pc_set = 0;
       if ((opcode == TYPE_LS && sub_opcode_8bit == SW) || (opcode == SWI)) begin
         enable_im = 0;
         enable_im_fetch = 0;
@@ -287,6 +300,47 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
         enable_dm_write = 0;
       end
     end
+    updatePCState : begin
+      next_state = stopState;
+      if ((opcode == BEQ) || (opcode == J)) begin
+        enable_pc_set = 1;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_alu_execute = 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
+      end else begin 
+        enable_pc_set = 0;
+        enable_im = 0;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_alu_execute = 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
+      end
+    end
+    default: begin
+        next_state = stopState;
+        enable_pc_set = 0;
+        enable_im = 0;
+        enable_im = 0;
+        enable_im_fetch = 0;
+        enable_im_write = 0;
+        enable_alu_execute = 0;
+        enable_reg_read = 0;
+        enable_reg_write = 0;
+        enable_dm = 0;
+        enable_dm_fetch = 0;
+        enable_dm_write = 0;
+      end
     endcase
   end
 
@@ -387,10 +441,11 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_dm_fetch, enable_d
   end
 
   always @ (reset, PC, current_state) begin
+    //$display("PC:%d, im_start:%d", PC, im_start);
     if (reset) begin
         exe_ir_done = 0;
     end else begin
-      if ((PC >= total_ir) && (current_state == swWriteState))
+      if ((PC - im_start >= total_ir) && (current_state == swWriteState))
         exe_ir_done = 1;
       else
         exe_ir_done = exe_ir_done;

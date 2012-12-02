@@ -8,7 +8,7 @@ module mem_controller(total_ir, eop, ir_enable, load_im_done, im_enable, im_en_r
   // TODO: DM
   input clock;
   input reset;
-  input [36:0]rom_ir;
+  input [35:0]rom_ir;
   
   output im_enable;
   output im_en_read;
@@ -18,7 +18,7 @@ module mem_controller(total_ir, eop, ir_enable, load_im_done, im_enable, im_en_r
   output mem_enable;
   output mem_en_read; 
   output mem_en_write; 
-  output [15:0]mem_addr;
+  output [13:0]mem_addr;
 
   output eop; 
   output load_im_done; 
@@ -34,7 +34,7 @@ module mem_controller(total_ir, eop, ir_enable, load_im_done, im_enable, im_en_r
   reg mem_enable;
   reg mem_en_read; 
   reg mem_en_write; 
-  reg [15:0]mem_addr; 
+  reg [13:0]mem_addr; 
 
   wire ir_rst    = rom_ir[35];
   wire ir_en     = rom_ir[34];

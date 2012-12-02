@@ -9,7 +9,7 @@ module DM(clk, rst, enable_fetch, enable_writeback, enable_mem, DMin, DMout, DM_
   input enable_writeback;
   input enable_mem;
   input [DataSize-1:0]DMin;
-  input [11:0]DM_address;
+  input [14:0]DM_address;
   output [DataSize-1:0]DMout;
   reg [DataSize-1:0]DMout;
   reg [DataSize-1:0]mem_data[mem_size-1:0];
