@@ -4,7 +4,7 @@ parameter data_size=32;
 parameter mem_size=16384;
 
 input clk, rst, enable, read, write;
-input [15:0]address;
+input [13:0]address;
 input [data_size-1:0]Din;
 
 output [data_size-1:0]Dout;
