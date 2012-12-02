@@ -1,7 +1,12 @@
+`timescale 1ns/10ps
 `include "DM.v"
 `include "IM.v"
 `include "rom.v"
 `include "memory.v"
+
+`ifdef syn
+	`include "/usr/cad/cell_based_design_kit/CBDK_TSMC018_Arm_v3.2/CIC/Verilog/tsmc18_neg.v" 
+`endif
 
 module top_tb;
 
@@ -17,7 +22,7 @@ module top_tb;
   wire [DataSize-1:0] DM_out;
     
   //ROM
-  wire [36:0] rom_out;
+  wire [35:0] rom_out;
   wire rom_enable, rom_read;
   wire [7:0] rom_address;
   wire [31:0] IM_in;
@@ -33,7 +38,7 @@ module top_tb;
   wire MEM_en;
   wire MEM_read;
   wire MEM_write;
-  wire [15:0] MEM_addr;
+  wire [13:0] MEM_addr;
   wire [31:0] MEM_data;
   
   //IM
@@ -44,7 +49,7 @@ module top_tb;
   wire DM_read;
   wire DM_write;
   wire [31:0] DM_in;
-  wire [11:0] DM_address;
+  wire [14:0] DM_address;
   
   //performance counter
   wire [127:0] cycle_cnt;
@@ -76,8 +81,8 @@ module top_tb;
         , .DM_enable(DM_enable)
         , .DM_in(DM_in)
         , .DM_address(DM_address)
-        , .cycle_cnt(cycle_cnt)
-        , .ins_cnt(ins_cnt)
+        , .Cycle_cnt(cycle_cnt)
+        , .Ins_cnt(ins_cnt)
         ); 
  
   DM DM1(.clk(clk)
@@ -133,7 +138,7 @@ module top_tb;
   system_enable = 1'b0;
 
   #5 rst=1'b1; 
-  #5 rst=1'b0;
+  #15 rst=1'b0;
     	
   //load verification program here
 
@@ -175,20 +180,16 @@ module top_tb;
 
   #5 system_enable = 1'b1;
   
-  end
-
-
-  always@(negedge clk)begin
-  	if( (instruction == 32'd0) && (TOP.rom_done == 1'b1) && (IM_address != 30'h80))begin 
-			$display("**************************END OF SIMULATION****************************");
+  #3000
+    	$display("**************************END OF SIMULATION****************************");
 
       for( i=128;i<180;i=i+1 ) $display( "IM[%h]=%h",i,IM1.mem_data[i] );  
       for( i=0;i<40;i=i+1 ) $display( "DM[%d]=%d",i,DM1.mem_data[i] );
       
       $display("Cycle Count=%d\nInstruction Count=%d",cycle_cnt,ins_cnt);
       $finish;
-    end
   end
+
   
   initial begin
     $dumpfile("top_tb.vcd");
