@@ -163,6 +163,18 @@ module top_tb;
       for( i=0;i<40;i=i+1 ) $display( "DM[%d]=%d",i,DM1.mem_data[i] );
       
       $display("Cycle Count=%d\nInstruction Count=%d",cycle_cnt,ins_cnt);
+  `ifdef prog1
+      if (DM1.mem_data[24] == 250)
+        $display ("PASS");
+      else
+        $display ("FAIL");
+  `endif
+  `ifdef prog2
+      if ((DM1.mem_data[20] == 7) && (DM1.mem_data[24] == 1472) && (DM1.mem_data[28] == 1527))
+        $display ("PASS");
+      else
+        $display ("FAIL");
+  `endif
       $finish;
   end
 
