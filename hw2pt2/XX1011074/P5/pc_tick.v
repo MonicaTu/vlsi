@@ -49,7 +49,7 @@ module pc_tick(pc, cycle_cnt, ir_enable, enable_pc_set, pc_set, reset, clock);
     end else if (enable_pc_set) begin
       pc = pc + (pc_set << 1);
     end else if ((internal_cycle_cnt % `IR_CYCLE) == 0) begin
-      pc <= pc + 1; 
+      pc <= pc + 4; 
     end else begin
       pc <= pc;
     end

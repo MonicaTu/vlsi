@@ -1,6 +1,6 @@
 module mem_controller(total_ir, eop, ir_enable, load_im_done, im_enable, im_en_read, im_en_write, im_addr, mem_enable, mem_en_read, mem_en_write, mem_addr, rom_ir, reset, clock);
 
-  parameter im_start = 'h7F;
+  parameter im_start = 'h80;
   
   // state
   parameter stopState = 2'b00, resetState = 2'b01, loadState = 2'b10;
@@ -133,7 +133,7 @@ module mem_controller(total_ir, eop, ir_enable, load_im_done, im_enable, im_en_r
       mem_addr <= 0; 
     end else begin
       if (im_en_write) begin
-        im_addr <= im_addr + 1;
+        im_addr <= im_addr + 4;
         mem_addr <= mem_addr + 1;
       end else begin
         im_addr <= im_addr;
@@ -146,7 +146,7 @@ module mem_controller(total_ir, eop, ir_enable, load_im_done, im_enable, im_en_r
     if (reset) begin
       load_im_done = 0;
     end else begin
-      if (((im_addr - im_start) << 5) > ir_size)
+      if (((im_addr - im_start) << (5-2)) > ir_size)
         load_im_done = 1;
       else
         load_im_done = load_im_done;

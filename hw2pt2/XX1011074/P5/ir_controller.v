@@ -457,7 +457,7 @@ module ir_controller(exe_ir_done, Ins_cnt, IM_address, enable_pc_set, enable_dm_
     if (reset) begin
         exe_ir_done = 0;
     end else begin
-      if ((PC - im_start >= total_ir) && (current_state == swWriteState))
+      if ((((PC - im_start) >> 2) >= total_ir) && (current_state == swWriteState))
         exe_ir_done = 1;
       else
         exe_ir_done = exe_ir_done;
