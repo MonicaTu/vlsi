@@ -180,10 +180,10 @@ module top_tb;
 
   
   initial begin
-    $dumpfile("top_tb.vcd");
+    $dumpfile("top.vcd");
     $dumpvars;
-//  $fsdbDumpfile("top.fsdb");
-//  $fsdbDumpvars(0, top_tb);
+    $fsdbDumpfile("top.fsdb");
+    $fsdbDumpvars(0, top_tb);
   end
   
 endmodule
