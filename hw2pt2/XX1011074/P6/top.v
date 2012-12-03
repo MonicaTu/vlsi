@@ -4,7 +4,7 @@
 `include "ir_controller.v"
 `include "regfile.v"
 `include "alu32.v"
-`include "mux4to1_select_mux.v"
+`include "imm_select_mux.v"
 `include "alu_scr_mux.v"
 `include "writeback_select_mux.v"
 
@@ -66,7 +66,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
 
   // internal
   wire [IMSize-1:0]PC;
-  wire [IMSize-1:0]pc_set;
+  wire [IMSize-1:0]pc_start;
   wire enable_alu_execute;
   wire enable_reg_read;
   wire enable_reg_write;
@@ -77,10 +77,12 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire [4:0]imm5;
   wire [14:0]imm15;
   wire [19:0]imm20;
+  wire [13:0]imm14;
+  wire [23:0]imm24;
   wire [RegAddrSize-1:0]read_address1;
   wire [RegAddrSize-1:0]read_address2;
   wire [RegAddrSize-1:0]addressT;
-  wire [1:0] mux4to1_select;
+  wire [2:0] imm_select;
   wire [1:0] writeback_select;
   wire [1:0]alu_scr_select1;
   wire [1:0]alu_scr_select2;
@@ -98,7 +100,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire [DataSize-1:0]scr2;
   wire [DataSize-1:0]alu32_result;
   wire [DataSize-1:0]write_data;
-  wire [DataSize-1:0]mux4to1_out;
+  wire [DataSize-1:0]imm_out;
   wire [DataSize-1:0]scr_out1;
   wire [DataSize-1:0]scr_out2;
   
@@ -120,8 +122,6 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   assign DM_in = write_data; //regfile1.rw_reg[write_address];
   assign DM_address = alu32_result[DMAddrSize-1:0];
 
-  assign pc_set = alu32_result[IMSize-1:0];
-  
   assign IM_read    = (ir_enable) ? ir_IM_read    : mem_IM_read;
   assign IM_write   = (ir_enable) ? ir_IM_write   : mem_IM_write;
   assign IM_enable  = (ir_enable) ? ir_IM_enable  : mem_IM_enable;
@@ -132,7 +132,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .cycle_cnt(Cycle_cnt),
     .pc(PC), 
     .enable_pc_set(enable_pc_set),
-    .pc_set(pc_set),
+    .pc_set(imm_out),
     .ir_enable(ir_enable), 
     .reset(rst), 
     .clock(clk));
@@ -193,7 +193,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .read_address1(read_address1),
     .read_address2(read_address2),
     .addressT(addressT),
-    .mux4to1_select(mux4to1_select),
+    .imm_select(imm_select),
     .writeback_select(writeback_select),
     .alu_scr_select1(alu_scr_select1),
     .alu_scr_select2(alu_scr_select2),
@@ -217,6 +217,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .write(enable_reg_write));
 
   alu32 alu1 ( 
+    .enable_pc_set(enable_pc_set),
     .alu_result(alu32_result),
     .alu_overflow(alu32_overflow),
     .scr1(scr_out1),
@@ -228,23 +229,25 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .enable_execute(enable_alu_execute),
     .reset(rst));
 
-  mux4to1_select_mux mux4to1_select_mux1 (
-    .mux4to1_out(mux4to1_out),
+  imm_select_mux imm_select_mux1 (
+    .imm_out(imm_out),
     .imm_5bit(imm5),
     .imm_15bit(imm15),
     .imm_20bit(imm20),
-    .mux4to1_select(mux4to1_select));
+    .imm_14bit(imm14),
+    .imm_24bit(imm24),
+    .imm_select(imm_select));
 
   alu_scr_mux alu_scr_mux1 (
     .scr_out(scr_out1),
-    .imm(mux4to1_out),
+    .imm(imm_out),
     .data(read_data1), 
     .addr(read_address1), 
     .alu_scr_select(alu_scr_select1));
   
   alu_scr_mux alu_scr_mux2 (
     .scr_out(scr_out2),
-    .imm(mux4to1_out),
+    .imm(imm_out),
     .data(read_data2), 
     .addr(read_address2), 
     .alu_scr_select(alu_scr_select2));
