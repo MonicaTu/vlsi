@@ -180,7 +180,7 @@ module top_tb;
 
   #5 system_enable = 1'b1;
   
-  #3000
+  #6000
     	$display("**************************END OF SIMULATION****************************");
 
       for( i=128;i<180;i=i+1 ) $display( "IM[%h]=%h",i,IM1.mem_data[i] );  

@@ -118,6 +118,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
   wire [15:0]total_ir;
 
   wire enable_pc_set;
+  wire enable_bj;
 
   assign DM_in = write_data; //regfile1.rw_reg[write_address];
   assign DM_address = alu32_result[DMAddrSize-1:0];
@@ -132,6 +133,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .cycle_cnt(Cycle_cnt),
     .pc(PC), 
     .enable_pc_set(enable_pc_set),
+    .enable_bj(enable_bj),
     .pc_set(imm_out),
     .ir_enable(ir_enable), 
     .reset(rst), 
@@ -173,7 +175,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .exe_ir_done(exe_ir_done), 
     .Ins_cnt(Ins_cnt),
     .IM_address(ir_IM_address),
-    .enable_pc_set(enable_pc_set), 
+    .enable_bj(enable_bj),
     .enable_dm_fetch(DM_read), 
     .enable_dm_write(DM_write), 
     .enable_dm(DM_enable), 
@@ -188,8 +190,10 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .sub_opcode_8bit(sub_opcode_8bit),
     .sv(sv),
     .imm5(imm5),
+    .imm14(imm14),
     .imm15(imm15),
     .imm20(imm20),
+    .imm24(imm24),
     .read_address1(read_address1),
     .read_address2(read_address2),
     .addressT(addressT),
@@ -198,6 +202,7 @@ module top (MEM_en, MEM_read, MEM_write, MEM_addr, rom_enable, rom_read, rom_add
     .alu_scr_select1(alu_scr_select1),
     .alu_scr_select2(alu_scr_select2),
     .total_ir(total_ir), 
+    .load_im_done(load_im_done), 
     .clock(clk),
     .reset(rst),
     .PC(PC),

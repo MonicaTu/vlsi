@@ -2,9 +2,9 @@
 `define MEM_SIZE     ('d10)  // 10 bits
 `define IR_SIZE      ('d32)  // 32 bits
 `define IR_SIZE_BYTE ('d4)   // 32 bits = 4 bytes
-`define IR_CYCLE     ('d9)
+`define IR_CYCLE     ('d10)
 
-module pc_tick(pc, cycle_cnt, ir_enable, enable_pc_set, pc_set, reset, clock);
+module pc_tick(pc, cycle_cnt, ir_enable, enable_bj, enable_pc_set, pc_set, reset, clock);
   
   parameter im_start = 'h80; // FIXME
 
@@ -13,6 +13,7 @@ module pc_tick(pc, cycle_cnt, ir_enable, enable_pc_set, pc_set, reset, clock);
   input reset;
   input ir_enable;
   input enable_pc_set;
+  input enable_bj;
   input [31:0] pc_set;
 
   output [`MEM_SIZE-1:0] pc;
@@ -43,15 +44,17 @@ module pc_tick(pc, cycle_cnt, ir_enable, enable_pc_set, pc_set, reset, clock);
     end
   end
 
-  always @(posedge local_clock or reset) begin
+  always @(internal_cycle_cnt or reset or enable_bj or enable_pc_set) begin
     if (reset) begin
       pc = im_start;
-    end else if (enable_pc_set) begin
-      pc = pc + (pc_set << 1);
-    end else if ((internal_cycle_cnt % `IR_CYCLE) == 0) begin
-      pc <= pc + 4; 
     end else begin
-      pc <= pc;
+      if (enable_bj && enable_pc_set) begin
+        pc = pc + (pc_set << 1);
+      end else begin 
+        if ((internal_cycle_cnt % `IR_CYCLE) == 0) begin
+          pc = pc + 4; 
+        end
+      end
     end
     //$display("pc:%d", pc);
   end
