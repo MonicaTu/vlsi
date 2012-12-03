@@ -13,7 +13,7 @@ module pc_tick(pc, cycle_cnt, ir_enable, enable_pc_set, pc_set, reset, clock);
   input reset;
   input ir_enable;
   input enable_pc_set;
-  input [`MEM_SIZE-1:0] pc_set;
+  input [31:0] pc_set;
 
   output [`MEM_SIZE-1:0] pc;
   output [`TICK_SIZE-1:0] cycle_cnt;
@@ -46,8 +46,8 @@ module pc_tick(pc, cycle_cnt, ir_enable, enable_pc_set, pc_set, reset, clock);
   always @(posedge local_clock or reset) begin
     if (reset) begin
       pc = im_start;
-    end else if (enable_pc_set && pc_set) begin
-      pc = pc_set;
+    end else if (enable_pc_set) begin
+      pc = pc + (pc_set << 1);
     end else if ((internal_cycle_cnt % `IR_CYCLE) == 0) begin
       pc <= pc + 1; 
     end else begin

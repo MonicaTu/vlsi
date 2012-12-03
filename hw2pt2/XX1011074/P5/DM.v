@@ -20,7 +20,7 @@ module DM(clk, rst, enable_fetch, enable_writeback, enable_mem, DMin, DMout, DM_
 //  wire [DataSize-1:0]mem_data_0 = mem_data[0];
 //  wire [DataSize-1:0]mem_data_1 = mem_data[1];
 //  wire [DataSize-1:0]mem_data_2 = mem_data[2];
-//  wire [DataSize-1:0]mem_data_3 = mem_data[3];
+  wire [DataSize-1:0]mem_data_3 = mem_data[3];
 //  wire [DataSize-1:0]mem_data_4 = mem_data[4];
 //  wire [DataSize-1:0]mem_data_5 = mem_data[5];
 //  wire [DataSize-1:0]mem_data_6 = mem_data[6];
@@ -36,7 +36,7 @@ module DM(clk, rst, enable_fetch, enable_writeback, enable_mem, DMin, DMout, DM_
 //  wire [DataSize-1:0]mem_data_16 = mem_data[16];
 //  wire [DataSize-1:0]mem_data_17 = mem_data[17];
 //  wire [DataSize-1:0]mem_data_18 = mem_data[18];
-//  wire [DataSize-1:0]mem_data_19 = mem_data[19];
+  wire [DataSize-1:0]mem_data_19 = mem_data[19];
 //  wire [DataSize-1:0]mem_data_20 = mem_data[20];
 //  wire [DataSize-1:0]mem_data_21 = mem_data[21];
 //  wire [DataSize-1:0]mem_data_22 = mem_data[22];

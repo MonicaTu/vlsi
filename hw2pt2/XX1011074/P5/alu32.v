@@ -1,18 +1,22 @@
-module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit,sub_opcode_8bit,sv,enable_execute,reset);
+// TODO: enable_pc_set in each op.
+
+module alu32(enable_pc_set, alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit,sub_opcode_8bit,sv,enable_execute,reset);
   parameter TYPE_BASIC=6'b100000;
   parameter NOP=5'b01001, ADD=5'b00000, SUB=5'b00001, AND=5'b00010,
             OR=5'b00100, XOR=5'b00011, SRLI=5'b01001, SLLI=5'b01000,
             ROTRI=5'b01011;
 
   parameter ADDI=6'b101000, ORI=6'b101100, XORI=6'b101011, LWI=6'b000010, SWI=6'b001010;
-
   parameter MOVI=6'b100010;
+  parameter BEQ=6'b100110;
+  parameter J=6'b100100;
 
   parameter TYPE_LS=6'b011100;
   parameter LW=8'b00000010, SW=8'b00001010;
 
   output [31:0]alu_result;
   output alu_overflow;
+  output enable_pc_set;
   
   input [31:0]scr1,scr2;
   input [5:0]opcode;
@@ -24,6 +28,7 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit,sub_opcode
   
   reg [31:0]alu_result;
   reg alu_overflow;
+  reg enable_pc_set;
   reg [63:0]rotate;
   reg a,b;
   
@@ -98,20 +103,37 @@ module alu32(alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit,sub_opcode
                        alu_overflow=1'b0;
                        alu_result[31:0]=scr2[31:0];
                      end
+        BEQ        : begin
+                       alu_overflow=1'b0;
+                       alu_result = 32'b0;
+                       if (scr1 == scr2)
+                         enable_pc_set = 1'b1;
+                       else
+                         enable_pc_set = 1'b0;
+                     end
+        J          : begin
+                       alu_overflow=1'b0;
+                       alu_result=32'b0;
+                       enable_pc_set = 1'b1;
+                     end
         LWI        : begin
+                       alu_overflow=1'b0;
                        alu_result=scr1+(scr2<<2);
 //                       $display("(LWI) scr1: %d, scr2: %d, 2, alu_result: %d", scr1, scr2, alu_result);
                      end
         SWI        : begin
+                       alu_overflow=1'b0;
                        alu_result=scr1+(scr2<<2);
 //                       $display("(SWI) scr1: %d, scr2: %d, 2, alu_result: %d", scr1, scr2, alu_result);
                      end
         TYPE_LS    : case (sub_opcode_8bit)
                        LW : begin
+                             alu_overflow=1'b0;
                              alu_result=scr1+(scr2<<sv);
 //                             $display("(LW) scr1: %d, scr2: %d, sv: %d, alu_result: %d", scr1, scr2, sv, alu_result);
                             end
                        SW : begin
+                             alu_overflow=1'b0;
                              alu_result=scr1+(scr2<<sv);
 //                             $display("(SW) scr1: %d, scr2: %d, sv: %d, alu_result: %d", scr1, scr2, sv, alu_result);
                             end
