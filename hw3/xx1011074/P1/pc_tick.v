@@ -1,28 +1,27 @@
-`define TICK_SIZE    ('d128) // 128 bits
-`define MEM_SIZE     ('d10)  // 10 bits
-`define IR_SIZE      ('d32)  // 32 bits
-`define IR_SIZE_BYTE ('d4)   // 32 bits = 4 bytes
-`define IR_CYCLE     ('d9)
-
-module pc_tick(pc, cycle_cnt, ir_enable, enable_pc_set, pc_set, reset, clock);
+module pc_tick(pc, cycle_cnt, ir_enable, zero, pc_set, reset, clock);
   
   parameter im_start = 'h80; // FIXME
+  parameter ir_cycle = 9; // FIXME:cycle per instruction 
+  
+  parameter data_size = 32;
+  parameter tick_size = 128;
+  parameter address_size = 10;
 
   // interface
   input clock;
   input reset;
   input ir_enable;
-  input enable_pc_set;
-  input [31:0] pc_set;
+  input zero;
+  input [data_size-1:0] pc_set;
 
-  output [`MEM_SIZE-1:0] pc;
-  output [`TICK_SIZE-1:0] cycle_cnt;
+  output [address_size-1:0] pc;
+  output [tick_size-1:0] cycle_cnt;
 
-  reg [`MEM_SIZE-1:0] pc;
-  reg [`TICK_SIZE-1:0] cycle_cnt;
+  reg [address_size-1:0] pc;
+  reg [tick_size-1:0] cycle_cnt;
   
   // internal
-  reg [`TICK_SIZE-1:0] internal_cycle_cnt;
+  reg [tick_size-1:0] internal_cycle_cnt;
   wire local_clock;
 
   assign local_clock = (ir_enable & clock);
@@ -56,10 +55,10 @@ module pc_tick(pc, cycle_cnt, ir_enable, enable_pc_set, pc_set, reset, clock);
     d = q+1;
     if (reset) begin
       pc = im_start;
-    end else if (enable_pc_set) begin
+    end else if (zero) begin
       pc = pc + (pc_set << 1);
       d = 0;
-    end else if ((q % `IR_CYCLE) == 0) begin
+    end else if ((q % ir_cycle) == 0) begin
       pc = pc + 4; 
     end else begin
       pc = pc;
