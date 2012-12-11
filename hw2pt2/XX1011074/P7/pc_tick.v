@@ -35,23 +35,34 @@ module pc_tick(pc, cycle_cnt, ir_enable, enable_pc_set, pc_set, reset, clock);
     end
   end
 
-  always @(posedge local_clock or reset) begin
+//  always @(posedge local_clock or reset) begin
+//    if (reset) begin
+//      d <= 1;
+//    end else begin
+//      d <= d  + 1;
+//    end
+//  end
+
+  always @ (posedge local_clock) begin
     if (reset) begin
-      internal_cycle_cnt <= 1;
+      q <= 0;
     end else begin
-      internal_cycle_cnt <= internal_cycle_cnt + 1;
+      q <= d;
     end
   end
-
-  always @(posedge local_clock or reset) begin
+      
+  always @(*) begin
+//    d = q;
+    d = q+1;
     if (reset) begin
       pc = im_start;
     end else if (enable_pc_set) begin
       pc = pc + (pc_set << 1);
-    end else if ((internal_cycle_cnt % `IR_CYCLE) == 0) begin
-      pc <= pc + 4; 
+      d = 0;
+    end else if ((q % `IR_CYCLE) == 0) begin
+      pc = pc + 4; 
     end else begin
-      pc <= pc;
+      pc = pc;
     end
     //$display("pc:%d", pc);
   end
