@@ -3,7 +3,7 @@ module EM(clk, rst, MEM_en, MEM_read, MEM_write, MEM_address, MEM_in, MEM_data);
 parameter data_size = 32;
 parameter in_size = 32;
 parameter address_size = 16;
-parameter mem_size = (2^16); // 2^address_size
+parameter mem_size = (2**address_size);
 
 input clk, rst, MEM_en, MEM_read, MEM_write;
 input [address_size-1:0]MEM_address;
