@@ -1,6 +1,6 @@
-// TODO: enable_pc_set in each op.
+// TODO: zero in each op.
 
-module alu32(enable_pc_set, alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit,sub_opcode_8bit,sv,enable_execute,reset);
+module alu32(zero, alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_5bit,sub_opcode_8bit,sv,enable_execute,reset);
   parameter TYPE_BASIC=6'b100000;
   parameter NOP=5'b01001, ADD=5'b00000, SUB=5'b00001, AND=5'b00010,
             OR=5'b00100, XOR=5'b00011, SRLI=5'b01001, SLLI=5'b01000,
@@ -16,7 +16,7 @@ module alu32(enable_pc_set, alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_
 
   output [31:0]alu_result;
   output alu_overflow;
-  output enable_pc_set;
+  output zero;
   
   input [31:0]scr1,scr2;
   input [5:0]opcode;
@@ -28,7 +28,7 @@ module alu32(enable_pc_set, alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_
   
   reg [31:0]alu_result;
   reg alu_overflow;
-  reg enable_pc_set;
+  reg zero;
   reg [63:0]rotate;
   reg a,b;
   
@@ -107,14 +107,14 @@ module alu32(enable_pc_set, alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode_
                        alu_overflow=1'b0;
                        alu_result = 32'b0;
                        if (scr1 == scr2)
-                         enable_pc_set = 1'b1;
+                         zero = 1'b1;
                        else
-                         enable_pc_set = 1'b0;
+                         zero = 1'b0;
                      end
         J          : begin
                        alu_overflow=1'b0;
                        alu_result=32'b0;
-                       enable_pc_set = 1'b1;
+                       zero = 1'b1;
                      end
         LWI        : begin
                        alu_overflow=1'b0;
