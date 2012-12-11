@@ -1,17 +1,17 @@
-module IM(clk, rst, IM_address, enable_fetch, enable_write, enable_mem, IMin, IMout);
+module IM(clk, rst, IM_address, IM_read, IM_write, IM_enable, IMin, instruction);
 
   parameter DataSize=32;
   parameter MemSize=1024;
   parameter im_start='h80;
   
-  input clk, rst, enable_fetch, enable_write, enable_mem;
+  input clk, rst, IM_read, IM_write, IM_enable;
   input [9:0]IM_address;
   input [DataSize-1:0]IMin;
   
   
-  output [DataSize-1:0]IMout;
+  output [DataSize-1:0]instruction;
   
-  reg [DataSize-1:0]IMout;
+  reg [DataSize-1:0]instruction;
   reg [DataSize-1:0]mem_data[MemSize-1:0];
   
   integer i;
@@ -48,15 +48,15 @@ module IM(clk, rst, IM_address, enable_fetch, enable_write, enable_mem, IMin, IM
     if(rst)begin
       for(i=0;i<MemSize;i=i+1)
         mem_data[i]<=0;
-      IMout<=0;
+      instruction<=0;
 //      $display("rst");
     end
-    else if(enable_mem)begin
-      if(enable_fetch)begin
-        IMout<=mem_data[IM_address];
-//        $display("IMout: %b", IMout);
+    else if(IM_enable)begin
+      if(IM_read)begin
+        instruction<=mem_data[IM_address];
+//        $display("instruction: %b", instruction);
       end
-      else if(enable_write)begin
+      else if(IM_write)begin
 //        $display("IMin: %b", IMin);
         mem_data[IM_address] <= IMin;
       end
