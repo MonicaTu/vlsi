@@ -7,7 +7,7 @@ module pc_select_mux (o_pc, i_add_4, i_add_imm_sl_1, i_exception, i_pc_select);
   parameter sel_size = 2;
   parameter pc_size = 32;
 
-  input [pc_size-1:0]i_add_4r;
+  input [pc_size-1:0]i_add_4;
   input [pc_size-1:0]i_add_imm_sl_1;
   input [pc_size-1:0]i_exception;
   input [sel_size-1:0]i_pc_select;
