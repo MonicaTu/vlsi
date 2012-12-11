@@ -1,3 +1,7 @@
+`include "pc.v"
+`include "pc_select_mux.v"
+`include "adder.v"
+
 module top(
   //SYSTEM SIGNAL
   clk,
@@ -79,9 +83,32 @@ module top(
   
   //I/O interrupt
   input IO_interrupt;
-  
 
+  //internal
   
-  
+  pc pc1 (
+      .o_pc(pc_out)
+    , .i_pc(o_pc)
+  );
+
+  pc_select_mux pc_select_mux1 (
+      .o_pc(o_pc)
+    , .i_add_4(adder1_result)
+    , .i_add_imm_sl_1(adder2_result)
+    , .i_exception(exception)
+    , .i_pc_select(pc_select)
+  );
+
+  adder adder1 (
+      .o_result(adder1_result)
+    , .i_src1(adder1_src1)
+    , .i_src2(adder1_src2)
+  );
+
+  adder adder2 (
+      .o_result(adder2_result)
+    , .i_src1(adder2_src1)
+    , .i_src2(adder2_src2)
+  );
 
 endmodule
