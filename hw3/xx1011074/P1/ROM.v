@@ -12,19 +12,19 @@ output [data_size-1:0]rom_out;
 reg [data_size-1:0]rom_out;
 
 // internal
-reg [data_size-1:0]mem_data[mem_size-1:0];
+reg [data_size-1:0]ROM_REG[mem_size-1:0];
 
 // for test
-wire [data_size-1:0]rom_mem_data_0 = mem_data[0];
-wire [data_size-1:0]rom_mem_data_1 = mem_data[1];
-wire [data_size-1:0]rom_mem_data_2 = mem_data[2];
-wire [data_size-1:0]rom_mem_data_3 = mem_data[3];
-wire [data_size-1:0]rom_mem_data_4 = mem_data[4];
+wire [data_size-1:0]ROM_REG_0 = ROM_REG[0];
+wire [data_size-1:0]ROM_REG_1 = ROM_REG[1];
+wire [data_size-1:0]ROM_REG_2 = ROM_REG[2];
+wire [data_size-1:0]ROM_REG_3 = ROM_REG[3];
+wire [data_size-1:0]ROM_REG_4 = ROM_REG[4];
 
 
 always@(posedge clk)begin
   if(rom_enable)begin
-      rom_out<=mem_data[rom_address];
+      rom_out<=ROM_REG[rom_address];
       #1; // FIXME: workaround for time delay
   end
 end
