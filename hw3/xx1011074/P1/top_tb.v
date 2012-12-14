@@ -1,4 +1,5 @@
-`timscale 1ns/10ps
+`define PERIOD 10
+//`timscale 1ns/10ps
 `include "./IM.v"
 `include "./DM.v"
 `include "./ROM.v"
@@ -136,6 +137,21 @@ module top_tb();
   
   //clk gen.
   always #(`PERIOD/2) clk = ~clk;
+
+  `ifdef prog
+  initial begin
+//    clk = 0;
+//    rst = 0;
+//    #1 rst = 1;
+//    #(`PERIOD) rst = 0;
+  	clk = 0;
+  	rst = 1;
+  	#(`PERIOD/2) rst = 0;
+  	$readmemb("mins.prog",IM1.mem_data);
+  	#1100;
+    $finish;
+  end
+  `endif
   
   ///////////Function Test//////////
   `ifdef prog1
