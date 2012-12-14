@@ -1,16 +1,14 @@
-module pc(o_pc, i_pc, i_rst, i_clk);
+module pc(o_pc, i_pc, rst, clk);
   
-  parameter data_size = 32;
+  input rst;
+  input clk;
+  input [31:0]i_pc;
 
-  input i_rst;
-  input i_clk;
-  input [data_size-1:0]o_pc;
+  output [31:0]o_pc;
+  reg    [31:0]o_pc;
 
-  output [data_size-1:0]i_pc;
-  reg    [data_size-1:0]i_pc;
-
-  always @ (*) begin
-    if (i_rst)
+  always @ (posedge clk or rst) begin
+    if (rst)
       o_pc = 0;
     else
       o_pc = i_pc;
