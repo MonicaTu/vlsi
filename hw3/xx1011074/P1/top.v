@@ -1,6 +1,11 @@
 `include "pc.v"
-`include "pc_select_mux.v"
 `include "adder.v"
+`include "controller.v"
+`include "equal_32bit.v"
+`include "mux2to1_32bit.v"
+`include "sign_extend_14to32.v"
+`include "sign_extend_24to32.v"
+`include "IF_ID.v"
 
 module top(
   //SYSTEM SIGNAL
@@ -84,31 +89,107 @@ module top(
   //I/O interrupt
   input IO_interrupt;
 
+  // top
+  assign IM_address = pc1_out;
   //internal
+  assign BEQ_J_offset = mux_BEQ_J_data << 1;
+  assign branch_taken = controller1_branch & equal1_result;
+  assign jump_taken = controller1_jump;
+  assign zero = branch_taken || jump_taken;
+
+  wire [31:0]pc1_out;
+  wire [31:0]mux_pc_out;
+
+  wire [31:0]adder1_result;
+  wire [31:0]adder2_result;
+  wire controller1_jump;
+  wire controller1_branch;
+  wire equal1_result;
+  wire jump_taken;
+  wire branch_taekn;
+  wire zero;
+
+  wire [31:0]IF_ID1_pc;
+  wire [31:0]IF_ID1_instruction;
+
+  wire [31:0]BEQ_J_offset;
+  wire [31:0]mux_BEQ_J_data;
+  wire [31:0]SE_14to32_data;
+  wire [31:0]SE_24to32_data;
+
+  wire [31:0]regfile_data1;
+  wire [31:0]regfile_data2;
   
   pc pc1 (
-      .o_pc(pc_out)
-    , .i_pc(o_pc)
+      .o_pc(pc1_out)
+    , .i_pc(mux_pc_out)
+    , .rst(rst)
+    , .clk(clk)
   );
 
-  pc_select_mux pc_select_mux1 (
-      .o_pc(o_pc)
-    , .i_add_4(adder1_result)
-    , .i_add_imm_sl_1(adder2_result)
-    , .i_exception(exception)
-    , .i_pc_select(pc_select)
+  mux2to1_32bit mux_pc (
+      .o_data(mux_pc_out)
+    , .i_data0(adder1_result)
+    , .i_data1(adder2_result)
+    , .i_select(zero)
   );
 
   adder adder1 (
       .o_result(adder1_result)
-    , .i_src1(adder1_src1)
-    , .i_src2(adder1_src2)
+    , .i_src1(pc1_out)
+    , .i_src2(32'd1)
   );
 
   adder adder2 (
       .o_result(adder2_result)
-    , .i_src1(adder2_src1)
-    , .i_src2(adder2_src2)
+    , .i_src1(IF_ID1_pc)
+    , .i_src2(BEQ_J_offset)
+  );
+
+  sign_extend_14to32 SE_14to32 (
+      .o_data(SE_14to32_data)
+    , .i_data(IF_ID1_instruction[13:0])
+  );
+
+  sign_extend_24to32 SE_24to32 (
+      .o_data(SE_24to32_data)
+    , .i_data(IF_ID1_instruction[23:0])
+  );
+
+  mux2to1_32bit mux_BEQ_J (
+      .o_data(mux_BEQ_J_data)
+    , .i_data0(SE_14to32_data)
+    , .i_data1(SE_24to32_data)
+    , .i_select(IF_ID1_instruction[26]) // FIXME
+  );
+
+  equal_32bit equal1 (
+      .o_result(equal1_result)
+    , .i_data1(regfile_data1)
+    , .i_data2(regfile_data2)
+  );
+
+  controller controller1 (
+      .o_branch(controller1_branch)
+    , .o_jump(controller1_jump)
+//    , .RegDst
+//    , .MemRead
+//    , .MemtoReg
+//    , .ALUOp
+//    , .MemWrite
+//    , .ALUSrc
+//    , .RegWrite
+    , .i_opcode(IF_ID1_instruction[30:25])
+    , .rst(rst)
+  );
+
+  IF_ID IF_ID1 (
+      .o_pc(IF_ID1_pc)
+    , .o_instruction(IF_ID1_instruction)
+    , .i_pc(adder1_result)
+    , .i_instruction(instruction) // top
+    , .rst(rst)
+    , .clk(clk)
   );
 
 endmodule
