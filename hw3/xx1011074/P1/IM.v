@@ -1,4 +1,4 @@
-module IM(clk, rst, IM_address, IM_read, IM_write, IM_enable, IMin, instruction);
+module IM(clk, rst, IM_address, IM_read, IM_write, IM_enable, IM_in, instruction);
 
   parameter data_size=32;
   parameter address_size=10;
@@ -7,7 +7,7 @@ module IM(clk, rst, IM_address, IM_read, IM_write, IM_enable, IMin, instruction)
   
   input clk, rst, IM_read, IM_write, IM_enable;
   input [address_size-1:0]IM_address;
-  input [data_size-1:0]IMin;
+  input [data_size-1:0]IM_in;
   
   output [data_size-1:0]instruction;
   
@@ -57,8 +57,8 @@ module IM(clk, rst, IM_address, IM_read, IM_write, IM_enable, IMin, instruction)
 //        $display("instruction: %b", instruction);
       end
       else if(IM_write)begin
-//        $display("IMin: %b", IMin);
-        mem_data[IM_address] <= IMin;
+//        $display("IM_in: %b", IM_in);
+        mem_data[IM_address] <= IM_in;
       end
     end
   end

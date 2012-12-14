@@ -1,4 +1,4 @@
-module rom(clk, rom_enable, rom_address, rom_out);
+module ROM(clk, rom_enable, rom_address, rom_out);
 
 parameter data_size=36;
 parameter address_size=8;
