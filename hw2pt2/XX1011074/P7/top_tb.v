@@ -176,8 +176,10 @@ module top_tb;
   initial begin
     $dumpfile("top.vcd");
     $dumpvars;
+`ifdef FSDB
     $fsdbDumpfile("top.fsdb");
     $fsdbDumpvars(0, top_tb);
+`endif
   end
   
 endmodule
