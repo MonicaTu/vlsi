@@ -78,7 +78,7 @@ module mem_controller(rom_done, rom_enable, rom_addr, im_enable, im_en_read, im_
         current_state <= enState;
 
     enState: // S4
-      if (present_rom_ir == 32'b0)
+      if (rom_ir == 32'b0) // FIXME
         current_state <= cpuState;
       else begin
       if (ir_en == 1)
