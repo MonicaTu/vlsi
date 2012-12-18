@@ -94,6 +94,9 @@ module top(
      internal
    ============ */
 
+  // PC
+  wire pc_clk;
+
   wire [31:0]pc1_out;
   wire [31:0]mux_pc_out;
 
@@ -140,7 +143,9 @@ module top(
   
   // top
   assign ir_IM_address = pc1_out;
-  //internal
+
+  assign pc_clk = rom_done & clk;
+
   assign BEQ_J_offset = mux_BEQ_J_data << 1;
   assign branch_taken = controller1_branch & equal1_result;
   assign jump_taken = controller1_jump;
@@ -175,7 +180,7 @@ module top(
       .o_pc(pc1_out)
     , .i_pc(mux_pc_out)
     , .rst(rst)
-    , .clk(clk)
+    , .clk(pc_clk)
   );
 
   mux2to1_32bit mux_pc (
