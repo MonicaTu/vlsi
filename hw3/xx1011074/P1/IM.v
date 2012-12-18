@@ -3,7 +3,7 @@ module IM(clk, rst, IM_address, IM_read, IM_write, IM_enable, IM_in, instruction
   parameter data_size=32;
   parameter address_size=10;
   parameter mem_size=(2**address_size);
-  parameter im_start='h80;
+  parameter im_start='h0;
   
   input clk, rst, IM_read, IM_write, IM_enable;
   input [address_size-1:0]IM_address;
