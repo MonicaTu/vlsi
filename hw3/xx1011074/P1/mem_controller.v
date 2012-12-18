@@ -23,7 +23,7 @@ module mem_controller(rom_done, rom_enable, rom_addr, im_enable, im_en_read, im_
   output mem_enable;
   output mem_en_read; 
   output mem_en_write; 
-  output [13:0]mem_addr;
+  output [15:0]mem_addr;
 
 
   // internal
@@ -39,7 +39,7 @@ module mem_controller(rom_done, rom_enable, rom_addr, im_enable, im_en_read, im_
   reg mem_enable;
   reg mem_en_read; 
   reg mem_en_write; 
-  reg [13:0]mem_addr; 
+  reg [15:0]mem_addr; 
 
   wire ir_rst    = present_rom_ir[35];
   wire ir_en     = present_rom_ir[34];
@@ -198,7 +198,7 @@ module mem_controller(rom_done, rom_enable, rom_addr, im_enable, im_en_read, im_
         mem_enable <= 1;
         mem_en_read <= 1;
         mem_en_write <= 0;
-        mem_addr <= mem_addr + 14'b1;
+        mem_addr <= mem_addr + 16'b1;
         if (ir_select == 0) begin // IM
           im_enable <= 1;
           im_en_read <= 0;
