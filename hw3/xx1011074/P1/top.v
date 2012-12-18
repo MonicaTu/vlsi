@@ -1,3 +1,4 @@
+`include "mem_controller.v"
 `include "pc.v"
 `include "adder.v"
 `include "controller.v"
@@ -89,13 +90,9 @@ module top(
   //I/O interrupt
   input IO_interrupt;
 
-  // top
-  assign IM_address = pc1_out;
-  //internal
-  assign BEQ_J_offset = mux_BEQ_J_data << 1;
-  assign branch_taken = controller1_branch & equal1_result;
-  assign jump_taken = controller1_jump;
-  assign zero = branch_taken || jump_taken;
+/* ============
+     internal
+   ============ */
 
   wire [31:0]pc1_out;
   wire [31:0]mux_pc_out;
@@ -119,7 +116,61 @@ module top(
 
   wire [31:0]regfile_data1;
   wire [31:0]regfile_data2;
+
+  //ROM
+  wire rom_done;
+  wire rom_enable;
+  wire [7:0] rom_address;
   
+  //EM
+  wire MEM_en;
+  wire MEM_read;
+  wire MEM_write;
+  wire [15:0] MEM_address;
+ 
+  //IM
+  wire mem_IM_read;
+  wire mem_IM_write;
+  wire mem_IM_enable;
+  wire [9:0]mem_IM_address;
+  wire ir_IM_read;
+  wire ir_IM_write;
+  wire ir_IM_enable;
+  wire [9:0]ir_IM_address;
+  
+  // top
+  assign ir_IM_address = pc1_out;
+  //internal
+  assign BEQ_J_offset = mux_BEQ_J_data << 1;
+  assign branch_taken = controller1_branch & equal1_result;
+  assign jump_taken = controller1_jump;
+  assign zero = branch_taken || jump_taken;
+  
+  assign IM_read    = (rom_done) ? ir_IM_read    : mem_IM_read;
+  assign IM_write   = (rom_done) ? ir_IM_write   : mem_IM_write;
+  assign IM_enable  = (rom_done) ? ir_IM_enable  : mem_IM_enable;
+  assign IM_address = (rom_done) ? ir_IM_address : mem_IM_address;
+  assign IM_in = MEM_data; 
+
+  assign rom_read = rom_enable;
+  
+  mem_controller mem_controller1 (
+    .rom_done(rom_done),
+    .rom_enable(rom_enable),
+    .rom_addr(rom_address),
+    .im_enable(mem_IM_enable), 
+    .im_en_read(mem_IM_read), 
+    .im_en_write(mem_IM_write), 
+    .im_addr(mem_IM_address), 
+    .mem_enable(MEM_en), 
+    .mem_en_read(MEM_read), 
+    .mem_en_write(MEM_write), 
+    .mem_addr(MEM_address), 
+    .rom_ir(rom_out), 
+    .system_enable(system_enable),
+    .reset(rst),
+    .clock(clk));
+
   pc pc1 (
       .o_pc(pc1_out)
     , .i_pc(mux_pc_out)
