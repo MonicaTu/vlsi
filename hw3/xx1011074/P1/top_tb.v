@@ -138,23 +138,8 @@ module top_tb();
   //clk gen.
   always #(`PERIOD/2) clk = ~clk;
 
-  `ifdef prog
-  initial begin
-//    clk = 0;
-//    rst = 0;
-//    #1 rst = 1;
-//    #(`PERIOD) rst = 0;
-  	clk = 0;
-  	rst = 1;
-  	#(`PERIOD/2) rst = 0;
-  	$readmemb("mins.prog",IM1.mem_data);
-  	#1100;
-    $finish;
-  end
-  `endif
-  
   ///////////Function Test//////////
-  `ifdef prog1
+//  `ifdef prog1
   initial begin
   	clk = 0;
   	rst = 0;
@@ -163,8 +148,15 @@ module top_tb();
   	#1 rst = 1;
   	#(`PERIOD) rst = 0;
   	
+    `ifdef prog
+  	$readmemb("ex_mem.txt",EM1.EM_REG);
+  	$readmemb("rom.txt",ROM1.ROM_REG);
+    `endif
+
+    `ifdef prog1
   	$readmemb(/*your test program path*/,EM1.EM_REG);
   	$readmemb(/*your test program path*/,ROM1.ROM_REG);
+    `endif
   	
     system_enable = 1;
   	#(`PERIOD) system_enable = 0;
@@ -187,7 +179,7 @@ module top_tb();
     $display("\n");
   	$finish;
   end
-  `endif
+//  `endif
   
   ///////////Sorting Test//////////
   `ifdef prog2
