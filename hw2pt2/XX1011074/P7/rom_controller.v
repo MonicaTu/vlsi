@@ -1,11 +1,10 @@
-module rom_controller(rom_done, rom_pc, ROM_enable, ROM_read, Ins_cnt, eop, exe_ir_done, load_im_done, system_enable, reset, clock);
+module rom_controller(rom_done, rom_pc, ROM_enable, ROM_read, Ins_cnt, eop, exe_ir_done, load_im_done, rom_ctrl_reset, system_enable);
 
   parameter InsSize = 64;
   
   // state
   parameter stopState = 1'b0, readState = 1'b1;
 
-  input clock;
   input reset;
   input system_enable;
   input load_im_done;
