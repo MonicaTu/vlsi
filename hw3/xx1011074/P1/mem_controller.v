@@ -1,6 +1,6 @@
 module mem_controller(rom_done, rom_enable, rom_addr, im_enable, im_en_read, im_en_write, im_addr, mem_enable, mem_en_read, mem_en_write, mem_addr, rom_ir, system_enable, reset, clock);
 
-  parameter im_start = 'h80;
+  parameter im_start = 'h0;
   
   // state
   parameter stopState = 3'b000, pcState = 3'b001, fetchIrState = 3'b010, rstState = 3'b011, enState = 3'b100, readState = 3'b101, cpuState = 3'b110;
