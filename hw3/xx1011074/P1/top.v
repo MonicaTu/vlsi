@@ -151,9 +151,9 @@ module top(
   assign jump_taken = controller1_jump;
   assign zero = branch_taken || jump_taken;
   
-  assign IM_read    = (rom_done) ? ir_IM_read    : mem_IM_read;
-  assign IM_write   = (rom_done) ? ir_IM_write   : mem_IM_write;
-  assign IM_enable  = (rom_done) ? ir_IM_enable  : mem_IM_enable;
+  assign IM_read    = (rom_done) ? 1 : mem_IM_read;
+  assign IM_write   = (rom_done) ? 1 : mem_IM_write;
+  assign IM_enable  = (rom_done) ? 1 : mem_IM_enable;
   assign IM_address = (rom_done) ? ir_IM_address : mem_IM_address;
   assign IM_in = MEM_data; 
 
