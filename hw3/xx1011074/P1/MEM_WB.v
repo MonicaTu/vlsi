@@ -48,8 +48,8 @@ reg	[31:0]	ALUData_out;
 reg	[4:0]	WBregister_out;
 
 // Procedure
-always @(posedge clk or negedge rst) begin
-	if(~rst) begin
+always @(posedge clk or rst) begin
+	if(rst) begin
 		RegWrite_out	<= 1'b0;
 		MemtoReg_out	<= 1'b0;	
 		MemData_out		<= 32'b0;

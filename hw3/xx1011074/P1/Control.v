@@ -1,11 +1,13 @@
-module Control(ImmSelect, ALUOp, ALUSubOp, RegDst, Branch, MemRead, MemtoReg, MemWrite, ALUSrc, RegWrite, opcode, sub_opcode);
+module Control(ImmSelect, ALUOp, ALUSubOp, ALUsv, RegDst, Branch, MemRead, MemtoReg, MemWrite, ALUSrc, RegWrite, i_opcode, i_sub_opcode, i_sv);
    
-  input [5:0]opcode;
-  input [4:0]sub_opcode;
+  input [5:0]i_opcode;
+  input [4:0]i_sub_opcode;
+  input [1:0]i_sv;
 
-  output [3:0]ImmSelect;
+  output [2:0]ImmSelect;
   output [5:0]ALUOp;
   output [4:0]ALUSubOp;
+  output [1:0]ALUsv;
   output RegDst;    // Rb = scr2
   output Branch;    //
   output MemRead;   // read Mem 
@@ -16,10 +18,11 @@ module Control(ImmSelect, ALUOp, ALUSubOp, RegDst, Branch, MemRead, MemtoReg, Me
 
   // internal
   reg [6:0]out;
-  reg [3:0]ImmSelect;
+  reg [2:0]ImmSelect;
   
-  assign ALUOp = opcode;
-  assign ALUSubOp = sub_opcode;
+  assign ALUOp = i_opcode;
+  assign ALUSubOp = i_sub_opcode;
+  assign ALUsv = i_sv;
   assign RegDst = out[6];
   assign Branch = out[5];
   assign MemRead = out[4];
@@ -29,10 +32,10 @@ module Control(ImmSelect, ALUOp, ALUSubOp, RegDst, Branch, MemRead, MemtoReg, Me
   assign RegWrite = out[0];
   
   // {RegDst, Branch, MemRead, MemtoReg, MemWrite, ALUSrc, RegWrite}
-  always @ (opcode) begin
-    case (opcode)
-      6'b100000:    // ADD/SUB/AND/OR/XOR
-        case (sub_opcode)
+  always @ (i_opcode) begin
+    case (i_opcode)
+      6'b100000:    
+        case (i_sub_opcode)
           5'b01001: begin// SRLI, FIXME: NOP
             ImmSelect = 3'b001; // imm5
             out = 7'b0000001;
@@ -45,7 +48,7 @@ module Control(ImmSelect, ALUOp, ALUSubOp, RegDst, Branch, MemRead, MemtoReg, Me
             ImmSelect = 3'b001; // imm5
             out = 7'b0000001;
           end
-          default: begin
+          default: begin // ADD/SUB/AND/OR/XOR
             ImmSelect = 3'b000; // imm0
             out = 7'b1000001;
           end
@@ -55,11 +58,11 @@ module Control(ImmSelect, ALUOp, ALUSubOp, RegDst, Branch, MemRead, MemtoReg, Me
         out = 7'b0000001;
         end
       6'b101100: begin   // ORI
-        ImmSelect = 3'b010; // imm15
+        ImmSelect = 3'b110; // imm15ZE
         out = 7'b0000001;
         end
       6'b101011: begin   // XORI
-        ImmSelect = 3'b010; // imm15
+        ImmSelect = 3'b110; // imm15ZE
         out = 7'b0000001;
         end
       6'b000010: begin   // LWI
@@ -75,7 +78,7 @@ module Control(ImmSelect, ALUOp, ALUSubOp, RegDst, Branch, MemRead, MemtoReg, Me
         out = 7'b0000001;
         end
       6'b011100:
-        case (sub_opcode)
+        case (i_sub_opcode)
           5'b00010: begin // LW
             ImmSelect = 3'b000; // imm0
             out = 7'b0011011;
