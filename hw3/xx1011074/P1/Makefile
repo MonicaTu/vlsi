@@ -1,5 +1,5 @@
-tb:
-	iverilog top_tb.v top.v -Dprog=1 -DVCD=1
+basic:
+	iverilog top_tb.v top.v -Dbasic=1 -DVCD=1
 	./a.out
 	gtkwave top.vcd
 

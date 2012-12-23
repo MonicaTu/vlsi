@@ -148,14 +148,14 @@ module top_tb();
   	#1 rst = 1;
   	#(`PERIOD) rst = 0;
   	
-    `ifdef prog
-  	$readmemb("ex_mem.txt",EM1.EM_REG);
-  	$readmemb("rom.txt",ROM1.ROM_REG);
+    `ifdef basic
+  	$readmemb("basic_em.prog",EM1.EM_REG);
+  	$readmemb("basic_rom.prog",ROM1.ROM_REG);
     `endif
 
     `ifdef prog1
-  	$readmemb(/*your test program path*/,EM1.EM_REG);
-  	$readmemb(/*your test program path*/,ROM1.ROM_REG);
+  	$readmemb("ex_mem.txt",EM1.EM_REG);
+  	$readmemb("rom.txt",ROM1.ROM_REG);
     `endif
   	
     system_enable = 1;
