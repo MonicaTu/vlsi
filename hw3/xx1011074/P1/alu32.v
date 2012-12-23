@@ -61,15 +61,15 @@ module alu32(zero, alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode, sv, rese
                                 alu_result=scr1^scr2;
                               end
                       SRLI  : begin
-                                if(scr2!=0)begin 
+//                                if(scr2!=0)begin 
                                   alu_overflow=1'b0;
                                   alu_result=scr1>>scr2;
-                                      end
+//                                      end
                     //NOP   :
-                                      else begin
-                                  alu_result=32'b0;
-                                  alu_overflow=1'b0;
-                                end
+//                                      else begin
+//                                  alu_result=32'b0;
+//                                  alu_overflow=1'b0;
+//                                end
                               end
                       SLLI  : begin
                                 alu_overflow=1'b0;
