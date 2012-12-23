@@ -592,8 +592,8 @@ module top(
   // Forwarding
   Forwarding Forwarding (
       .IFIDaddress1(address1_ID)
-    , .IFIDaddress2(address1_ID)
-    , .IDEXaddress1(address2_EX)
+    , .IFIDaddress2(address2_ID)
+    , .IDEXaddress1(address1_EX)
     , .IDEXaddress2(address2_EX)
     , .EXMEMRegWrite(RegWrite_MEM)
     , .EXMEMaddressT(addressT_MEM)
