@@ -29,32 +29,32 @@ end
 
 always @ (IDEXaddress1 or IDEXaddress2 or EXMEMaddressT or MEMWBaddressT or IFIDaddress1 or IFIDaddress2 or EXMEMRegWrite or MEMWBRegWrite) begin
 
-if (EXMEMRegWrite && (EXMEMaddressT != 5'b0) && (EXMEMaddressT == IDEXaddress1)) 
+if (EXMEMRegWrite && (EXMEMaddressT == IDEXaddress1)) 
     ForwardA_ALU <= 2'b10;
-else if (MEMWBRegWrite && (MEMWBaddressT != 5'b0) && (MEMWBaddressT == IDEXaddress1))
+else if (MEMWBRegWrite && (MEMWBaddressT == IDEXaddress1))
     ForwardA_ALU <= 2'b01;
   else
     ForwardA_ALU <= 2'b00;
     
-if (EXMEMRegWrite && (EXMEMaddressT != 5'b0) && (EXMEMaddressT == IDEXaddress2))
+if (EXMEMRegWrite && (EXMEMaddressT == IDEXaddress2))
     ForwardB_ALU <= 2'b10;
-else if (MEMWBRegWrite && (MEMWBaddressT != 5'b0) && (MEMWBaddressT == IDEXaddress2))
+else if (MEMWBRegWrite && (MEMWBaddressT == IDEXaddress2))
     ForwardB_ALU <= 2'b01;
   else
     ForwardB_ALU <= 2'b00;
 
 
 if (Branch) begin
-  if (EXMEMRegWrite && (EXMEMaddressT != 5'b0) && (EXMEMaddressT == IFIDaddress1)) 
+  if (EXMEMRegWrite && (EXMEMaddressT == IFIDaddress1)) 
     ForwardA_EQ <= 2'b10;
-  else if (MEMWBRegWrite && (MEMWBaddressT != 5'b0) && (MEMWBaddressT == IFIDaddress1))
+  else if (MEMWBRegWrite && (MEMWBaddressT == IFIDaddress1))
     ForwardA_EQ <= 2'b01;
   else
     ForwardA_EQ <= 2'b00;
     
-  if (EXMEMRegWrite && (EXMEMaddressT != 5'b0) && (EXMEMaddressT == IFIDaddress2))
+  if (EXMEMRegWrite && (EXMEMaddressT == IFIDaddress2))
     ForwardB_EQ <= 2'b10;
-  else if (MEMWBRegWrite && (MEMWBaddressT != 5'b0) && (MEMWBaddressT == IFIDaddress2))
+  else if (MEMWBRegWrite && (MEMWBaddressT == IFIDaddress2))
     ForwardB_EQ <= 2'b01;
   else
     ForwardB_EQ <= 2'b00;
