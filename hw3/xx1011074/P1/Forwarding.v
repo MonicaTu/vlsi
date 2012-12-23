@@ -1,21 +1,21 @@
 module Forwarding(
-    IfIdRegRs,
-    IfIdRegRt,
+    IFIDaddress1,
+    IFIDaddress2,
     Branch,
-    IdExRegRs,
-    IdExRegRt,
-    ExMemRegWrite,
-    ExMemRegRd,
-    MemWbRegWrite,
-    MemWbRegRd,
+    IDEXaddress1,
+    IDEXaddress2,
+    EXMEMRegWrite,
+    EXMEMaddressT,
+    MEMWBRegWrite,
+    MEMWBaddressT,
     ForwardA_ALU,	
     ForwardB_ALU, 
     ForwardA_EQ,
     ForwardB_EQ
 );
 
-input [4:0] IdExRegRs, IdExRegRt, ExMemRegRd, MemWbRegRd, IfIdRegRs, IfIdRegRt; 
-input ExMemRegWrite,  MemWbRegWrite, Branch;
+input [4:0] IDEXaddress1, IDEXaddress2, EXMEMaddressT, MEMWBaddressT, IFIDaddress1, IFIDaddress2; 
+input EXMEMRegWrite,  MEMWBRegWrite, Branch;
 output [1:0] ForwardA_ALU, ForwardB_ALU, ForwardA_EQ, ForwardB_EQ;
 
 reg [1:0] ForwardA_ALU, ForwardB_ALU, ForwardA_EQ, ForwardB_EQ;
@@ -27,34 +27,34 @@ ForwardA_EQ = 2'b00;
 ForwardB_EQ = 2'b00;
 end
 
-always @ (IdExRegRs or IdExRegRt or ExMemRegRd or MemWbRegRd or IfIdRegRs or IfIdRegRt or ExMemRegWrite or MemWbRegWrite) begin
+always @ (IDEXaddress1 or IDEXaddress2 or EXMEMaddressT or MEMWBaddressT or IFIDaddress1 or IFIDaddress2 or EXMEMRegWrite or MEMWBRegWrite) begin
 
-if (ExMemRegWrite && (ExMemRegRd != 5'b0) && (ExMemRegRd == IdExRegRs)) 
+if (EXMEMRegWrite && (EXMEMaddressT != 5'b0) && (EXMEMaddressT == IDEXaddress1)) 
     ForwardA_ALU <= 2'b10;
-else if (MemWbRegWrite && (MemWbRegRd != 5'b0) && (MemWbRegRd == IdExRegRs))
+else if (MEMWBRegWrite && (MEMWBaddressT != 5'b0) && (MEMWBaddressT == IDEXaddress1))
     ForwardA_ALU <= 2'b01;
   else
     ForwardA_ALU <= 2'b00;
     
-if (ExMemRegWrite && (ExMemRegRd != 5'b0) && (ExMemRegRd == IdExRegRt))
+if (EXMEMRegWrite && (EXMEMaddressT != 5'b0) && (EXMEMaddressT == IDEXaddress2))
     ForwardB_ALU <= 2'b10;
-else if (MemWbRegWrite && (MemWbRegRd != 5'b0) && (MemWbRegRd == IdExRegRt))
+else if (MEMWBRegWrite && (MEMWBaddressT != 5'b0) && (MEMWBaddressT == IDEXaddress2))
     ForwardB_ALU <= 2'b01;
   else
     ForwardB_ALU <= 2'b00;
 
 
 if (Branch) begin
-  if (ExMemRegWrite && (ExMemRegRd != 5'b0) && (ExMemRegRd == IfIdRegRs)) 
+  if (EXMEMRegWrite && (EXMEMaddressT != 5'b0) && (EXMEMaddressT == IFIDaddress1)) 
     ForwardA_EQ <= 2'b10;
-  else if (MemWbRegWrite && (MemWbRegRd != 5'b0) && (MemWbRegRd == IfIdRegRs))
+  else if (MEMWBRegWrite && (MEMWBaddressT != 5'b0) && (MEMWBaddressT == IFIDaddress1))
     ForwardA_EQ <= 2'b01;
   else
     ForwardA_EQ <= 2'b00;
     
-  if (ExMemRegWrite && (ExMemRegRd != 5'b0) && (ExMemRegRd == IfIdRegRt))
+  if (EXMEMRegWrite && (EXMEMaddressT != 5'b0) && (EXMEMaddressT == IFIDaddress2))
     ForwardB_EQ <= 2'b10;
-  else if (MemWbRegWrite && (MemWbRegRd != 5'b0) && (MemWbRegRd == IfIdRegRt))
+  else if (MEMWBRegWrite && (MEMWBaddressT != 5'b0) && (MEMWBaddressT == IFIDaddress2))
     ForwardB_EQ <= 2'b01;
   else
     ForwardB_EQ <= 2'b00;

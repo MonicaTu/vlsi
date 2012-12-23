@@ -1,6 +1,6 @@
 module Hazard_Detection(
-    IFIDRegRs,
-    IFIDRegRt,
+    IFIDaddress1,
+    IFIDaddress2,
     IDEXRegDST,
     IDEXMemRead,
     IDEXRegWrite,
@@ -9,7 +9,7 @@ module Hazard_Detection(
     clk
 );
 
-input [4:0] IFIDRegRs, IFIDRegRt, IDEXRegDST;
+input [4:0] IFIDaddress1, IFIDaddress2, IDEXRegDST;
 input IDEXMemRead, Branch, IDEXRegWrite, clk;
 output Stall;
 
@@ -23,17 +23,17 @@ end
 always @ (negedge clk) begin
   Stall <= 0;
   if (Branch) begin
-    if (IDEXMemRead && ((IFIDRegRs == IDEXRegDST) || (IFIDRegRt == IDEXRegDST))) begin
+    if (IDEXMemRead && ((IFIDaddress1 == IDEXRegDST) || (IFIDaddress2 == IDEXRegDST))) begin
       Stall <= 1;
       Stall2 <= 1;
-    end else if (IDEXRegWrite && ((IFIDRegRs == IDEXRegDST) || (IFIDRegRt == IDEXRegDST))) begin
+    end else if (IDEXRegWrite && ((IFIDaddress1 == IDEXRegDST) || (IFIDaddress2 == IDEXRegDST))) begin
       Stall <= 1;
       Stall2 <= 0;
     end else if (Stall2) begin
       Stall <= 1;
       Stall2 <= 0;
     end
-  end else if (IDEXMemRead && ((IFIDRegRs == IDEXRegDST) || (IFIDRegRt == IDEXRegDST))) begin
+  end else if (IDEXMemRead && ((IFIDaddress1 == IDEXRegDST) || (IFIDaddress2 == IDEXRegDST))) begin
       Stall <= 1;
       Stall2 <= 0;
   end else begin

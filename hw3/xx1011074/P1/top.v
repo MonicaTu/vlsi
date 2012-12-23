@@ -19,6 +19,8 @@
 `include "alu32.v"
 `include "EX_MEM.v"
 `include "MEM_WB.v"
+`include "Forwarding.v"
+`include "Hazard_Detection.v"
 
 module top(
   //SYSTEM SIGNAL
@@ -133,8 +135,8 @@ module top(
   wire branch_taekn;
   wire zero;
 
-  wire [31:0]IF_ID1_pc;
-  wire [31:0]IF_ID1_instruction;
+  wire [31:0]IF_ID_pc;
+  wire [31:0]IF_ID_instruction;
 
 //  wire [31:0]BEQ_J_offset;
 //  wire [31:0]mux_BEQ_J_data;
@@ -226,9 +228,9 @@ module top(
   wire [DataSize-1:0]addressT_data_WB;
 //  wire [DataSize-1:0]write_data;
 
-  assign addressT_ID = IF_ID1_instruction[24:20];
-  assign address1_ID = IF_ID1_instruction[19:15];
-  assign address2_ID = IF_ID1_instruction[14:10];
+  assign addressT_ID = IF_ID_instruction[24:20];
+  assign address1_ID = IF_ID_instruction[19:15];
+  assign address2_ID = IF_ID_instruction[14:10];
 
   // internal
 //  wire [IMSize-1:0]PC;
@@ -275,8 +277,10 @@ module top(
   // Forwarding
   wire [1:0]ForwardA_ALU;
   wire [1:0]ForwardB_ALU;
-  assign ForwardA_ALU = 2'b00; // FIXME
-  assign ForwardB_ALU = 2'b00; // FIXME
+//  assign ForwardA_ALU = 2'b00; // FIXME
+//  assign ForwardB_ALU = 2'b00; // FIXME
+  wire [1:0]ForwardA_EQ;
+  wire [1:0]ForwardB_EQ;
 
 //  wire mem_IM_read;
 //  wire mem_IM_write;
@@ -348,9 +352,9 @@ module top(
     , .i_src2(32'd1)
   );
 
-  IF_ID IF_ID1 (
-      .o_pc(IF_ID1_pc)
-    , .o_instruction(IF_ID1_instruction)
+  IF_ID IF_ID (
+      .o_pc(IF_ID_pc)
+    , .o_instruction(IF_ID_instruction)
     , .i_pc(adder1_result)
     , .i_instruction(instruction) // top
     , .rst(rst)
@@ -361,9 +365,9 @@ module top(
   Control Control1 (
 //      .o_branch(controller1_branch)
 //    , .o_jump(controller1_jump)
-      .i_opcode(IF_ID1_instruction[30:25])
-    , .i_sub_opcode(IF_ID1_instruction[4:0])
-    , .i_sv(IF_ID1_instruction[9:8])
+      .i_opcode(IF_ID_instruction[30:25])
+    , .i_sub_opcode(IF_ID_instruction[4:0])
+    , .i_sv(IF_ID_instruction[9:8])
     , .ImmSelect(ImmSelect)
     , .ALUOp(ALUOp_ID)
     , .ALUSubOp(ALUSubOp_ID)
@@ -392,32 +396,32 @@ module top(
 
   sign_extend_5to32 SE_5to32 (
       .o_data(SE_5to32_data)
-    , .i_data(IF_ID1_instruction[14:10])
+    , .i_data(IF_ID_instruction[14:10])
   );
 
   sign_extend_15to32 SE_15to32 (
       .o_data(SE_15to32_data)
-    , .i_data(IF_ID1_instruction[14:0])
+    , .i_data(IF_ID_instruction[14:0])
   );
 
   zero_extend_15to32 ZE_15to32 (
       .o_data(ZE_15to32_data)
-    , .i_data(IF_ID1_instruction[14:0])
+    , .i_data(IF_ID_instruction[14:0])
   );
 
   sign_extend_20to32 SE_20to32 (
       .o_data(SE_20to32_data)
-    , .i_data(IF_ID1_instruction[19:0])
+    , .i_data(IF_ID_instruction[19:0])
   );
 
   sign_extend_14to32 SE_14to32 (
       .o_data(SE_14to32_data)
-    , .i_data(IF_ID1_instruction[13:0])
+    , .i_data(IF_ID_instruction[13:0])
   );
 
   sign_extend_24to32 SE_24to32 (
       .o_data(SE_24to32_data)
-    , .i_data(IF_ID1_instruction[23:0])
+    , .i_data(IF_ID_instruction[23:0])
   );
 
   mux2to1_7bit Control_Stall(
@@ -443,7 +447,7 @@ module top(
 
 //  adder adder2 (
 //      .o_result(adder2_result)
-//    , .i_src1(IF_ID1_pc)
+//    , .i_src1(IF_ID_pc)
 //    , .i_src2(BEQ_J_offset)
 //  );
 
@@ -586,32 +590,32 @@ module top(
   );
 
   // Forwarding
-//  Forwarding Forwarding (
-//    , .IfIdRegRs(Instr_ID[25:21])
-//    , .IfIdRegRt(Instr_ID[20:16])
-//    , .IdExRegRs(Instr_EX[25:21])
-//    , .IdExRegRt(Instr_EX[20:16])
-//    , .ExMemRegWrite(RegWrite_MEM)
-//    , .ExMemRegRd(addressT_data_MEM)
-//    , .MemWbRegWrite(RegWrite_WB)
-//    , .MemWbRegRd(addressT_data_WB)
-//    , .Branch(Branch)
-//    , .ForwardA_ALU(ForwardA_ALU)	
-//    , .ForwardB_ALU(ForwardB_ALU) 
-//    , .ForwardA_EQ(ForwardA_EQ)
-//    , .ForwardB_EQ(ForwardB_EQ)
-//  );
+  Forwarding Forwarding (
+      .IFIDaddress1(address1_ID)
+    , .IFIDaddress2(address1_ID)
+    , .IDEXaddress1(address2_EX)
+    , .IDEXaddress2(address2_EX)
+    , .EXMEMRegWrite(RegWrite_MEM)
+    , .EXMEMaddressT(addressT_MEM)
+    , .MEMWBRegWrite(RegWrite_WB)
+    , .MEMWBaddressT(addressT_WB)
+    , .Branch(Branch)
+    , .ForwardA_ALU(ForwardA_ALU)	
+    , .ForwardB_ALU(ForwardB_ALU) 
+    , .ForwardA_EQ(ForwardA_EQ)
+    , .ForwardB_EQ(ForwardB_EQ)
+  );
 
   // Hazard Detection
-//  Hazard_Detection Hazard_Detection(
-//    , .IFIDRegRs(Instr_ID[25:21])
-//    , .IFIDRegRt(Instr_ID[20:16])
-//    , .IDEXMemRead(MemRead_EX)
-//    , .IDEXRegDST(addressT_data_EX)
-//    , .Branch(Ctrl_Code[8])
-//    , .IDEXRegWrite(RegWrite_EX)
-//    , .Stall(Stall)
-//    , .clk(clk)
-//  );
+  Hazard_Detection Hazard_Detection(
+      .IFIDaddress1(address1_ID)
+    , .IFIDaddress2(address2_ID)
+    , .IDEXMemRead(MemRead_EX)
+    , .IDEXRegDST(addressT_EX)
+    , .Branch(Control_Code[5])
+    , .IDEXRegWrite(RegWrite_EX)
+    , .Stall(Stall)
+    , .clk(clk)
+  );
 
 endmodule
