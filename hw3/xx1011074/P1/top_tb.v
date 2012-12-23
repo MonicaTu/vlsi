@@ -153,6 +153,11 @@ module top_tb();
   	$readmemb("basic_rom.prog",ROM1.ROM_REG);
     `endif
 
+    `ifdef lwsw
+  	$readmemb("lwsw_em.prog",EM1.EM_REG);
+  	$readmemb("lwsw_rom.prog",ROM1.ROM_REG);
+    `endif
+
     `ifdef prog1
   	$readmemb("ex_mem.txt",EM1.EM_REG);
   	$readmemb("rom.txt",ROM1.ROM_REG);

@@ -3,6 +3,11 @@ basic:
 	./a.out
 	gtkwave top.vcd
 
+lwsw:
+	iverilog top_tb.v top.v -Dlwsw=1 -DVCD=1
+	./a.out
+	gtkwave top.vcd
+
 tb1:
 	iverilog top_tb.v top.v -Dprog1=1 -DVCD=1
 	./a.out
