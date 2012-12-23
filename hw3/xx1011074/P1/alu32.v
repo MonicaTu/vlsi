@@ -1,6 +1,6 @@
 // TODO: zero in each op.
 
-module alu32(zero, alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode, sv,enable_execute,reset);
+module alu32(zero, alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode, sv, reset);
   parameter TYPE_BASIC=6'b100000;
   parameter NOP=5'b01001, ADD=5'b00000, SUB=5'b00001, AND=5'b00010,
             OR=5'b00100, XOR=5'b00011, SRLI=5'b01001, SLLI=5'b01000,
@@ -24,7 +24,6 @@ module alu32(zero, alu_result,alu_overflow,scr1,scr2,opcode,sub_opcode, sv,enabl
   input [4:0]sub_opcode;
   input [1:0]sv;
   input reset;
-  input enable_execute;
   
   reg [31:0]alu_result;
   reg alu_overflow;

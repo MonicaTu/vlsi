@@ -45,14 +45,17 @@ module regfile(read_data1, read_data2, read_dataT, read_address1, read_address2,
         read_data2<=rw_reg[read_address2];
         read_dataT<=rw_reg[addressT];
       end
-      else if(write)begin
-        rw_reg[addressT]<=write_data;
-      end
       // FIXME
 //      else begin
 //        read_data1<=32'b0;
 //        read_data2<=32'b0;
 //      end
+    end
+  end
+  
+  always@(negedge clk)begin
+    if(write)begin
+      rw_reg[addressT]<=write_data;
     end
   end
 endmodule

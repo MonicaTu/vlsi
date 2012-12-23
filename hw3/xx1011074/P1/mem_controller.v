@@ -88,7 +88,7 @@ module mem_controller(rom_done, rom_enable, rom_addr, im_enable, im_en_read, im_
       end
 
     readState: // S5
-      if (size == 0)
+      if (size == 1)
         current_state <= pcState;
       else
         current_state <= readState;

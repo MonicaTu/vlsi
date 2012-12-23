@@ -433,7 +433,7 @@ module top(
     , .read_dataT(addressT_data_ID)
     , .read_address1(address1_ID)
     , .read_address2(address2_ID)
-    , .addressT(addressT_ID)
+    , .addressT(addressT_WB)
     , .write_data(mux_MemtoReg)
     , .clk(clk)
     , .reset(rst)
@@ -492,7 +492,8 @@ module top(
   
   // EX block: ALU execute
   alu32 alu1 ( 
-      .alu_result(ALUResult_EX)
+      .zero(zero)
+    , .alu_result(ALUResult_EX)
     , .alu_overflow(ALUOverflow_EX)
     , .scr1(muxA_ALUsrc)
     , .scr2(mux_ALUsrc)

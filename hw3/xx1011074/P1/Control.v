@@ -38,15 +38,15 @@ module Control(ImmSelect, ALUOp, ALUSubOp, ALUsv, RegDst, Branch, MemRead, Memto
         case (i_sub_opcode)
           5'b01001: begin// SRLI, FIXME: NOP
             ImmSelect = 3'b001; // imm5
-            out = 7'b0000001;
+            out = 7'b0000011;
           end
           5'b01000: begin// SLLI
             ImmSelect = 3'b001; // imm5
-            out = 7'b0000001;
+            out = 7'b0000011;
           end
           5'b01011: begin// ROTRI
             ImmSelect = 3'b001; // imm5
-            out = 7'b0000001;
+            out = 7'b0000011;
           end
           default: begin // ADD/SUB/AND/OR/XOR
             ImmSelect = 3'b000; // imm0
@@ -55,15 +55,15 @@ module Control(ImmSelect, ALUOp, ALUSubOp, ALUsv, RegDst, Branch, MemRead, Memto
         endcase
       6'b101000: begin   // ADDI
         ImmSelect = 3'b010; // imm15
-        out = 7'b0000001;
+        out = 7'b0000011;
         end
       6'b101100: begin   // ORI
         ImmSelect = 3'b110; // imm15ZE
-        out = 7'b0000001;
+        out = 7'b0000011;
         end
       6'b101011: begin   // XORI
         ImmSelect = 3'b110; // imm15ZE
-        out = 7'b0000001;
+        out = 7'b0000011;
         end
       6'b000010: begin   // LWI
         ImmSelect = 3'b010; // imm15
@@ -75,26 +75,26 @@ module Control(ImmSelect, ALUOp, ALUSubOp, ALUsv, RegDst, Branch, MemRead, Memto
         end
       6'b100010: begin   // MOVI
         ImmSelect = 3'b011; // imm20
-        out = 7'b0000001;
+        out = 7'b0000011;
         end
       6'b011100:
         case (i_sub_opcode)
           5'b00010: begin // LW
             ImmSelect = 3'b000; // imm0
-            out = 7'b0011011;
+            out = 7'b0011001;
             end
           5'b01010: begin // SW
             ImmSelect = 3'b000; // imm0
-            out = 7'b0000110;
+            out = 7'b0000100;
             end
         endcase
       6'b100110: begin   // BEQ
         ImmSelect = 3'b100; // imm14
-        out = 7'b0100000;
+        out = 7'b0100010;
         end
       6'b100100: begin   // J
         ImmSelect = 3'b101; // imm24
-        out = 7'b0100000;
+        out = 7'b0100010;
         end
     endcase
   end
