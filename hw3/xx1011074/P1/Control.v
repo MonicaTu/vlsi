@@ -32,7 +32,7 @@ module Control(ImmSelect, ALUOp, ALUSubOp, ALUsv, RegDst, Branch, MemRead, Memto
   assign RegWrite = out[0];
   
   // {RegDst, Branch, MemRead, MemtoReg, MemWrite, ALUSrc, RegWrite}
-  always @ (i_opcode) begin
+  always @ (i_opcode or i_sub_opcode) begin
     case (i_opcode)
       6'b100000:    
         case (i_sub_opcode)
