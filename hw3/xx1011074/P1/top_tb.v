@@ -148,32 +148,26 @@ module top_tb();
   	
     ///////////Function Test//////////
     `ifdef prog1
-  	  $readmemb("ex_mem.txt",EM1.EM_REG);
-  	  $readmemb("rom.txt",ROM1.ROM_REG);
+  	  $readmemb("individual_mem.prog",EM1.EM_REG);
+  	  $readmemb("individual_rom.prog",ROM1.ROM_REG);
     `endif
   
     ///////////Sorting Test//////////
     `ifdef prog2
-    initial begin
-  	  $readmemb("sort_mem.txt",EM1.EM_REG);
-  	  $readmemb("sort_rom.txt",ROM1.ROM_REG);
-    end
+  	  $readmemb("sorting1_mem.prog",EM1.EM_REG);
+  	  $readmemb("sorting1_rom.prog",ROM1.ROM_REG);
     `endif
     
     ///////////Fibonacci Test//////////
     `ifdef prog3
-    initial begin
-  	  $readmemb("fibonacci_mem.txt",EM1.EM_REG);
-  	  $readmemb("fibonacci_rom.txt",ROM1.ROM_REG);
-    end
+  	  $readmemb("fibonacci_mem.prog",EM1.EM_REG);
+  	  $readmemb("fibonacci_rom.prog",ROM1.ROM_REG);
     `endif
     
     /////////////Cross Test////////////
     `ifdef prog4
-    initial begin
-  	  $readmemb("cross_mem.txt",EM1.EM_REG);
-  	  $readmemb("cross_rom.txt",ROM1.ROM_REG);
-    end
+  	  $readmemb("ex_mem.txt",EM1.EM_REG);
+  	  $readmemb("rom.txt",ROM1.ROM_REG);
     `endif
  
     ///////////HWII-Part2-P5 Test//////////
@@ -200,6 +194,22 @@ module top_tb();
     `ifdef mins4
   	  $readmemb("mins4.prog",EM1.EM_REG);
   	  $readmemb("rom4.prog",ROM1.ROM_REG);
+    `endif
+
+    ///////////Hazard Test//////////
+    `ifdef hazard1
+  	  $readmemb("hazard1_mem.prog",EM1.EM_REG);
+  	  $readmemb("hazard1_rom.prog",ROM1.ROM_REG);
+    `endif
+
+    `ifdef hazard2
+  	  $readmemb("hazard2_mem.prog",EM1.EM_REG);
+  	  $readmemb("hazard2_rom.prog",ROM1.ROM_REG);
+    `endif
+
+    `ifdef hazard3
+  	  $readmemb("hazard3_mem.prog",EM1.EM_REG);
+  	  $readmemb("hazard3_rom.prog",ROM1.ROM_REG);
     `endif
 
     ///////////Other Test//////////
