@@ -28,8 +28,28 @@ tb4:
 	./a.out
 	gtkwave top.vcd
 
-tb5:
-	iverilog top_tb.v top.v -Dprog5=1 -DVCD=1
+mins:
+	iverilog top_tb.v top.v -Dmins=1 -DVCD=1
+	./a.out
+	gtkwave top.vcd
+
+mins1:
+	iverilog top_tb.v top.v -Dmins1=1 -DVCD=1
+	./a.out
+	gtkwave top.vcd
+
+mins2:
+	iverilog top_tb.v top.v -Dmins2=1 -DVCD=1
+	./a.out
+	gtkwave top.vcd
+
+mins3:
+	iverilog top_tb.v top.v -Dmins3=1 -DVCD=1
+	./a.out
+	gtkwave top.vcd
+
+mins4:
+	iverilog top_tb.v top.v -Dmins4=1 -DVCD=1
 	./a.out
 	gtkwave top.vcd
 
