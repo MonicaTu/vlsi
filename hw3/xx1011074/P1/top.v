@@ -270,6 +270,12 @@ module top(
   wire [31:0]MemData_WB;
 
   assign MemData_MEM = DM_out;
+  assign DM_address = ALUResult_MEM;
+  assign DM_in = addressT_data_ID; // FIXME
+//  assign DM_in = addressT_data_MEM; // FIXME
+  assign DM_enable = 1'b1;
+  assign DM_read = MemRead_MEM;
+  assign DM_write = MemWrite_MEM;
 
   // WB
   wire [31:0]mux_MemtoReg;
@@ -277,8 +283,6 @@ module top(
   // Forwarding
   wire [1:0]ForwardA_ALU;
   wire [1:0]ForwardB_ALU;
-//  assign ForwardA_ALU = 2'b00; // FIXME
-//  assign ForwardB_ALU = 2'b00; // FIXME
   wire [1:0]ForwardA_EQ;
   wire [1:0]ForwardB_EQ;
 
@@ -442,7 +446,7 @@ module top(
     , .clk(clk)
     , .reset(rst)
     , .read(1'b1)   // FIXME
-    , .write(1'b1)  // FIXME
+    , .write(RegWrite_WB) // FIXME
   );
 
 //  adder adder2 (
@@ -509,7 +513,7 @@ module top(
 
   mux3to1_32bit mux_alu_src_forwardA (    
       .o_data(muxA_ALUsrc)
-    , .i_data0(address1_data_EX)
+    , .i_data0(address1_data_ID) // FIXME
     , .i_data1(mux_MemtoReg)
     , .i_data2(ALUResult_MEM)
     , .i_select(ForwardA_ALU)
@@ -517,7 +521,7 @@ module top(
   
   mux3to1_32bit mux_alu_src_forwardB (    
       .o_data(muxB_ALUsrc)
-    , .i_data0(address2_data_EX)
+    , .i_data0(address2_data_ID) // FIXME
     , .i_data1(mux_MemtoReg)
     , .i_data2(ALUResult_MEM)
     , .i_select(ForwardB_ALU)
@@ -585,7 +589,7 @@ module top(
   mux2to1_32bit Mux_MemtoReg (
       .o_data(mux_MemtoReg)
     , .i_data0(ALUResult_WB) 
-    , .i_data1(MemData_WB) 
+    , .i_data1(MemData_MEM) // FIXME 
     , .i_select(MemtoReg_WB) 
   );
 
