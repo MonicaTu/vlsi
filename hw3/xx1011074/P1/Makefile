@@ -8,22 +8,22 @@ lwsw:
 	./a.out
 	gtkwave top.vcd
 
-tb1:
+individual:
 	iverilog top_tb.v top.v -Dprog1=1 -DVCD=1
 	./a.out
 	gtkwave top.vcd
 
-tb2:
+sorting:
 	iverilog top_tb.v top.v -Dprog2=1 -DVCD=1
 	./a.out
 	gtkwave top.vcd
 
-tb3:
+fibonacci:
 	iverilog top_tb.v top.v -Dprog3=1 -DVCD=1
 	./a.out
 	gtkwave top.vcd
 
-tb4:
+ta:
 	iverilog top_tb.v top.v -Dprog4=1 -DVCD=1
 	./a.out
 	gtkwave top.vcd
@@ -50,6 +50,21 @@ mins3:
 
 mins4:
 	iverilog top_tb.v top.v -Dmins4=1 -DVCD=1
+	./a.out
+	gtkwave top.vcd
+
+hazard1:
+	iverilog top_tb.v top.v -Dhazard1=1 -DVCD=1
+	./a.out
+	gtkwave top.vcd
+
+hazard2:
+	iverilog top_tb.v top.v -Dhazard2=1 -DVCD=1
+	./a.out
+	gtkwave top.vcd
+
+hazard3:
+	iverilog top_tb.v top.v -Dhazard3=1 -DVCD=1
 	./a.out
 	gtkwave top.vcd
 
