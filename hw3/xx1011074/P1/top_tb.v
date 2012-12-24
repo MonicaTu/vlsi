@@ -138,8 +138,6 @@ module top_tb();
   //clk gen.
   always #(`PERIOD/2) clk = ~clk;
 
-  ///////////Function Test//////////
-//  `ifdef prog1
   initial begin
   	clk = 0;
   	rst = 0;
@@ -148,19 +146,71 @@ module top_tb();
   	#1 rst = 1;
   	#(`PERIOD) rst = 0;
   	
+    ///////////Function Test//////////
+    `ifdef prog1
+  	  $readmemb("ex_mem.txt",EM1.EM_REG);
+  	  $readmemb("rom.txt",ROM1.ROM_REG);
+    `endif
+  
+    ///////////Sorting Test//////////
+    `ifdef prog2
+    initial begin
+  	  $readmemb("sort_mem.txt",EM1.EM_REG);
+  	  $readmemb("sort_rom.txt",ROM1.ROM_REG);
+    end
+    `endif
+    
+    ///////////Fibonacci Test//////////
+    `ifdef prog3
+    initial begin
+  	  $readmemb("fibonacci_mem.txt",EM1.EM_REG);
+  	  $readmemb("fibonacci_rom.txt",ROM1.ROM_REG);
+    end
+    `endif
+    
+    /////////////Cross Test////////////
+    `ifdef prog4
+    initial begin
+  	  $readmemb("cross_mem.txt",EM1.EM_REG);
+  	  $readmemb("cross_rom.txt",ROM1.ROM_REG);
+    end
+    `endif
+ 
+    ///////////HWII-Part2-P5 Test//////////
+    `ifdef mins
+  	  $readmemb("mins.prog",EM1.EM_REG);
+  	  $readmemb("rom.prog",ROM1.ROM_REG);
+    `endif
+
+    `ifdef mins1
+  	  $readmemb("mins1.prog",EM1.EM_REG);
+  	  $readmemb("rom1.prog",ROM1.ROM_REG);
+    `endif
+
+    `ifdef mins2
+  	  $readmemb("mins2.prog",EM1.EM_REG);
+  	  $readmemb("rom2.prog",ROM1.ROM_REG);
+    `endif
+
+    `ifdef mins3
+  	  $readmemb("mins3.prog",EM1.EM_REG);
+  	  $readmemb("rom3.prog",ROM1.ROM_REG);
+    `endif
+
+    `ifdef mins4
+  	  $readmemb("mins4.prog",EM1.EM_REG);
+  	  $readmemb("rom4.prog",ROM1.ROM_REG);
+    `endif
+
+    ///////////Other Test//////////
     `ifdef basic
-  	$readmemb("basic_em.prog",EM1.EM_REG);
-  	$readmemb("basic_rom.prog",ROM1.ROM_REG);
+  	  $readmemb("basic_mem.prog",EM1.EM_REG);
+  	  $readmemb("basic_rom.prog",ROM1.ROM_REG);
     `endif
 
     `ifdef lwsw
-  	$readmemb("lwsw_em.prog",EM1.EM_REG);
-  	$readmemb("lwsw_rom.prog",ROM1.ROM_REG);
-    `endif
-
-    `ifdef prog1
-  	$readmemb("ex_mem.txt",EM1.EM_REG);
-  	$readmemb("rom.txt",ROM1.ROM_REG);
+  	  $readmemb("lwsw_mem.prog",EM1.EM_REG);
+  	  $readmemb("lwsw_rom.prog",ROM1.ROM_REG);
     `endif
   	
     system_enable = 1;
@@ -184,29 +234,6 @@ module top_tb();
     $display("\n");
   	$finish;
   end
-//  `endif
-  
-  ///////////Sorting Test//////////
-  `ifdef prog2
-  initial begin
-    /*...*/	
-  end
-  `endif
-  
-  ///////////Fibonacci Test//////////
-  `ifdef prog3
-  initial begin
-    /*...*/	
-  end
-  `endif
-  
-  /////////////Cross Test////////////
-  `ifdef prog4
-  initial begin
-    /*...*/	
-  end
-  `endif
- 
   
   initial begin
   `ifdef FSDB
